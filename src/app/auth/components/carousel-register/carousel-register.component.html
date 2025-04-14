@@ -1,0 +1,14 @@
+<p-carousel [value]="carouselItems" [numVisible]="1" [numScroll]="1" [circular]="true"
+            [autoplayInterval]="5000" [showIndicators]="false" [showNavigators]="false"
+            indicatorStyleClass="hover:bg-primary-500">
+  <ng-template let-item pTemplate="item">
+    <div class="text-center mb-8 p-3">
+      <img src="{{item.image}}" alt="{{item.title}}" class="mb-6 w-full"
+           style="max-height: 200px; object-fit: contain;">
+      <div class="mx-auto font-medium text-xl mb-3 text-orange-900">{{ item.title }}</div>
+      <p class="m-0 text-orange-700 line-height-3">{{ item.text }}</p>
+      <button pButton pRipple label="View details" class="p-button-outlined mt-4"></button>
+    </div>
+  </ng-template>
+</p-carousel>
+

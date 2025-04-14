@@ -1,0 +1,107 @@
+<div
+  style="background: url('https://i.postimg.cc/RZ9Q00J5/fondo.jpg') no-repeat; background-size: cover"
+  class="px-4 py-8 md:px-6 lg:px-8">
+  <div class="flex flex-wrap">
+    <div class="w-full lg:w-6 p-4 lg:p-7" style="background-color: whitesmoke">
+      <img src="https://i.postimg.cc/FsxmSfq9/logo-hairypaws.png" alt="Hairy Paws Logo" height="60rem" class="mb-6">
+      <div class="text-xl text-900 font-500 mb-3">Welcome to Hairy-Paws</div>
+      <p class="text-600 line-height-3 mt-0 mb-6">Discover pets for adoption, reserve visits, and support local shelters
+        — all from your iOS or Android device.</p>
+      <ul class="list-none p-0 m-0">
+        <li class="flex align-items-start mb-4">
+          <div>
+                            <span class="flex align-items-center justify-content-center bg-orange-500"
+                                  style="width:38px;height:38px;border-radius:10px">
+                                <i class="text-xl text-white pi pi-heart"></i>
+                            </span>
+          </div>
+          <div class="ml-3">
+            <span class="font-medium text-900">Find your perfect companion</span>
+            <p class="mt-2 mb-0 text-600 line-height-3">Explore a wide range of pets and choose the one that best fits
+              your family. </p>
+          </div>
+        </li>
+        <li class="flex align-items-start mb-4">
+          <div>
+                            <span class="flex align-items-center justify-content-center bg-orange-500"
+                                  style="width:38px;height:38px;border-radius:10px">
+                                <i class="text-xl text-white pi pi-bolt"></i>
+                            </span>
+          </div>
+          <div class="ml-3">
+            <span class="font-medium text-900">Fast and easy adoption process</span>
+            <p class="mt-2 mb-0 text-600 line-height-3">Adopt or schedule a visit with just a few clicks. Receive
+              instant notifications.</p>
+          </div>
+        </li>
+        <li class="flex align-items-start mb-4">
+          <div>
+                            <span class="flex align-items-center justify-content-center bg-orange-500"
+                                  style="width:38px;height:38px;border-radius:10px">
+                                <i class="text-xl text-white pi pi-users"></i>
+                            </span>
+          </div>
+          <div class="ml-3">
+            <span class="font-medium text-900">Support local NGOs</span>
+            <p class="mt-2 mb-0 text-600 line-height-3">Donate supplies or money to trusted organizations helping pets
+              in need.</p>
+          </div>
+        </li>
+        <li class="flex align-items-start">
+          <div>
+                            <span class="flex align-items-center justify-content-center bg-orange-500"
+                                  style="width:38px;height:38px;border-radius:10px">
+                                <i class="text-xl text-white pi pi-shield"></i>
+                            </span>
+          </div>
+          <div class="ml-3">
+            <span class="font-medium text-900">Maximum security for your peace of mind</span>
+            <p class="mt-2 mb-0 text-600 line-height-3">Your data and transactions are protected with state-of-the-art security measures.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="w-full lg:w-6 p-4 lg:p-7 surface-card">
+      <div class="text-900 text-2xl font-medium mb-6">Login</div>
+      <label for="email3" class="block text-900 font-medium mb-2">Email</label>
+      <input id="email3" type="text" placeholder="Email address" pInputText class="w-full mb-3 p-3"
+             [(ngModel)]="loginRequest.email">
+
+      <label for="password3" class="block text-900 font-medium mb-2">Password</label>
+      <input id="password3" type="password" placeholder="Password" pInputText class="w-full mb-3 p-3"
+             [(ngModel)]="loginRequest.password">
+
+      <div class="flex align-items-center justify-content-between mb-6">
+        <div class="flex align-items-center">
+          <p-checkbox id="rememberme3" [binary]="true" styleClass="mr-2"></p-checkbox>
+          <label for="rememberme3">Remember me</label>
+        </div>
+        <a class="font-medium no-underline ml-2 text-orange-500 text-right cursor-pointer">Forgot password?</a>
+      </div>
+
+      <button pButton pRipple label="Login" icon="pi pi-user" class="w-full" (click)="login()"></button>
+
+      <p-divider align="center" styleClass="my-6">
+        <span class="text-600 font-normal text-sm">OR</span>
+      </p-divider>
+
+      <button pButton pRipple label="Login with Google" icon="pi pi-google"
+              class="w-full p-button-secondary"></button>
+
+      <div class="mt-6 text-center text-600">
+        Don't have an account? <a tabindex="0" class="font-medium text-orange-500" routerLink="/auth/register">Sign
+        up</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-twofa-page
+  [visible]="twoFaDialogVisible"
+  [userId]="userId!"
+  (visibleChange)="twoFaDialogVisible = $event"
+  (onShow)="onDialogShow()"
+  (verificationComplete)="onVerificationComplete()">
+</app-twofa-page>
+
+

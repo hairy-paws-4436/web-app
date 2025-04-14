@@ -1,0 +1,9 @@
+<h1 *ngIf="!finishedAuthCheck()"></h1>
+<router-outlet *ngIf="finishedAuthCheck()"></router-outlet>
+
+<p-dialog header="Sesión Expirada" [visible]="sessionExpired()" [modal]="true">
+  <p>Tu sesión ha expirado. Por favor, vuelve a iniciar sesión.</p>
+  <ng-template pTemplate="footer">
+    <button pButton label="Volver a Iniciar Sesión" icon="pi pi-sign-in" (click)="onCloseDialog()"></button>
+  </ng-template>
+</p-dialog>

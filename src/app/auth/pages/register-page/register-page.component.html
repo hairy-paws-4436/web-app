@@ -1,0 +1,78 @@
+<div
+  style="background: url('https://i.postimg.cc/RZ9Q00J5/fondo.jpg') no-repeat; background-size: cover"
+  class="surface-ground px-4 py-8 md:px-6 lg:px-8">
+  <div class="flex flex-wrap shadow-2">
+
+    <div class="w-full lg:w-6 px-4 py-4 lg:p-7 " style="background-color: whitesmoke">
+      <img src="https://i.postimg.cc/FsxmSfq9/logo-hairypaws.png" alt="Logo" height="70rem" class="mb-6">
+      <app-carousel-register></app-carousel-register>
+    </div>
+
+    <div class="w-full lg:w-6 p-4 lg:p-7 surface-card">
+      <div class="flex align-items-center justify-content-between mb-5">
+        <span class="text-2xl font-medium text-900">Register</span>
+        <a tabindex="0"
+           class="font-medium text-orange-500 hover:text-orange-700 cursor-pointer transition-colors transition-duration-150"
+           routerLink="/auth/login">Sign in</a>
+      </div>
+      <button pButton pRipple label="Register with Google" icon="pi pi-google"
+              class="w-full p-button-secondary mb-3"></button>
+      <p-divider align="center" styleClass="my-4">
+        <span class="text-600 font-normal text-sm">Or</span>
+      </p-divider>
+
+      <div class="formgrid grid">
+
+        <div class="field col-12 md:col-6">
+          <label for="firstName" class="block text-900 font-medium mb-2">First Name</label>
+          <input id="firstName" type="text" placeholder="Enter your first name" pInputText class="w-full p-3"
+                 [(ngModel)]="registerRequest.firstName">
+        </div>
+        <div class="field col-12 md:col-6">
+          <label for="lastName" class="block text-900 font-medium mb-2">Last Name</label>
+          <input id="lastName" type="text" placeholder="Enter your last name" pInputText class="w-full p-3"
+                 [(ngModel)]="registerRequest.lastName">
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <label for="email" class="block text-900 font-medium mb-2">Email</label>
+          <input id="email" type="email" placeholder="Enter your email" pInputText class="w-full p-3"
+                 [(ngModel)]="registerRequest.email">
+        </div>
+        <div class="field col-12 md:col-6">
+          <label for="phone" class="block text-900 font-medium mb-2">Phone Number</label>
+          <input id="phone" type="text" placeholder="Enter your phone number" pInputText class="w-full p-3"
+                 [(ngModel)]="registerRequest.phoneNumber">
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <label for="password" class="block text-900 font-medium mb-2">Password</label>
+          <input id="password" type="password" placeholder="Enter your password" pInputText class="w-full p-3"
+                 [(ngModel)]="registerRequest.password">
+        </div>
+        <div class="field col-12 md:col-6">
+          <label for="role" class="block text-900 font-medium mb-2">Role</label>
+          <p-autoComplete
+            [(ngModel)]="selectedRole"
+            [suggestions]="filteredRoles"
+            (completeMethod)="filterRoles($event)"
+            [dropdown]="true"
+            placeholder="Select your role"
+            styleClass="w-full"
+            [forceSelection]="true"
+            id="role"
+          ></p-autoComplete>
+        </div>
+      </div>
+
+      <div class="flex align-items-center justify-content-between mt-4 mb-5">
+        <div class="flex align-items-center">
+          <p-checkbox id="terms" [binary]="true" styleClass="mr-2"></p-checkbox>
+          <label for="terms">I accept the <a class="text-orange-500 cursor-pointer">terms and conditions</a></label>
+        </div>
+      </div>
+      <button pButton pRipple label="Register" icon="pi pi-user-plus" class="w-full p-3"
+              (click)="register()"></button>
+    </div>
+  </div>
+</div>
