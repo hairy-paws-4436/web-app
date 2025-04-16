@@ -1,0 +1,87 @@
+/* pet-adoption-dialog.component.css */
+
+.adoption-dialog-content {
+  padding: 1rem 0;
+}
+
+.pet-image-medium {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pet-image-medium img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+:host ::ng-deep .p-steps .p-steps-item .p-menuitem-link {
+  background: transparent;
+}
+
+:host ::ng-deep .p-steps .p-steps-item.p-highlight .p-steps-number {
+  background: var(--primary-color);
+}
+
+.adoption-step-content {
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+}
+
+.adoption-intro {
+  line-height: 1.5;
+}
+
+.adoption-intro ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.adoption-intro li {
+  margin-bottom: 0.5rem;
+}
+
+.review-summary {
+  margin-top: 2rem;
+}
+
+:host ::ng-deep .p-calendar {
+  width: 100%;
+}
+
+:host ::ng-deep .p-calendar .p-inputtext {
+  width: 100%;
+}
+
+:host ::ng-deep .p-inputtextarea {
+  resize: vertical;
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 768px) {
+  :host ::ng-deep .p-steps .p-steps-item .p-menuitem-link .p-steps-title {
+    display: none;
+  }
+
+  .adoption-step-content {
+    min-height: 400px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .pet-image-medium {
+    width: 60px;
+    height: 60px;
+  }
+
+  .pet-info-summary h3 {
+    font-size: 1.25rem;
+  }
+
+  .adoption-step-content {
+    min-height: 450px;
+  }
+}

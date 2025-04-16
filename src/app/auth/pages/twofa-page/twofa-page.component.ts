@@ -29,7 +29,6 @@ import Swal from 'sweetalert2';
     ButtonDirective,
     Ripple,
     PrimeTemplate,
-    ButtonIcon
   ],
   templateUrl: './twofa-page.component.html',
   styleUrl: './twofa-page.component.css'
@@ -58,7 +57,7 @@ export class TwofaPageComponent {
   closeDialog() {
     this.visible = false;
     this.visibleChange.emit(this.visible);
-    this.resetInputs();  // Resetear inputs
+    this.resetInputs();
   }
 
   resetInputs() {
@@ -73,7 +72,7 @@ export class TwofaPageComponent {
 
   submitCode() {
     if (!this.userId) {
-      Swal.fire('Error', 'No user ID found for verification', 'error');
+      Swal.fire('Error', 'No user ID found for verification', 'error').then();
       return;
     }
 

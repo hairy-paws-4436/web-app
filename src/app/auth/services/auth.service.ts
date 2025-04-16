@@ -73,8 +73,8 @@ export class AuthService {
       }),
       catchError((err) => {
         const errorMessage =
-          err?.error?.message || // Caso esperado desde el backend
-          err?.message ||        // Errores de red o de Angular
+          err?.error?.message ||
+          err?.message ||
           'Error inesperado al iniciar sesión';
 
         return throwError(() => errorMessage);
@@ -111,8 +111,6 @@ export class AuthService {
     return this.http.post<RegisterResponseInterface>(url, registerRequest).pipe(
       switchMap(() => this.login(loginRequest)),
       catchError((error: HttpErrorResponse) => {
-        console.log(registerRequest);
-        console.log(loginRequest);
         const errorMessage = error.error?.message || 'Error inesperado al registrar';
         return throwError(() => errorMessage);
       })

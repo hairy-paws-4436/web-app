@@ -7,7 +7,7 @@ export interface PetInterface {
   gender: string
   description: string
   ownerId: string
-  images: any[]
+  images: string[]
   status: string
   availableForAdoption: boolean
   weight: string

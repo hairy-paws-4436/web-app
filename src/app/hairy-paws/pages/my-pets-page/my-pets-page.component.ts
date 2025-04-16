@@ -1,30 +1,30 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {PetInterface} from '../../interfaces/pet-interface';
+import {NgForOf, NgIf} from "@angular/common";
+import {Paginator} from "primeng/paginator";
+import {PetCardComponent} from "../../components/pet-card/pet-card.component";
+import {PetsDetailsDialogComponent} from "../../components/pets-details-dialog/pets-details-dialog.component";
+import {ProgreessSpinnerComponent} from "../../../shared/components/progreess-spinner/progreess-spinner.component";
+import {Toast} from "primeng/toast";
 import {PetService} from '../../services/pet.service';
-import Swal from 'sweetalert2';
-import {PetCardComponent} from '../../components/pet-card/pet-card.component';
-import {NgForOf, NgIf} from '@angular/common';
-import {ProgreessSpinnerComponent} from '../../../shared/components/progreess-spinner/progreess-spinner.component';
-import {Paginator} from 'primeng/paginator';
 import {MessageService} from 'primeng/api';
-import {PetsDetailsDialogComponent} from '../../components/pets-details-dialog/pets-details-dialog.component';
-import {Toast} from 'primeng/toast';
+import {PetInterface} from '../../interfaces/pet-interface';
+import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-pets-page',
-  imports: [
-    PetCardComponent,
-    NgIf,
-    ProgreessSpinnerComponent,
-    Paginator,
-    NgForOf,
-    PetsDetailsDialogComponent,
-    Toast
-  ],
-  templateUrl: './pets-page.component.html',
-  styleUrl: './pets-page.component.css'
+  selector: 'app-my-pets-page',
+    imports: [
+        NgForOf,
+        NgIf,
+        Paginator,
+        PetCardComponent,
+        PetsDetailsDialogComponent,
+        ProgreessSpinnerComponent,
+        Toast
+    ],
+  templateUrl: './my-pets-page.component.html',
+  styleUrl: './my-pets-page.component.css'
 })
-export class PetsPageComponent implements OnInit {
+export class MyPetsPageComponent implements OnInit {
   private petService: PetService = inject(PetService);
   private messageService: MessageService = inject(MessageService);
 
@@ -39,14 +39,13 @@ export class PetsPageComponent implements OnInit {
   selectedPet: PetInterface | null = null;
 
   ngOnInit() {
-    this.loadPets();
+    this.myPets();
   }
 
-  private loadPets(): void {
-    this.petService.getPetsByTypeAndBreed(this.type, this.breed).subscribe({
+  private myPets(): void {
+    this.petService.myPets().subscribe({
       next: (pets) => {
         this.pets = pets;
-        // Initialize the first page after loading data
         this.updatePaginatedPets(0);
         this.isLoading = false;
       },
