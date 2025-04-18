@@ -1,0 +1,168 @@
+<div class="donation-form-container">
+  <p-toast></p-toast>
+
+  <div class="container">
+    <div class="donation-card-container">
+      <p-card>
+        <form [formGroup]="donationForm" (ngSubmit)="onSubmit()">
+          <!-- NGO Selection -->
+          <div class="form-section">
+            <h2 class="section-title">Select NGO</h2>
+
+            <div class="field">
+              <label for="ongId" class="block font-medium mb-2">NGO to donate to *</label>
+              <p-dropdown
+                id="ongId"
+                [options]="ongs"
+                formControlName="ongId"
+                optionLabel="name"
+                optionValue="id"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                placeholder="Select an NGO"
+                [ngClass]="{'ng-invalid ng-dirty': isInvalid('ongId')}"
+                (onChange)="onOngChange($event.value)"
+                [disabled]="selectedOng !== null"
+                styleClass="w-full">
+              </p-dropdown>
+              <small *ngIf="isInvalid('ongId')" class="p-error">{{ getErrorMessage('ongId') }}</small>
+            </div>
+
+            <div *ngIf="selectedOng" class="selected-ong-card">
+              <h3 class="ong-name">{{ selectedOng.name }}</h3>
+              <p class="ong-description">{{ selectedOng.description }}</p>
+
+              <div class="ong-details">
+                <div class="details-item">
+                  <i class="pi pi-map-marker"></i>
+                  <span>{{ selectedOng.address }}</span>
+                </div>
+                <div class="details-item">
+                  <i class="pi pi-phone"></i>
+                  <span>{{ selectedOng.phone }}</span>
+                </div>
+                <div class="details-item">
+                  <i class="pi pi-envelope"></i>
+                  <span>{{ selectedOng.email }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p-divider></p-divider>
+
+          <div class="form-section">
+            <h2 class="section-title">Donation Type</h2>
+
+            <div class="donation-type-selection">
+              <div *ngFor="let type of donationTypes" class="donation-type-option">
+                <p-radioButton
+                  [inputId]="'type-' + type.value"
+                  [value]="type.value"
+                  formControlName="type">
+                </p-radioButton>
+                <label [for]="'type-' + type.value" class="ml-2">{{ type.label }}</label>
+              </div>
+            </div>
+          </div>
+
+          <p-divider></p-divider>
+
+          <div *ngIf="donationForm.value.type === 'money'" class="form-section">
+            <h2 class="section-title">Money Donation</h2>
+
+            <div class="form-grid">
+              <div class="field col-12 md:col-6">
+                <label for="amount" class="block font-medium mb-2">Amount (in local currency) *</label>
+                <p-inputNumber
+                  id="amount"
+                  formControlName="amount"
+                  mode="currency"
+                  currency="PEN"
+                  locale="es-PE"
+                  [minFractionDigits]="2"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('amount')}"
+                  class="w-full">
+                </p-inputNumber>
+                <small *ngIf="isInvalid('amount')" class="p-error">{{ getErrorMessage('amount') }}</small>
+              </div>
+
+              <div class="field col-12 md:col-6">
+                <label for="transactionId" class="block font-medium mb-2">Transaction ID</label>
+                <input
+                  id="transactionId"
+                  type="text"
+                  pInputText
+                  formControlName="transactionId"
+                  placeholder="Optional reference code"
+                  class="w-full">
+              </div>
+
+              <div class="field col-12">
+                <label for="notes" class="block font-medium mb-2">Notes</label>
+                <textarea
+                  id="notes"
+                  pTextarea
+                  formControlName="notes"
+                  [rows]="3"
+                  [autoResize]="true"
+                  placeholder="Additional information about your donation"
+                  class="w-full">
+                </textarea>
+              </div>
+
+              <div class="field col-12">
+                <label for="receipt" class="block font-medium mb-2">Receipt (Optional)</label>
+                <p-fileUpload
+                  id="receipt"
+                  mode="basic"
+                  chooseLabel="Upload Receipt"
+                  [auto]="true"
+                  accept="image/*,application/pdf"
+                  [maxFileSize]="5000000"
+                  class="w-full">
+                </p-fileUpload>
+                <small class="form-helper-text">Upload a receipt or proof of payment (Max 5MB)</small>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="donationForm.value.type === 'items'" class="form-section">
+            <h2 class="section-title">Items Donation</h2>
+
+            <app-donation-items
+              (itemsChange)="onItemsUpdate($event)">
+            </app-donation-items>
+
+            <div class="field mt-3">
+              <label for="notes-items" class="block font-medium mb-2">Notes</label>
+              <textarea
+                id="notes-items"
+                pTextarea
+                formControlName="notes"
+                [rows]="3"
+                [autoResize]="true"
+                placeholder="Additional information about your donation items"
+                class="w-full">
+              </textarea>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <button
+              pButton
+              pRipple
+              type="submit"
+              label="Submit Donation"
+              icon="pi pi-heart"
+              [loading]="isSubmitting"
+              [disabled]="isSubmitting || (donationForm.value.type === 'items' && donationItems.length === 0)"
+              class="p-button-lg">
+            </button>
+          </div>
+        </form>
+      </p-card>
+    </div>
+  </div>
+</div>

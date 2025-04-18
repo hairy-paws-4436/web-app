@@ -1,0 +1,99 @@
+<!-- notification-action.component.html -->
+<div class="notification-action-container">
+  <p-toast></p-toast>
+
+  <!-- Action buttons -->
+  <div class="action-buttons" *ngIf="requiresAction()">
+    <ng-container [ngSwitch]="notification.type">
+      <!-- Adoption Request Actions -->
+      <ng-container *ngSwitchCase="'adoption_request'">
+        <button
+          pButton
+          pRipple
+          label="Approve"
+          icon="pi pi-check"
+          class="p-button-success p-button-sm mr-2"
+          (click)="openApproveDialog()">
+        </button>
+        <button
+          pButton
+          pRipple
+          label="Reject"
+          icon="pi pi-times"
+          class="p-button-danger p-button-sm"
+          (click)="openRejectDialog()">
+        </button>
+      </ng-container>
+
+      <!-- Donation Received Actions -->
+      <ng-container *ngSwitchCase="'donation_received'">
+        <button
+          pButton
+          pRipple
+          label="Confirm"
+          icon="pi pi-check"
+          class="p-button-success p-button-sm mr-2"
+          (click)="openApproveDialog()">
+        </button>
+        <button
+          pButton
+          pRipple
+          label="Cancel"
+          icon="pi pi-times"
+          class="p-button-danger p-button-sm"
+          (click)="openRejectDialog()">
+        </button>
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <!-- Action Dialog -->
+  <p-dialog
+    [(visible)]="showDialog"
+    [header]="dialogTitle"
+    [style]="{width: '450px'}"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false">
+
+    <div class="action-dialog-content">
+      <form [formGroup]="actionForm" (ngSubmit)="submitAction()">
+        <div class="field">
+          <label [for]="getFieldName()" class="block font-medium mb-2">{{ getFieldLabel() }} *</label>
+          <textarea
+            [id]="getFieldName()"
+            [formControlName]="getFieldName()"
+            pTextarea
+            [rows]="4"
+            [autoResize]="true"
+            [placeholder]="getFieldPlaceholder()"
+            [ngClass]="{'ng-invalid ng-dirty': isInvalid(getFieldName())}"
+            class="w-full">
+          </textarea>
+          <small *ngIf="isInvalid(getFieldName())" class="p-error">{{ getErrorMessage(getFieldName()) }}</small>
+        </div>
+      </form>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        pRipple
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="closeDialog()">
+      </button>
+      <button
+        pButton
+        pRipple
+        [label]="getButtonLabel()"
+        icon="pi pi-check"
+        [disabled]="actionForm.invalid || isSubmitting"
+        [loading]="isSubmitting"
+        (click)="submitAction()"
+        [ngClass]="{'p-button-success': actionType === 'approve', 'p-button-danger': actionType === 'reject'}">
+      </button>
+    </ng-template>
+  </p-dialog>
+</div>

@@ -37,29 +37,10 @@
         </div>
       </div>
 
-      <!-- Step 2: Schedule -->
-      <div *ngIf="activeIndex === 1" class="step-schedule">
-        <h4 class="mt-0 mb-3">Schedule an Adoption Meeting</h4>
-        <p class="mb-4">The next step is to meet {{pet.name}} in person. This helps ensure you and {{pet.name}} are a good match.</p>
 
-        <div class="field mb-4">
-          <label for="adoptionDate" class="block font-medium mb-2">When would you like to visit?</label>
-          <p-calendar
-            id="adoptionDate"
-            [(ngModel)]="visitDate"
-            [showTime]="true"
-            [showIcon]="true"
-            [minDate]="minDate"
-            [readonlyInput]="true"
-            [style]="{'width':'100%'}"
-            placeholder="Select date and time">
-          </p-calendar>
-          <small class="text-color-secondary">Choose a date and time that works for you</small>
-        </div>
-      </div>
 
       <!-- Step 3: Notes -->
-      <div *ngIf="activeIndex === 2" class="step-notes">
+      <div *ngIf="activeIndex === 1" class="step-notes">
         <h4 class="mt-0 mb-3">Additional Information</h4>
         <p class="mb-4">Please share why you're interested in adopting {{pet.name}} and any relevant experience you have with this breed.</p>
 
@@ -80,9 +61,7 @@
             <div class="col-12 md:col-6">
               <strong>Pet:</strong> {{pet.name}} ({{pet.breed}})
             </div>
-            <div class="col-12 md:col-6">
-              <strong>Meeting Date:</strong> {{visitDate | date:'medium'}}
-            </div>
+
           </div>
         </div>
       </div>

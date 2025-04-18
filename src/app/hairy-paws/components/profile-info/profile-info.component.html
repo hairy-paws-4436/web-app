@@ -1,0 +1,133 @@
+<!-- profile-info.component.html -->
+<div class="profile-info-container">
+  <h3 class="section-title">Personal Information</h3>
+  <p class="section-description">Update your personal information</p>
+
+  <!-- Profile Image Upload Section -->
+  <div class="profile-image-section">
+    <h4 class="subsection-title">Profile Image</h4>
+
+    <div class="profile-image-upload">
+      <div class="current-image">
+        <img
+          [src]="userProfile.profileImageUrl || 'https://i.postimg.cc/fWqh3BhK/image.png'"
+          alt="Profile Image"
+          class="image-preview">
+      </div>
+
+      <div class="image-upload-controls">
+        <p-fileUpload
+          mode="basic"
+          chooseLabel="Change Image"
+          [auto]="true"
+          accept="image/*"
+          [maxFileSize]="5000000"
+          (uploadHandler)="onProfileImageUpload($event)"
+          [disabled]="isUploadingImage"
+          styleClass="p-button-outlined">
+        </p-fileUpload>
+
+        <small class="file-description">
+          <i class="pi pi-info-circle mr-1"></i>
+          Max file size: 5MB. Supported formats: JPG, PNG, GIF
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <p-divider></p-divider>
+
+  <!-- Profile Information Form -->
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+    <div class="form-grid">
+      <div class="field col-12 md:col-6">
+        <label for="firstName" class="block font-medium mb-2">First Name *</label>
+        <input
+          id="firstName"
+          type="text"
+          pInputText
+          formControlName="firstName"
+          [ngClass]="{'ng-invalid ng-dirty': isInvalid('firstName')}"
+          class="w-full">
+        <small *ngIf="isInvalid('firstName')" class="p-error">{{ getErrorMessage('firstName') }}</small>
+      </div>
+
+      <div class="field col-12 md:col-6">
+        <label for="lastName" class="block font-medium mb-2">Last Name *</label>
+        <input
+          id="lastName"
+          type="text"
+          pInputText
+          formControlName="lastName"
+          [ngClass]="{'ng-invalid ng-dirty': isInvalid('lastName')}"
+          class="w-full">
+        <small *ngIf="isInvalid('lastName')" class="p-error">{{ getErrorMessage('lastName') }}</small>
+      </div>
+
+      <div class="field col-12 md:col-6">
+        <label for="phoneNumber" class="block font-medium mb-2">Phone Number *</label>
+        <input
+          id="phoneNumber"
+          type="text"
+          pInputText
+          formControlName="phoneNumber"
+          placeholder="9 digits"
+          [ngClass]="{'ng-invalid ng-dirty': isInvalid('phoneNumber')}"
+          class="w-full">
+        <small *ngIf="isInvalid('phoneNumber')" class="p-error">{{ getErrorMessage('phoneNumber') }}</small>
+      </div>
+
+      <div class="field col-12">
+        <label for="address" class="block font-medium mb-2">Address *</label>
+        <input
+          id="address"
+          type="text"
+          pInputText
+          formControlName="address"
+          [ngClass]="{'ng-invalid ng-dirty': isInvalid('address')}"
+          class="w-full">
+        <small *ngIf="isInvalid('address')" class="p-error">{{ getErrorMessage('address') }}</small>
+      </div>
+
+      <!-- Email (read-only) -->
+      <div class="field col-12 md:col-6">
+        <label for="email" class="block font-medium mb-2">Email Address</label>
+        <input
+          id="email"
+          type="email"
+          pInputText
+          [value]="userProfile.email"
+          readonly
+          class="w-full readonly-input">
+        <small class="input-help-text">Email address cannot be changed</small>
+      </div>
+
+      <!-- Role (read-only) -->
+      <div class="field col-12 md:col-6">
+        <label for="role" class="block font-medium mb-2">Account Type</label>
+        <input
+          id="role"
+          type="text"
+          pInputText
+          [value]="userProfile.role"
+          readonly
+          class="w-full readonly-input">
+        <small class="input-help-text">Account type cannot be changed</small>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="field col-12 submit-container">
+        <button
+          pButton
+          pRipple
+          type="submit"
+          label="Save Changes"
+          icon="pi pi-check"
+          [loading]="isSubmitting"
+          [disabled]="isSubmitting || profileForm.pristine"
+          class="p-button-primary">
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

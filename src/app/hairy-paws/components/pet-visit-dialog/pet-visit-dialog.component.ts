@@ -7,6 +7,7 @@ import {Calendar} from 'primeng/calendar';
 import {FormsModule} from '@angular/forms';
 import {PrimeTemplate} from 'primeng/api';
 import {Button} from 'primeng/button';
+import {DatePicker} from 'primeng/datepicker';
 
 // @ts-ignore
 @Component({
@@ -14,10 +15,10 @@ import {Button} from 'primeng/button';
   imports: [
     Dialog,
     NgIf,
-    Calendar,
     FormsModule,
     PrimeTemplate,
-    Button
+    Button,
+    DatePicker
   ],
   templateUrl: './pet-visit-dialog.component.html',
   styleUrl: './pet-visit-dialog.component.css'

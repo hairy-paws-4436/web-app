@@ -19,22 +19,29 @@
               <li routerLink="/hairy-paws/pets">
                 <a pRipple
                    class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
-                  <i class="pi pi-book mr-2"></i>
-                  <span class="font-medium">All</span>
+                  <i class="pi pi-list mr-2"></i>
+                  <span class="font-medium">All Pets</span>
                 </a>
               </li>
               <li routerLink="/hairy-paws/filter-pets">
                 <a pRipple
                    class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
-                  <i class="pi pi-search mr-2"></i>
-                  <span class="font-medium">Filter</span>
+                  <i class="pi pi-filter mr-2"></i>
+                  <span class="font-medium">Filter Pets</span>
                 </a>
               </li>
-              <li routerLink="/hairy-paws/my-pets">
+              <li *ngIf="isOwner || isONG" routerLink="/hairy-paws/my-pets">
                 <a pRipple
                    class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
                   <i class="pi pi-heart mr-2"></i>
-                  <span class="font-medium">My pets</span>
+                  <span class="font-medium">My Pets</span>
+                </a>
+              </li>
+              <li *ngIf="isOwner || isONG" routerLink="/hairy-paws/pet-register">
+                <a pRipple
+                   class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
+                  <i class="pi pi-plus-circle mr-2"></i>
+                  <span class="font-medium">Register Pet</span>
                 </a>
               </li>
             </ul>
@@ -50,25 +57,11 @@
                 <i class="pi pi-chevron-down"></i>
               </div>
               <ul class="list-none p-0 m-0 overflow-hidden">
-                <li routerLink="  ">
+                <li routerLink="/hairy-paws/notifications">
                   <a pRipple
                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
-                    <i class="pi pi-file-edit mr-2"></i>
-                    <span class="font-medium">Adoptions</span>
-                  </a>
-                </li>
-                <li routerLink="  ">
-                  <a pRipple
-                     class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
-                    <i class="pi pi-file-edit mr-2"></i>
-                    <span class="font-medium">Visits</span>
-                  </a>
-                </li>
-                <li routerLink="  ">
-                  <a pRipple
-                     class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
-                    <i class="pi pi-file-edit mr-2"></i>
-                    <span class="font-medium">Donations</span>
+                    <i class="pi pi-bell mr-2"></i>
+                    <span class="font-medium">All Notifications</span>
                   </a>
                 </li>
               </ul>
@@ -81,15 +74,36 @@
               <div pRipple class="p-3 flex align-items-center justify-content-between text-600 cursor-pointer"
                    pStyleClass="@next" enterFromClass="hidden" enterActiveClass="slidedown" leaveToClass="hidden"
                    leaveActiveClass="slideup">
-                <span class="font-medium text-primary">DONATIONS</span>
+                <span class="font-medium text-primary">ORGANIZATIONS</span>
                 <i class="pi pi-chevron-down"></i>
               </div>
               <ul class="list-none p-0 m-0 overflow-hidden">
-                <li routerLink="">
+                <li routerLink="/hairy-paws/ongs">
                   <a pRipple
                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
-                    <i class="pi pi-cloud-upload mr-2"></i>
-                    <span class="font-medium">Subir</span>
+                    <i class="pi pi-building mr-2"></i>
+                    <span class="font-medium">All NGOs</span>
+                  </a>
+                </li>
+                <li routerLink="/hairy-paws/events">
+                  <a pRipple
+                     class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
+                    <i class="pi pi-calendar mr-2"></i>
+                    <span class="font-medium">All Events</span>
+                  </a>
+                </li>
+                <li *ngIf="isONG" routerLink="/hairy-paws/event-register">
+                  <a pRipple
+                     class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
+                    <i class="pi pi-calendar-plus mr-2"></i>
+                    <span class="font-medium">Register Event</span>
+                  </a>
+                </li>
+                <li routerLink="/hairy-paws/ong-register">
+                  <a pRipple
+                     class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
+                    <i class="pi pi-plus-circle mr-2"></i>
+                    <span class="font-medium">Register NGO</span>
                   </a>
                 </li>
               </ul>
@@ -106,11 +120,11 @@
                 <i class="pi pi-chevron-down"></i>
               </div>
               <ul class="list-none p-0 m-0 overflow-hidden">
-                <li routerLink="">
+                <li routerLink="/hairy-paws/profile">
                   <a pRipple
                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
-                    <i class="pi pi-cloud-upload mr-2"></i>
-                    <span class="font-medium">Subir</span>
+                    <i class="pi pi-user mr-2"></i>
+                    <span class="font-medium">My Profile</span>
                   </a>
                 </li>
               </ul>
@@ -125,14 +139,14 @@
            class="m-3 flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors"
            (click)="logout()">
           <i class="pi pi-sign-out mr-2 text-red-900 font-bold"></i>
-          <span class="font-medium text-red-900 font-bold">Cerrar sesión</span>
+          <span class="font-medium text-red-900 font-bold">Log Out</span>
         </a>
       </div>
     </div>
   </div>
   <div class="flex-auto flex flex-column min-h-screen overflow-y-auto">
     <div
-      class="flex justify-content-between align-items-center p-3 surface-0  surface-border sticky top-0 z-1">
+      class="flex justify-content-between align-items-center p-3 surface-0 surface-border sticky top-0 z-1">
       <div class="flex">
         <a pRipple
            class="cursor-pointer inline-flex align-items-center justify-content-center lg:hidden text-700 mr-3"
@@ -142,7 +156,7 @@
         </a>
       </div>
     </div>
-    <div class="flex-auto  bg-white">
+    <div class="flex-auto bg-white">
       <router-outlet></router-outlet>
     </div>
   </div>

@@ -8,18 +8,17 @@ import {Dialog} from 'primeng/dialog';
 import {Steps} from 'primeng/steps';
 import {DatePipe, NgIf} from '@angular/common';
 import {Button} from 'primeng/button';
+import {DatePicker} from 'primeng/datepicker';
 
 @Component({
   selector: 'app-pet-adoption-dialog',
   imports: [
     FormsModule,
-    Calendar,
     Dialog,
     Steps,
     NgIf,
-    DatePipe,
     PrimeTemplate,
-    Button
+    Button,
   ],
   templateUrl: './pet-adoption-dialog.component.html',
   styleUrl: './pet-adoption-dialog.component.css'
@@ -42,12 +41,8 @@ export class PetAdoptionDialogComponent {
       command: () => this.activeIndex = 0
     },
     {
-      label: 'Schedule Meeting',
-      command: () => this.activeIndex = 1
-    },
-    {
       label: 'Submit Request',
-      command: () => this.activeIndex = 2
+      command: () => this.activeIndex = 1
     }
   ];
 

@@ -19,6 +19,7 @@ import {AdoptionInterface} from '../../interfaces/adoption-interface';
 import {AdoptionService} from '../../services/adoption.service';
 import {PetVisitDialogComponent} from '../pet-visit-dialog/pet-visit-dialog.component';
 import {PetAdoptionDialogComponent} from '../pet-adoption-dialog/pet-adoption-dialog.component';
+import {AuthService} from '../../../auth/services/auth.service';
 
 interface AvailabilityOption {
   label: string;
@@ -52,19 +53,19 @@ export class PetsFilterTableComponent implements OnInit {
   private petService: PetService = inject(PetService);
   private adoptionService: AdoptionService = inject(AdoptionService);
   private messageService: MessageService = inject(MessageService);
+  private authService: AuthService = inject(AuthService);
 
   pets: PetInterface[] = [];
   selectedPets: PetInterface[] = [];
   isLoading: boolean = true;
 
-  // Filter options
   availabilityOptions: AvailabilityOption[] = [
     { label: 'Any', value: null },
     { label: 'Available', value: true },
     { label: 'Not Available', value: false }
   ];
 
-  // Dialog visibility states
+
   displayPetDetails: boolean = false;
   displayVisitDialog: boolean = false;
   displayAdoptionDialog: boolean = false;
@@ -85,6 +86,10 @@ export class PetsFilterTableComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  get isAdopter (): boolean {
+    return this.authService.isAdopter();
   }
 
   // Show pet details

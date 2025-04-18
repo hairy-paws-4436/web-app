@@ -1,1 +1,90 @@
-<p>notifications-page works!</p>
+<!-- notifications-page.component.html (updated) -->
+<div class="notifications-container">
+  <p-toast></p-toast>
+  <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000"></p-confirmDialog>
+
+  <!-- Content -->
+  <div class="container">
+    <!-- TabView for categorized notifications -->
+    <p-tabView (onChange)="filterNotificationsByTab($event.index)">
+      <!-- All Notifications Tab -->
+      <p-tabPanel [header]="'All (' + notifications.length + ')'">
+        <!-- Unread Counter -->
+        <div *ngIf="!isLoading && unreadCount > 0" class="unread-counter mb-3">
+          <span class="unread-badge">{{ unreadCount }}</span> unread notification{{ unreadCount !== 1 ? 's' : '' }}
+        </div>
+
+        <!-- Empty state -->
+        <div *ngIf="!isLoading && filteredNotifications.length === 0" class="empty-state">
+          <div class="empty-state-content">
+            <i class="pi pi-bell" style="font-size: 3rem; color: var(--p-primary-color);"></i>
+            <h2>No notifications</h2>
+            <p>You don't have any notifications at the moment.</p>
+          </div>
+        </div>
+
+        <!-- Notifications List -->
+        <div *ngIf="!isLoading && filteredNotifications.length > 0" class="notifications-list">
+          <app-notification-item
+            *ngFor="let notification of filteredNotifications"
+            [notification]="notification"
+            (onClick)="handleNotificationClick(notification)"
+            (onDelete)="deleteNotification(notification)"
+            (onActionCompleted)="handleActionCompleted($event)"
+            class="notification-item">
+          </app-notification-item>
+        </div>
+      </p-tabPanel>
+
+      <!-- Action Required Tab -->
+      <p-tabPanel [header]="'Action Required (' + actionRequiredCount + ')'">
+        <!-- Empty state -->
+        <div *ngIf="!isLoading && filteredNotifications.length === 0" class="empty-state">
+          <div class="empty-state-content">
+            <i class="pi pi-check-circle" style="font-size: 3rem; color: var(--p-green-500);"></i>
+            <h2>No pending actions</h2>
+            <p>You don't have any notifications that require your action.</p>
+          </div>
+        </div>
+
+        <!-- Notifications List -->
+        <div *ngIf="!isLoading && filteredNotifications.length > 0" class="notifications-list">
+          <app-notification-item
+            *ngFor="let notification of filteredNotifications"
+            [notification]="notification"
+            (onClick)="handleNotificationClick(notification)"
+            (onDelete)="deleteNotification(notification)"
+            (onActionCompleted)="handleActionCompleted($event)"
+            class="notification-item">
+          </app-notification-item>
+        </div>
+      </p-tabPanel>
+
+      <!-- General Tab -->
+      <p-tabPanel header="General">
+        <!-- Empty state -->
+        <div *ngIf="!isLoading && filteredNotifications.length === 0" class="empty-state">
+          <div class="empty-state-content">
+            <i class="pi pi-bell-slash" style="font-size: 3rem; color: var(--p-primary-color);"></i>
+            <h2>No general notifications</h2>
+            <p>You don't have any general notifications at the moment.</p>
+          </div>
+        </div>
+
+        <!-- Notifications List -->
+        <div *ngIf="!isLoading && filteredNotifications.length > 0" class="notifications-list">
+          <app-notification-item
+            *ngFor="let notification of filteredNotifications"
+            [notification]="notification"
+            (onClick)="handleNotificationClick(notification)"
+            (onDelete)="deleteNotification(notification)"
+            class="notification-item">
+          </app-notification-item>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+
+    <!-- Loading Spinner -->
+    <app-progreess-spinner [isLoading]="isLoading"></app-progreess-spinner>
+  </div>
+</div>

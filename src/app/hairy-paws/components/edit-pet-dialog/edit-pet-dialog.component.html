@@ -1,0 +1,168 @@
+<!-- edit-pet-dialog.component.html -->
+<p-dialog
+  [(visible)]="visible"
+  [header]="'Edit ' + (pet?.name || 'Pet')"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{width: '90%', maxWidth: '600px'}"
+  [closeOnEscape]="true"
+  (onHide)="closeDialog()">
+
+  <div class="edit-pet-content" *ngIf="editedPet">
+    <div class="grid">
+      <!-- Basic Information -->
+      <div class="col-12">
+        <h3 class="section-title">Basic Information</h3>
+      </div>
+
+      <div class="col-12 md:col-6 field">
+        <label for="pet-name" class="font-medium">Name</label>
+        <input
+          id="pet-name"
+          type="text"
+          pInputText
+          [(ngModel)]="editedPet.name"
+          placeholder="Pet name"
+          class="w-full">
+      </div>
+
+      <div class="col-12 md:col-6 field">
+        <label for="pet-breed" class="font-medium">Breed</label>
+        <input
+          id="pet-breed"
+          type="text"
+          pInputText
+          [(ngModel)]="editedPet.breed"
+          placeholder="Pet breed"
+          class="w-full">
+      </div>
+
+      <div class="col-12 md:col-6 field">
+        <label for="pet-age" class="font-medium">Age (years)</label>
+        <p-inputNumber
+          id="pet-age"
+          [(ngModel)]="editedPet.age"
+          [min]="0"
+          [max]="30"
+          [showButtons]="false"
+          placeholder="Age in years"
+          class="w-full">
+        </p-inputNumber>
+      </div>
+
+      <div class="col-12 md:col-6 field">
+        <label for="pet-gender" class="font-medium">Gender</label>
+        <p-dropdown
+          id="pet-gender"
+          [(ngModel)]="editedPet.gender"
+          [options]="genderOptions"
+          placeholder="Select gender"
+          optionLabel="label"
+          optionValue="value"
+          [showClear]="false"
+          class="w-full">
+        </p-dropdown>
+      </div>
+
+      <div class="col-12 md:col-6 field">
+        <label for="pet-weight" class="font-medium">Weight (kg)</label>
+        <p-inputNumber
+          id="pet-weight"
+          [(ngModel)]="editedPet.weight"
+          [min]="0"
+          [max]="150"
+          [minFractionDigits]="2"
+          [maxFractionDigits]="2"
+          placeholder="Weight in kg"
+          class="w-full">
+        </p-inputNumber>
+      </div>
+
+      <div class="col-12 md:col-6 field pt-4">
+        <div class="adoption-status-field">
+          <p-checkbox
+            [(ngModel)]="editedPet.availableForAdoption"
+            [binary]="true"
+            inputId="adoption-available">
+          </p-checkbox>
+          <label for="adoption-available" class="adoption-label font-medium ml-2">Available for adoption</label>
+        </div>
+      </div>
+
+      <!-- Health Information -->
+      <div class="col-12">
+        <p-divider></p-divider>
+        <h3 class="section-title">Health Information</h3>
+      </div>
+
+      <div class="col-12 md:col-6 field">
+        <div class="health-check-field">
+          <p-checkbox
+            [(ngModel)]="editedPet.vaccinated"
+            [binary]="true"
+            inputId="pet-vaccinated">
+          </p-checkbox>
+          <label for="pet-vaccinated" class="health-label font-medium ml-2">Vaccinated</label>
+        </div>
+      </div>
+
+      <div class="col-12 md:col-6 field">
+        <div class="health-check-field">
+          <p-checkbox
+            [(ngModel)]="editedPet.sterilized"
+            [binary]="true"
+            inputId="pet-sterilized">
+          </p-checkbox>
+          <label for="pet-sterilized" class="health-label font-medium ml-2">Neutered/Spayed</label>
+        </div>
+      </div>
+
+      <div class="col-12 field">
+        <label for="pet-health-details" class="font-medium">Health Details</label>
+        <textarea
+          id="pet-health-details"
+          [(ngModel)]="editedPet.healthDetails"
+          [rows]="3"
+          placeholder="Information about vaccines, health conditions, etc."
+          class="w-full">
+        </textarea>
+      </div>
+
+      <!-- Description -->
+      <div class="col-12">
+        <p-divider></p-divider>
+        <h3 class="section-title">Description</h3>
+      </div>
+
+      <div class="col-12 field">
+        <label for="pet-description" class="font-medium">Description</label>
+        <textarea
+          id="pet-description"
+          [(ngModel)]="editedPet.description"
+          [rows]="4"
+          placeholder="Tell us about your pet's personality, preferences, etc. (Minimum length is 10 characters)"
+          class="w-full">
+        </textarea>
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end gap-2">
+      <p-button
+        label="Cancel"
+        icon="pi pi-times"
+        styleClass="p-button-text"
+        (click)="closeDialog()"
+        [disabled]="isSaving">
+      </p-button>
+      <p-button
+        label="Save Changes"
+        icon="pi pi-check"
+        (click)="savePet()"
+        [loading]="isSaving">
+      </p-button>
+    </div>
+  </ng-template>
+</p-dialog>

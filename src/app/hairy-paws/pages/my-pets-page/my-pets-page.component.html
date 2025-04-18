@@ -1,35 +1,39 @@
-<div>
+<!-- my-pets-page.component.html -->
+<div class="my-pets-container">
   <p-toast></p-toast>
+  <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
-  <div *ngIf="!isLoading" class="py-3 px-5 grid">
-    <app-pet-card
-      *ngFor="let pet of paginatedPets"
-      [petCard]="pet"
-      (viewDetails)="showPetDetails($event)"
-      class="col-12 md:col-6 xl:col-3 card-container">
-    </app-pet-card>
-  </div>
-
-  <div *ngIf="!isLoading && paginatedPets.length === 0" class="py-5 flex justify-content-center align-items-center">
-    <div class="text-center">
-      <i class="pi pi-search-minus" style="font-size: 3rem; color: #64748b;"></i>
-      <h3>No pets found</h3>
-      <p>There are no pets available with the selected criteria.</p>
+  <!-- Content -->
+  <div class="container">
+    <!-- Empty state -->
+    <div *ngIf="!isLoading && myPets.length === 0" class="empty-state">
+      <div class="empty-state-content">
+        <i class="pi pi-paw" style="font-size: 3rem; color: var(--p-primary-color);"></i>
+        <h2>No pets found</h2>
+        <p>You don't have any registered pets yet.</p>
+        <button routerLink="/hairy-paws/pet-register" pButton label="Register a New Pet" icon="pi pi-plus" class="p-button-primary"></button>
+      </div>
     </div>
+
+    <!-- Pet Cards Grid -->
+    <div *ngIf="!isLoading && myPets.length > 0" class="my-pets-grid">
+      <app-my-pet-card
+        *ngFor="let pet of myPets"
+        [pet]="pet"
+        (editPet)="openEditDialog($event)"
+        (deletePet)="confirmDeletePet($event)"
+        class="pet-card-item">
+      </app-my-pet-card>
+    </div>
+
+    <!-- Loading Spinner -->
+    <app-progreess-spinner [isLoading]="isLoading"></app-progreess-spinner>
   </div>
 
-  <app-progreess-spinner [isLoading]="isLoading"></app-progreess-spinner>
-
-  <p-paginator
-    *ngIf="!isLoading && pets.length > 0"
-    [rows]="8"
-    [totalRecords]="pets.length"
-    (onPageChange)="onPageChange($event)">
-  </p-paginator>
-
-  <app-pets-details-dialog
-    [(visible)]="displayPetDetails"
+  <!-- Edit Pet Dialog -->
+  <app-edit-pet-dialog
+    [(visible)]="displayEditDialog"
     [pet]="selectedPet"
-    (adoptionRequested)="handleAdoptionRequest($event)">
-  </app-pets-details-dialog>
+    (petUpdated)="handlePetUpdate($event)">
+  </app-edit-pet-dialog>
 </div>

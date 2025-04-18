@@ -11,6 +11,7 @@ import {AdoptionService} from '../../services/adoption.service';
 import {AdoptionInterface} from '../../interfaces/adoption-interface';
 import {PetVisitDialogComponent} from '../pet-visit-dialog/pet-visit-dialog.component';
 import {PetAdoptionDialogComponent} from '../pet-adoption-dialog/pet-adoption-dialog.component';
+import {AuthService} from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-pet-card',
@@ -31,6 +32,7 @@ export class PetCardComponent {
 
   private adoptionService: AdoptionService = inject(AdoptionService);
   private messageService: MessageService = inject(MessageService);
+  private authService: AuthService = inject(AuthService);
 
   // Dialog visibility states
   showVisitDialog: boolean = false;
@@ -43,6 +45,10 @@ export class PetCardComponent {
     if (this.petCard) {
       this.viewDetails.emit(this.petCard);
     }
+  }
+
+  get isAdopter (): boolean {
+    return this.authService.isAdopter();
   }
 
   /**
@@ -94,11 +100,13 @@ export class PetCardComponent {
             : `Your adoption request for ${this.petCard?.name} has been submitted!`
         });
       },
-      error: (error) => {
-        Swal.fire({
-          title: 'Error',
-          text: error.message || 'An error occurred while processing your request.',
-          icon: 'error'
+      error: () => {
+        let errorMessage = 'An error occurred while processing your request.';
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: errorMessage
         });
       }
     });

@@ -1,0 +1,162 @@
+<!-- event-form.component.html -->
+<div class="event-form-container">
+  <p-toast></p-toast>
+
+  <div class="container">
+    <div class="event-card-container">
+      <p-card>
+        <div *ngIf="isLoading" class="loading-container">
+          <div class="loading-spinner"></div>
+          <p class="loading-text">Loading event details...</p>
+        </div>
+
+        <form *ngIf="!isLoading" [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+          <!-- Basic Information -->
+          <div class="form-section">
+            <h2 class="section-title">Event Information</h2>
+
+            <div class="form-grid">
+              <div class="field col-12">
+                <label for="title" class="block font-medium mb-2">Event Title *</label>
+                <input
+                  id="title"
+                  type="text"
+                  pInputText
+                  formControlName="title"
+                  placeholder="Give your event a descriptive title"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('title')}"
+                  class="w-full">
+                <small *ngIf="isInvalid('title')" class="p-error">{{ getErrorMessage('title') }}</small>
+              </div>
+
+              <div class="field col-12">
+                <label for="description" class="block font-medium mb-2">Event Description *</label>
+                <textarea
+                  id="description"
+                  pTextarea
+                  formControlName="description"
+                  [rows]="4"
+                  [autoResize]="true"
+                  placeholder="Describe the purpose and activities of the event"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('description')}"
+                  class="w-full"></textarea>
+                <small *ngIf="isInvalid('description')" class="p-error">{{ getErrorMessage('description') }}</small>
+              </div>
+
+              <div class="field col-12 md:col-6">
+                <label for="eventDate" class="block font-medium mb-2">Event Date & Time *</label>
+                <p-date-picker
+                  id="eventDate"
+                  formControlName="eventDate"
+                  [showTime]="true"
+                  [showIcon]="true"
+                  [minDate]="minDate"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('eventDate')}"
+                  placeholder="Select date and time"
+                  [style]="{'width':'100%'}"
+                  dateFormat="dd/mm/yy"
+                  hourFormat="24">
+                </p-date-picker>
+                <small *ngIf="isInvalid('eventDate')" class="p-error">{{ getErrorMessage('eventDate') }}</small>
+              </div>
+
+              <div class="field col-12 md:col-6">
+                <label for="endDate" class="block font-medium mb-2">End Date & Time (Optional)</label>
+                <p-date-picker
+                  id="endDate"
+                  formControlName="endDate"
+                  [showTime]="true"
+                  [showIcon]="true"
+                  [minDate]="eventForm.value.eventDate || minDate"
+                  placeholder="Select end date and time"
+                  [style]="{'width':'100%'}"
+                  dateFormat="dd/mm/yy"
+                  hourFormat="24">
+                </p-date-picker>
+                <small class="form-helper-text">Leave empty for single-day events</small>
+              </div>
+
+              <div class="field col-12">
+                <label for="location" class="block font-medium mb-2">Event Location *</label>
+                <input
+                  id="location"
+                  type="text"
+                  pInputText
+                  formControlName="location"
+                  placeholder="Enter the full address or location of the event"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('location')}"
+                  class="w-full">
+                <small *ngIf="isInvalid('location')" class="p-error">{{ getErrorMessage('location') }}</small>
+              </div>
+            </div>
+          </div>
+
+          <p-divider></p-divider>
+
+          <!-- Volunteer Information -->
+          <div class="form-section">
+            <h2 class="section-title">Volunteer Information</h2>
+
+            <div class="field volunteer-checkbox mb-4">
+              <p-checkbox
+                formControlName="isVolunteerEvent"
+                [binary]="true"
+                inputId="isVolunteerEvent">
+              </p-checkbox>
+              <label for="isVolunteerEvent" class="ml-2">This is a volunteer event</label>
+            </div>
+
+            <div class="form-grid" *ngIf="eventForm.value.isVolunteerEvent">
+              <div class="field col-12 md:col-6">
+                <label for="maxParticipants" class="block font-medium mb-2">Maximum Number of Volunteers *</label>
+                <p-inputNumber
+                  id="maxParticipants"
+                  formControlName="maxParticipants"
+                  [showButtons]="true"
+                  [min]="1"
+                  [step]="1"
+                  buttonLayout="horizontal"
+                  spinnerMode="horizontal"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('maxParticipants')}"
+                  class="w-full">
+                </p-inputNumber>
+                <small *ngIf="isInvalid('maxParticipants')" class="p-error">{{ getErrorMessage('maxParticipants') }}</small>
+              </div>
+
+              <div class="field col-12">
+                <label for="requirements" class="block font-medium mb-2">Volunteer Requirements</label>
+                <textarea
+                  id="requirements"
+                  pTextarea
+                  formControlName="requirements"
+                  [rows]="3"
+                  [autoResize]="true"
+                  placeholder="List any specific skills, experience, or items volunteers should bring"
+                  class="w-full"></textarea>
+              </div>
+            </div>
+
+            <div class="volunteer-info-text" *ngIf="!eventForm.value.isVolunteerEvent">
+              <i class="pi pi-info-circle mr-2"></i>
+              <span>If you need volunteers for this event, check the box above to enable volunteer registration.</span>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="form-footer">
+            <button
+              pButton
+              pRipple
+              type="submit"
+              [label]="isEditMode ? 'Update Event' : 'Create Event'"
+              [icon]="isEditMode ? 'pi pi-check' : 'pi pi-calendar-plus'"
+              [loading]="isSubmitting"
+              [disabled]="isSubmitting"
+              class="p-button-lg">
+            </button>
+          </div>
+        </form>
+      </p-card>
+    </div>
+  </div>
+</div>

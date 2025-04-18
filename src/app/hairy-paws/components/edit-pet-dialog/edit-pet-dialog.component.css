@@ -1,0 +1,84 @@
+/* edit-pet-dialog.component.css */
+
+:host ::ng-deep .p-dialog .p-dialog-header {
+  padding: 1.25rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+  padding: 1.5rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.edit-pet-content {
+  max-width: 100%;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0.5rem 0 1rem 0;
+  color: var(--text-color);
+}
+
+.field {
+  margin-bottom: 1.25rem;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.adoption-status-field,
+.health-check-field {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+/* Full width components */
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-dropdown,
+:host ::ng-deep .p-inputnumber,
+:host ::ng-deep .p-inputtextarea {
+  width: 100%;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  padding: 0.75rem 1rem;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 576px) {
+  :host ::ng-deep .p-dialog {
+    width: 95vw !important;
+  }
+
+  :host ::ng-deep .p-dialog .p-dialog-header {
+    padding: 1rem;
+  }
+
+  :host ::ng-deep .p-dialog .p-dialog-content {
+    padding: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.125rem;
+  }
+
+  :host ::ng-deep .p-dialog .p-dialog-footer {
+    padding: 1rem;
+    flex-direction: column;
+  }
+
+  :host ::ng-deep .p-dialog .p-dialog-footer .p-button {
+    margin-left: 0;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+}

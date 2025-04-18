@@ -1,6 +1,6 @@
 export interface AdoptionInterface {
   animalId: string;
-  type: string;
-  visitDate: Date;
+  type: 'adoption' | 'visit';
+  visitDate?: Date | string;
   notes: string;
 }

@@ -1,0 +1,77 @@
+<!-- profile-page.component.html -->
+<div class="profile-page-container">
+  <p-toast></p-toast>
+
+
+  <div class="container">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Loading profile data...</p>
+    </div>
+
+    <!-- Profile Content -->
+    <div *ngIf="!isLoading && userProfile" class="profile-content">
+      <!-- Profile Header with Image -->
+      <div class="profile-header">
+        <div class="profile-image-container">
+          <img
+            [src]="userProfile.profileImageUrl || 'https://i.postimg.cc/fWqh3BhK/image.png'"
+            alt="Profile Image"
+            class="profile-image">
+        </div>
+        <div class="profile-header-info">
+          <h2 class="user-name">{{ userProfile.firstName }} {{ userProfile.lastName }}</h2>
+          <p class="user-email">{{ userProfile.email }}</p>
+          <div class="user-role"
+               [ngClass]="{'role-admin': userProfile.role === 'admin', 'role-ong': userProfile.role === 'ong', 'role-user': userProfile.role === 'user'}">
+            {{ userProfile.role }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Navigation -->
+      <p-tabView [(activeIndex)]="activeTabIndex">
+        <!-- Profile Information Tab -->
+        <p-tabPanel header="Profile Information">
+          <app-profile-info
+            [userProfile]="userProfile"
+            (profileUpdated)="onProfileUpdated($event)">
+          </app-profile-info>
+        </p-tabPanel>
+
+        <!-- Change Password Tab -->
+        <p-tabPanel header="Password">
+          <app-change-password
+            (passwordChanged)="onPasswordChanged()">
+          </app-change-password>
+        </p-tabPanel>
+
+        <!-- Account Settings Tab -->
+        <p-tabPanel header="Account Settings">
+          <app-account-settings
+            [userProfile]="userProfile"
+            (accountDeactivated)="onAccountDeactivated()">
+          </app-account-settings>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="!isLoading && !userProfile" class="error-container">
+      <div class="error-icon">
+        <i class="pi pi-exclamation-circle"></i>
+      </div>
+      <h2 class="error-title">Unable to load profile</h2>
+      <p class="error-message">We couldn't load your profile information. Please try again later.</p>
+      <button
+        pButton
+        type="button"
+        label="Retry"
+        icon="pi pi-refresh"
+        (click)="loadUserProfile()"
+        class="p-button-primary">
+      </button>
+    </div>
+  </div>
+</div>

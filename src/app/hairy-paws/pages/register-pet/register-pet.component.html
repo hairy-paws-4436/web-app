@@ -1,0 +1,215 @@
+<!-- pet-register-page.component.html -->
+<div class="pet-register-container">
+  <p-toast></p-toast>
+
+
+  <div class="container">
+    <div class="register-card-container">
+      <p-card>
+        <form [formGroup]="petForm" (ngSubmit)="onSubmit()">
+          <!-- Basic Information -->
+          <div class="form-section">
+            <h2 class="section-title">Basic Information</h2>
+
+            <div class="form-grid">
+              <div class="field col-12 md:col-6">
+                <label for="name" class="block font-medium mb-2">Pet Name *</label>
+                <input
+                  id="name"
+                  type="text"
+                  pInputText
+                  formControlName="name"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('name')}"
+                  class="w-full">
+                <small *ngIf="isInvalid('name')" class="p-error">{{ getErrorMessage('name') }}</small>
+              </div>
+
+              <div class="field col-12 md:col-6">
+                <label for="type" class="block font-medium mb-2">Pet Type *</label>
+                <p-dropdown
+                  id="type"
+                  formControlName="type"
+                  [options]="petTypes"
+                  placeholder="Select pet type"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('type')}"
+                  [showClear]="true"
+                  class="w-full">
+                </p-dropdown>
+                <small *ngIf="isInvalid('type')" class="p-error">{{ getErrorMessage('type') }}</small>
+              </div>
+
+              <div class="field col-12 md:col-6">
+                <label for="breed" class="block font-medium mb-2">Breed *</label>
+                <input
+                  id="breed"
+                  type="text"
+                  pInputText
+                  formControlName="breed"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('breed')}"
+                  class="w-full">
+                <small *ngIf="isInvalid('breed')" class="p-error">{{ getErrorMessage('breed') }}</small>
+              </div>
+
+              <div class="field col-12 md:col-6">
+                <label for="gender" class="block font-medium mb-2">Gender *</label>
+                <p-dropdown
+                  id="gender"
+                  formControlName="gender"
+                  [options]="genderOptions"
+                  placeholder="Select gender"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('gender')}"
+                  [showClear]="true"
+                  class="w-full">
+                </p-dropdown>
+                <small *ngIf="isInvalid('gender')" class="p-error">{{ getErrorMessage('gender') }}</small>
+              </div>
+
+              <div class="field col-12 md:col-6">
+                <label for="age" class="block font-medium mb-2">Age (years) *</label>
+                <p-inputNumber
+                  id="age"
+                  formControlName="age"
+                  [min]="0"
+                  [max]="30"
+                  [showButtons]="false"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('age')}"
+                  placeholder="Enter age in years"
+                  class="w-full">
+                </p-inputNumber>
+                <small *ngIf="isInvalid('age')" class="p-error">{{ getErrorMessage('age') }}</small>
+              </div>
+
+              <div class="field col-12 md:col-6">
+                <label for="weight" class="block font-medium mb-2">Weight (kg)</label>
+                <p-inputNumber
+                  id="weight"
+                  formControlName="weight"
+                  [min]="0"
+                  [max]="150"
+                  [minFractionDigits]="2"
+                  [maxFractionDigits]="2"
+                  [showButtons]="false"
+                  placeholder="Enter weight in kg"
+                  class="w-full">
+                </p-inputNumber>
+              </div>
+            </div>
+          </div>
+
+          <p-divider></p-divider>
+
+          <!-- Health Information -->
+          <div class="form-section">
+            <h2 class="section-title">Health Information</h2>
+
+            <div class="form-grid">
+              <div class="health-checks col-12">
+                <div class="health-check-item">
+                  <p-checkbox
+                    id="vaccinated"
+                    formControlName="vaccinated"
+                    [binary]="true"
+                    [ngClass]="{'ng-invalid ng-dirty': isInvalid('vaccinated')}">
+                  </p-checkbox>
+                  <label for="vaccinated" class="ml-2">This pet is vaccinated *</label>
+                </div>
+
+                <div class="health-check-item">
+                  <p-checkbox
+                    id="sterilized"
+                    formControlName="sterilized"
+                    [binary]="true"
+                    [ngClass]="{'ng-invalid ng-dirty': isInvalid('sterilized')}">
+                  </p-checkbox>
+                  <label for="sterilized" class="ml-2">This pet is spayed/neutered *</label>
+                </div>
+              </div>
+
+              <div class="field col-12">
+                <label for="healthDetails" class="block font-medium mb-2">Health Details</label>
+                <textarea
+                  id="healthDetails"
+                  pTextarea
+                  formControlName="healthDetails"
+                  [rows]="3"
+                  [autoResize]="true"
+                  placeholder="Additional health information about the pet"
+                  class="w-full">
+                </textarea>
+              </div>
+            </div>
+          </div>
+
+          <p-divider></p-divider>
+
+          <!-- Description -->
+          <div class="form-section">
+            <h2 class="section-title">Description</h2>
+
+            <div class="field">
+              <label for="description" class="block font-medium mb-2">Pet Description *</label>
+              <textarea
+                id="description"
+                pTextarea
+                formControlName="description"
+                [rows]="4"
+                [autoResize]="true"
+                placeholder="Describe the pet's personality, likes, dislikes, etc."
+                [ngClass]="{'ng-invalid ng-dirty': isInvalid('description')}"
+                class="w-full">
+              </textarea>
+              <small *ngIf="isInvalid('description')" class="p-error">{{ getErrorMessage('description') }}</small>
+            </div>
+          </div>
+
+          <p-divider></p-divider>
+
+          <!-- Images -->
+          <div class="form-section">
+            <h2 class="section-title">Pet Images</h2>
+            <p class="section-description">Upload up to 5 images of your pet</p>
+
+            <p-fileUpload
+              name="petImages[]"
+              [multiple]="true"
+              accept="image/*"
+              [maxFileSize]="5000000"
+              [customUpload]="true"
+              (uploadHandler)="onImageUpload($event)"
+              [disabled]="petImages.length >= 5"
+              chooseLabel="Select Images"
+              [auto]="true"
+              class="mb-3">
+              <ng-template pTemplate="content">
+                <div *ngIf="petImages.length === 0" class="upload-message">
+                  <i class="pi pi-image upload-icon"></i>
+                  <p>Drag and drop images here or click to browse</p>
+                  <p class="upload-note">Max file size: 5MB. Supported formats: JPG, PNG, GIF</p>
+                </div>
+
+                <div *ngIf="petImages.length >= 5" class="limit-message">
+                  <i class="pi pi-exclamation-circle"></i>
+                  <p>Maximum number of images (5) reached</p>
+                </div>
+              </ng-template>
+            </p-fileUpload>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="form-footer">
+            <button
+              pButton
+              pRipple
+              type="submit"
+              label="Register Pet"
+              icon="pi pi-check"
+              [loading]="isSubmitting"
+              [disabled]="isSubmitting"
+              class="p-button-lg">
+            </button>
+          </div>
+        </form>
+      </p-card>
+    </div>
+  </div>
+</div>

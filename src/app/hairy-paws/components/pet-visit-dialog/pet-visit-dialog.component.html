@@ -24,7 +24,7 @@
     <div class="visit-form">
       <div class="field mb-4">
         <label for="visitDate" class="block font-medium mb-2">When would you like to visit?</label>
-        <p-calendar
+        <p-date-picker
           id="visitDate"
           [(ngModel)]="visitDate"
           [showTime]="true"
@@ -32,8 +32,9 @@
           [minDate]="minDate"
           [readonlyInput]="true"
           [style]="{'width':'100%'}"
+          dateFormat="yy-mm-dd"
           placeholder="Select date and time">
-        </p-calendar>
+        </p-date-picker>
         <small class="text-color-secondary">Choose a date and time for your visit</small>
       </div>
 

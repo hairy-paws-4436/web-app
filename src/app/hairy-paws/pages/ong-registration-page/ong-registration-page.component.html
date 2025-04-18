@@ -1,0 +1,193 @@
+<!-- ong-register-page.component.html -->
+<div class="ong-register-container">
+  <p-toast></p-toast>
+
+  <div class="container">
+    <div class="card-container">
+      <p-card>
+        <form [formGroup]="ongForm" (ngSubmit)="onSubmit()">
+          <div class="form-section">
+            <h2 class="section-title">Basic Information</h2>
+
+            <div class="form-grid">
+              <div class="field col-12 md:col-6">
+                <label for="name" class="block font-medium mb-2">NGO Name *</label>
+                <input
+                  id="name"
+                  type="text"
+                  pInputText
+                  formControlName="name"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('name')}"
+                  class="w-full">
+                <small *ngIf="isInvalid('name')" class="p-error">{{ getErrorMessage('name') }}</small>
+              </div>
+
+              <div class="field col-12 md:col-6">
+                <label for="ruc" class="block font-medium mb-2">RUC Number *</label>
+                <input
+                  id="ruc"
+                  type="text"
+                  pInputText
+                  formControlName="ruc"
+                  placeholder="11 digits"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('ruc')}"
+                  class="w-full">
+                <small *ngIf="isInvalid('ruc')" class="p-error">{{ getErrorMessage('ruc') }}</small>
+              </div>
+
+              <div class="field col-12">
+                <label for="description" class="block font-medium mb-2">Description *</label>
+                <textarea
+                  id="description"
+                  pInputTextarea
+                  formControlName="description"
+                  [rows]="3"
+                  [autoResize]="true"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('description')}"
+                  class="w-full"></textarea>
+                <small *ngIf="isInvalid('description')" class="p-error">{{ getErrorMessage('description') }}</small>
+              </div>
+            </div>
+          </div>
+
+          <p-divider></p-divider>
+
+          <div class="form-section">
+            <h2 class="section-title">Contact Information</h2>
+
+            <div class="form-grid">
+              <div class="field col-12">
+                <label for="address" class="block font-medium mb-2">Address *</label>
+                <input
+                  id="address"
+                  type="text"
+                  pInputText
+                  formControlName="address"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('address')}"
+                  class="w-full">
+                <small *ngIf="isInvalid('address')" class="p-error">{{ getErrorMessage('address') }}</small>
+              </div>
+
+              <div class="field col-12 md:col-6">
+                <label for="phone" class="block font-medium mb-2">Phone Number *</label>
+                <input
+                  id="phone"
+                  type="text"
+                  pInputText
+                  formControlName="phone"
+                  placeholder="9 digits"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('phone')}"
+                  class="w-full">
+                <small *ngIf="isInvalid('phone')" class="p-error">{{ getErrorMessage('phone') }}</small>
+              </div>
+
+              <div class="field col-12 md:col-6">
+                <label for="email" class="block font-medium mb-2">Email *</label>
+                <input
+                  id="email"
+                  type="email"
+                  pInputText
+                  formControlName="email"
+                  [ngClass]="{'ng-invalid ng-dirty': isInvalid('email')}"
+                  class="w-full">
+                <small *ngIf="isInvalid('email')" class="p-error">{{ getErrorMessage('email') }}</small>
+              </div>
+
+              <div class="field col-12">
+                <label for="website" class="block font-medium mb-2">Website</label>
+                <input
+                  id="website"
+                  type="url"
+                  pInputText
+                  formControlName="website"
+                  placeholder="https://example.org"
+                  class="w-full">
+              </div>
+            </div>
+          </div>
+
+          <p-divider></p-divider>
+
+          <div class="form-section">
+            <h2 class="section-title">Additional Information</h2>
+
+            <div class="form-grid">
+              <div class="field col-12 md:col-6">
+                <label for="mission" class="block font-medium mb-2">Mission</label>
+                <textarea
+                  id="mission"
+                  pInputTextarea
+                  formControlName="mission"
+                  [rows]="2"
+                  [autoResize]="true"
+                  class="w-full"></textarea>
+              </div>
+
+              <div class="field col-12 md:col-6">
+                <label for="vision" class="block font-medium mb-2">Vision</label>
+                <textarea
+                  id="vision"
+                  pInputTextarea
+                  formControlName="vision"
+                  [rows]="2"
+                  [autoResize]="true"
+                  class="w-full"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <p-divider></p-divider>
+
+          <div class="form-section">
+            <h2 class="section-title">Bank Information</h2>
+
+            <div class="form-grid">
+              <div class="field col-12 md:col-6">
+                <label for="bankName" class="block font-medium mb-2">Bank Name</label>
+                <input
+                  id="bankName"
+                  type="text"
+                  pInputText
+                  formControlName="bankName"
+                  class="w-full">
+              </div>
+
+              <div class="field col-12 md:col-6">
+                <label for="bankAccount" class="block font-medium mb-2">Bank Account Number</label>
+                <input
+                  id="bankAccount"
+                  type="text"
+                  pInputText
+                  formControlName="bankAccount"
+                  class="w-full">
+              </div>
+
+              <div class="field col-12">
+                <label for="interbankAccount" class="block font-medium mb-2">Interbank Account (CCI)</label>
+                <input
+                  id="interbankAccount"
+                  type="text"
+                  pInputText
+                  formControlName="interbankAccount"
+                  class="w-full">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <button
+              pButton
+              pRipple
+              type="submit"
+              label="Register NGO"
+              icon="pi pi-check"
+              [loading]="isSubmitting"
+              [disabled]="isSubmitting"
+              class="p-button-lg">
+            </button>
+          </div>
+        </form>
+      </p-card>
+    </div>
+  </div>
+</div>
