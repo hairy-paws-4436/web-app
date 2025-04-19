@@ -1,5 +1,3 @@
-/* notification-action.component.css */
-
 .notification-action-container {
   width: 100%;
 }
@@ -69,7 +67,6 @@
   margin-top: 1rem;
 }
 
-/* Responsive adjustments */
 @media screen and (max-width: 576px) {
   .button-group {
     flex-direction: column;

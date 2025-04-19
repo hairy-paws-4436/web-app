@@ -38,7 +38,6 @@
       </div>
 
 
-
       <!-- Step 3: Notes -->
       <div *ngIf="activeIndex === 1" class="step-notes">
         <h4 class="mt-0 mb-3">Additional Information</h4>
@@ -90,7 +89,7 @@
         </p-button>
 
         <p-button
-          *ngIf="activeIndex < 2"
+          *ngIf="activeIndex < 1"
           label="Next"
           icon="pi pi-arrow-right"
           iconPos="right"
@@ -98,7 +97,7 @@
         </p-button>
 
         <p-button
-          *ngIf="activeIndex === 2"
+          *ngIf="activeIndex === 1"
           label="Submit Adoption Request"
           icon="pi pi-heart-fill"
           styleClass="p-button-success"
