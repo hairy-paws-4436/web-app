@@ -15,6 +15,8 @@ import {ProgressSpinner} from 'primeng/progressspinner';
 import {NgForOf, NgIf} from '@angular/common';
 import {EventCardComponent} from '../../components/event-card/event-card.component';
 
+
+
 interface FilterOptions {
   searchTerm: string;
   volunteerOnly: boolean;
@@ -189,7 +191,7 @@ export class EventsListPagesComponent implements OnInit {
    * Navigate to event details
    */
   viewEventDetails(eventId: string): void {
-    this.router.navigate(['/hairy-paws/events', eventId]);
+    this.router.navigate(['/hairy-paws/event-details', eventId]);
   }
 
   /**

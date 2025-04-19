@@ -34,6 +34,7 @@ import {Toast} from 'primeng/toast';
     InputText,
     Card,
     Toast,
+    NgForOf,
   ],
   templateUrl: './register-pet.component.html',
   styleUrl: './register-pet.component.css'
@@ -53,10 +54,6 @@ export class RegisterPetComponent implements OnInit {
   petTypes = [
     {label: 'Dog', value: 'dog'},
     {label: 'Cat', value: 'cat'},
-    {label: 'Bird', value: 'bird'},
-    {label: 'Rabbit', value: 'rabbit'},
-    {label: 'Hamster', value: 'hamster'},
-    {label: 'Other', value: 'other'}
   ];
 
   genderOptions = [

@@ -5,6 +5,7 @@ export interface NotificationInterface {
   message: string;
   type: NotificationType;
   read: boolean;
+  referenceId: string;
   createdAt: string;
   relatedEntityId?: string;
   relatedEntityType?: string;

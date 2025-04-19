@@ -25,6 +25,25 @@
         </button>
       </ng-container>
 
+      <ng-container *ngSwitchCase="'visit_request'">
+        <button
+          pButton
+          pRipple
+          label="Approve"
+          icon="pi pi-check"
+          class="p-button-success p-button-sm mr-2"
+          (click)="openApproveDialog()">
+        </button>
+        <button
+          pButton
+          pRipple
+          label="Reject"
+          icon="pi pi-times"
+          class="p-button-danger p-button-sm"
+          (click)="openRejectDialog()">
+        </button>
+      </ng-container>
+
       <!-- Donation Received Actions -->
       <ng-container *ngSwitchCase="'donation_received'">
         <button

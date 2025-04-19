@@ -138,6 +138,14 @@
   color: var(--primary-color);
 }
 
+.uploaded-images {
+  margin-top: 1rem;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+
 .upload-note {
   font-size: 0.875rem;
   opacity: 0.7;

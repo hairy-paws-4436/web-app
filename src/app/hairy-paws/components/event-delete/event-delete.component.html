@@ -1,0 +1,13 @@
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+<button
+  pButton
+  pRipple
+  type="button"
+  [label]="buttonLabel"
+  [icon]="buttonIcon"
+  [class]="buttonClass"
+  (click)="confirmDelete()"
+  [disabled]="isDeleting">
+</button>

@@ -14,6 +14,8 @@ import {ProfilePageComponent} from '../pages/profile-page/profile-page.component
 import {RegisterPetComponent} from '../pages/register-pet/register-pet.component';
 import {OngDetailsComponent} from '../components/ong-details/ong-details.component';
 import {EventsListPagesComponent} from '../pages/events-list-pages/events-list-pages.component';
+import {EventDetailsComponent} from '../components/event-details/event-details.component';
+import {EventEditComponent} from '../components/event-edit/event-edit.component';
 
 
 const routes: Routes = [
@@ -34,6 +36,8 @@ const routes: Routes = [
 
       {path: 'events', component: EventsListPagesComponent},
       {path: 'event-register', component: EventFormComponent},
+      {path: 'event-details/:id', component: EventDetailsComponent},
+      {path: 'event-edit/:id', component: EventEditComponent},
 
       {path: 'donations-register', component: DonationFormComponent},
 

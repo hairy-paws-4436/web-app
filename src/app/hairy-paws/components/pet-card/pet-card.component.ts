@@ -85,6 +85,7 @@ export class PetCardComponent {
    * Submit the request to the service
    */
   private submitRequest(requestData: AdoptionInterface, type: string): void {
+    console.log(requestData);
     this.adoptionService.requestAdoptionOrVisit(requestData).subscribe({
       next: (response) => {
         // Close the dialogs

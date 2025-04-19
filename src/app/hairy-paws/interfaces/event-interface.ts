@@ -11,4 +11,7 @@ export interface EventInterface {
   ongId?: string;
   createdAt?: string;
   updatedAt?: string;
+  active: boolean;
+  imageUrl: string;
+
 }

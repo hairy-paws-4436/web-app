@@ -1,62 +1,70 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {EventService} from '../../services/event.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {MessageService} from 'primeng/api';
+// event-edit.component.ts
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+
+import { CalendarModule } from 'primeng/calendar';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DividerModule } from 'primeng/divider';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { RippleModule } from 'primeng/ripple';
+
+import { EventService } from '../../services/event.service';
 import {EventInterface} from '../../interfaces/event-interface';
-import {ButtonDirective} from 'primeng/button';
-import {Ripple} from 'primeng/ripple';
 import {InputTextarea} from 'primeng/inputtextarea';
-import {InputNumber} from 'primeng/inputnumber';
-import {NgClass, NgIf} from '@angular/common';
-import {Checkbox} from 'primeng/checkbox';
-import {Divider} from 'primeng/divider';
-import {Calendar} from 'primeng/calendar';
-import {InputText} from 'primeng/inputtext';
-import {Card} from 'primeng/card';
-import {Toast} from 'primeng/toast';
-import {Textarea} from 'primeng/textarea';
-import {DatePicker} from 'primeng/datepicker';
+
 
 @Component({
-  selector: 'app-event-form',
+  selector: 'app-event-edit',
+  standalone: true,
   imports: [
-    ButtonDirective,
-    Ripple,
+    CommonModule,
     ReactiveFormsModule,
-    InputNumber,
-    NgClass,
-    NgIf,
-    Checkbox,
-    Divider,
-    InputText,
-    Card,
-    Toast,
-    Textarea,
-    DatePicker
+    ButtonModule,
+    CardModule,
+    InputTextModule,
+    CalendarModule,
+    InputNumberModule,
+    CheckboxModule,
+    DividerModule,
+    ToastModule,
+    ConfirmDialogModule,
+    ProgressSpinnerModule,
+    RippleModule,
+    InputTextarea
   ],
-  templateUrl: './event-form.component.html',
-  styleUrl: './event-form.component.css'
+  providers: [MessageService, ConfirmationService],
+  templateUrl: './event-edit.component.html',
+  styleUrl: './event-edit.component.css'
 })
-export class EventFormComponent implements OnInit {
+export class EventEditComponent implements OnInit {
   private fb = inject(FormBuilder);
   private eventService = inject(EventService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
 
   eventForm!: FormGroup;
-  isLoading: boolean = false;
+  isLoading: boolean = true;
   isSubmitting: boolean = false;
-  isEditMode: boolean = false;
   eventId: string | null = null;
+  originalEvent: EventInterface | null = null;
 
   // Minimum date for calendar (today)
   minDate: Date = new Date();
 
   ngOnInit(): void {
     this.initForm();
-    this.checkRouteParams();
+    this.loadEventDetails();
 
     // Listen for volunteer event changes
     this.eventForm.get('isVolunteerEvent')?.valueChanges.subscribe(isVolunteer => {
@@ -76,43 +84,43 @@ export class EventFormComponent implements OnInit {
       location: ['', Validators.required],
       isVolunteerEvent: [false],
       maxParticipants: [null],
-      requirements: ['']
-    });
-  }
-
-  /**
-   * Check route parameters for event ID (edit mode)
-   */
-  private checkRouteParams(): void {
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-
-      if (id) {
-        this.isEditMode = true;
-        this.eventId = id;
-        this.loadEventDetails(id);
-      }
+      requirements: [''],
+      active: [true]
     });
   }
 
   /**
    * Load event details for editing
    */
-  private loadEventDetails(id: string): void {
+  private loadEventDetails(): void {
     this.isLoading = true;
 
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+
+      if (id) {
+        this.eventId = id;
+        this.fetchEventData(id);
+      } else {
+        this.handleError('Event ID not found');
+        this.navigateBack();
+      }
+    });
+  }
+
+  /**
+   * Fetch event data from the service
+   */
+  private fetchEventData(id: string): void {
     this.eventService.getEventById(id).subscribe({
       next: (event) => {
+        this.originalEvent = event;
         this.patchFormValues(event);
         this.isLoading = false;
       },
       error: (error) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error.message || 'Failed to load event details'
-        });
-        this.isLoading = false;
+        this.handleError(error.message || 'Failed to load event details');
+        this.navigateBack();
       }
     });
   }
@@ -129,7 +137,8 @@ export class EventFormComponent implements OnInit {
       location: event.location,
       isVolunteerEvent: event.isVolunteerEvent,
       maxParticipants: event.maxParticipants,
-      requirements: event.requirements
+      requirements: event.requirements,
+      active: event.active !== undefined ? event.active : true
     });
 
     // Make sure validators are updated
@@ -152,7 +161,7 @@ export class EventFormComponent implements OnInit {
   }
 
   /**
-   * Handle form submission
+   * Submit updated event
    */
   onSubmit(): void {
     if (this.eventForm.invalid) {
@@ -165,52 +174,40 @@ export class EventFormComponent implements OnInit {
       return;
     }
 
-    this.isSubmitting = true;
-
-    // Format dates for API
-    const formData = this.prepareFormData();
-
-    if (this.isEditMode && this.eventId) {
-      this.updateEvent(this.eventId, formData);
-    } else {
-      this.createEvent(formData);
+    if (!this.eventId) {
+      this.handleError('Event ID not found');
+      return;
     }
+
+    this.confirmUpdate();
   }
 
   /**
-   * Create a new event
+   * Confirm update with a dialog
    */
-  private createEvent(eventData: EventInterface): void {
-    this.eventService.createEvent(eventData).subscribe({
-      next: (response) => {
-        this.isSubmitting = false;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Event Created',
-          detail: 'The event has been created successfully'
-        });
-
-        // Navigate to event details page
-        setTimeout(() => {
-          this.router.navigate(['/events', response.id]);
-        }, 1500);
-      },
-      error: (error) => {
-        this.isSubmitting = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Creation Failed',
-          detail: error.message || 'Failed to create event. Please try again later.'
-        });
+  private confirmUpdate(): void {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to update this event?',
+      header: 'Update Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.updateEvent();
       }
     });
   }
 
   /**
-   * Update an existing event
+   * Update event with API
    */
-  private updateEvent(id: string, eventData: EventInterface): void {
-    this.eventService.updateEvent(id, eventData).subscribe({
+  private updateEvent(): void {
+    if (!this.eventId) return;
+
+    this.isSubmitting = true;
+
+    // Format dates for API
+    const formData = this.prepareFormData();
+
+    this.eventService.updateEvent(this.eventId, formData).subscribe({
       next: (response) => {
         this.isSubmitting = false;
         this.messageService.add({
@@ -221,17 +218,35 @@ export class EventFormComponent implements OnInit {
 
         // Navigate to event details page
         setTimeout(() => {
-          this.router.navigate(['/hairy-paws/events', response.id]);
+          this.router.navigate(['/hairy-paws/events', this.eventId]);
         }, 1500);
       },
       error: (error) => {
         this.isSubmitting = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Update Failed',
-          detail: error.message || 'Failed to update event. Please try again later.'
-        });
+        this.handleError(error.message || 'Failed to update event. Please try again later.');
       }
+    });
+  }
+
+  /**
+   * Navigate back to event details
+   */
+  navigateBack(): void {
+    if (this.eventId) {
+      this.router.navigate(['/hairy-paws/events', this.eventId]);
+    } else {
+      this.router.navigate(['/hairy-paws/events']);
+    }
+  }
+
+  /**
+   * Handle error messages
+   */
+  private handleError(message: string): void {
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: message
     });
   }
 
@@ -246,6 +261,20 @@ export class EventFormComponent implements OnInit {
       eventDate: formValue.eventDate.toISOString(),
       endDate: formValue.endDate ? formValue.endDate.toISOString() : undefined
     };
+  }
+
+  /**
+   * Cancel the edit operation
+   */
+  cancelEdit(): void {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to cancel? Any unsaved changes will be lost.',
+      header: 'Cancel Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.navigateBack();
+      }
+    });
   }
 
   /**
@@ -279,4 +308,3 @@ export class EventFormComponent implements OnInit {
     return 'Invalid value';
   }
 }
-
