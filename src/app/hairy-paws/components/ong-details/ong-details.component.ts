@@ -74,7 +74,7 @@ export class OngDetailsComponent implements OnInit {
           detail: error.message || 'Failed to load NGO details'
         });
         this.isLoading = false;
-        this.router.navigate(['/ongs']);
+        this.router.navigate(['/hairy-paws/ongs']);
       }
     });
   }

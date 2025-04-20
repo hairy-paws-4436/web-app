@@ -49,9 +49,6 @@ export class NotificationActionComponent implements OnInit {
     this.initForm();
   }
 
-  /**
-   * Initialize the action form
-   */
   private initForm(): void {
     this.actionForm = this.fb.group({
       notes: ['', [Validators.required, Validators.minLength(5)]],
@@ -59,9 +56,6 @@ export class NotificationActionComponent implements OnInit {
     });
   }
 
-  /**
-   * Open approval dialog
-   */
   openApproveDialog(): void {
     this.dialogTitle = 'Approve Request';
     this.actionType = 'approve';
@@ -71,9 +65,6 @@ export class NotificationActionComponent implements OnInit {
     this.showDialog = true;
   }
 
-  /**
-   * Open rejection dialog
-   */
   openRejectDialog(): void {
     this.dialogTitle = 'Reject Request';
     this.actionType = 'reject';
@@ -83,18 +74,13 @@ export class NotificationActionComponent implements OnInit {
     this.showDialog = true;
   }
 
-  /**
-   * Close action dialog
-   */
   closeDialog(): void {
     this.showDialog = false;
     this.actionForm.reset();
   }
 
-  /**
-   * Submit the action
-   */
   submitAction(): void {
+
     if (this.actionForm.invalid) {
       this.actionForm.markAllAsTouched();
       return;
@@ -119,9 +105,6 @@ export class NotificationActionComponent implements OnInit {
     }
   }
 
-  /**
-   * Approve the request based on notification type
-   */
   private approveRequest(): void {
     const entityId = this.notification.relatedEntityId as string;
     const notes = this.actionForm.get('notes')?.value;
@@ -141,9 +124,6 @@ export class NotificationActionComponent implements OnInit {
     }
   }
 
-  /**
-   * Reject the request based on notification type
-   */
   private rejectRequest(): void {
     const entityId = this.notification.relatedEntityId as string;
     const reason = this.actionForm.get('reason')?.value;
@@ -163,9 +143,6 @@ export class NotificationActionComponent implements OnInit {
     }
   }
 
-  /**
-   * Handle successful action
-   */
   private handleSuccess(message: string): void {
     this.isSubmitting = false;
     this.showDialog = false;
@@ -180,9 +157,6 @@ export class NotificationActionComponent implements OnInit {
     this.actionCompleted.emit({success: true, message});
   }
 
-  /**
-   * Handle error
-   */
   private handleError(message: string): void {
     this.isSubmitting = false;
 
@@ -195,17 +169,11 @@ export class NotificationActionComponent implements OnInit {
     this.actionCompleted.emit({success: false, message});
   }
 
-  /**
-   * Check if the form field is invalid
-   */
   isInvalid(fieldName: string): boolean {
     const field = this.actionForm.get(fieldName);
     return field ? field.invalid && (field.dirty || field.touched) : false;
   }
 
-  /**
-   * Get validation error message for a field
-   */
   getErrorMessage(fieldName: string): string {
     const field = this.actionForm.get(fieldName);
 
@@ -222,24 +190,15 @@ export class NotificationActionComponent implements OnInit {
     return 'Invalid value';
   }
 
-  /**
-   * Check if notification requires approval/rejection
-   */
   requiresAction(): boolean {
     return this.notification.type === NotificationType.ADOPTION_REQUEST ||
       this.notification.type === NotificationType.DONATION_RECEIVED;
   }
 
-  /**
-   * Get field name based on action type
-   */
   getFieldName(): string {
     return this.actionType === 'approve' ? 'notes' : 'reason';
   }
 
-  /**
-   * Get field label based on action type
-   */
   getFieldLabel(): string {
     if (this.actionType === 'approve') {
       if (this.notification.type === NotificationType.ADOPTION_REQUEST) {
@@ -256,9 +215,6 @@ export class NotificationActionComponent implements OnInit {
     }
   }
 
-  /**
-   * Get field placeholder based on action type
-   */
   getFieldPlaceholder(): string {
     if (this.actionType === 'approve') {
       if (this.notification.type === NotificationType.ADOPTION_REQUEST) {
@@ -275,9 +231,6 @@ export class NotificationActionComponent implements OnInit {
     }
   }
 
-  /**
-   * Get button label based on action type and notification type
-   */
   getButtonLabel(): string {
     if (this.actionType === 'approve') {
       return this.notification.type === NotificationType.ADOPTION_REQUEST ? 'Approve Adoption' : 'Confirm Donation';

@@ -189,10 +189,8 @@ export class EventFormComponent implements OnInit {
           summary: 'Event Created',
           detail: 'The event has been created successfully'
         });
-
-        // Navigate to event details page
         setTimeout(() => {
-          this.router.navigate(['/events', response.id]);
+          this.router.navigate(['/hairy-paws/event-details', response.id]);
         }, 1500);
       },
       error: (error) => {
