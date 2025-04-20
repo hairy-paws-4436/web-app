@@ -218,7 +218,7 @@ export class EventEditComponent implements OnInit {
 
         // Navigate to event details page
         setTimeout(() => {
-          this.router.navigate(['/hairy-paws/events', this.eventId]);
+          this.router.navigate(['/hairy-paws/event-details', this.eventId]);
         }, 1500);
       },
       error: (error) => {

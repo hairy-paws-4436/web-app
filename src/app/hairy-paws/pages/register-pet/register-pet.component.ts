@@ -34,7 +34,6 @@ import {Toast} from 'primeng/toast';
     InputText,
     Card,
     Toast,
-    NgForOf,
   ],
   templateUrl: './register-pet.component.html',
   styleUrl: './register-pet.component.css'
@@ -47,8 +46,8 @@ export class RegisterPetComponent implements OnInit {
 
   petForm!: FormGroup;
   isSubmitting: boolean = false;
-  petImages: string[] = [];
-  uploadedFiles: File[] = [];
+  petImagePreviews: string[] = []; // Solo para mostrar previews
+  uploadedFiles: File[] = []; // Archivos reales para enviar
 
   // Dropdown options
   petTypes = [
@@ -65,9 +64,6 @@ export class RegisterPetComponent implements OnInit {
     this.initForm();
   }
 
-  /**
-   * Initialize the pet registration form
-   */
   private initForm(): void {
     this.petForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -83,9 +79,6 @@ export class RegisterPetComponent implements OnInit {
     });
   }
 
-  /**
-   * Submit form to register a new pet
-   */
   onSubmit(): void {
     if (this.petForm.invalid) {
       this.petForm.markAllAsTouched();
@@ -99,13 +92,21 @@ export class RegisterPetComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    // Prepare pet data
-    const petData: PetInterface = {
-      ...this.petForm.value,
-      images: this.petImages.length > 0 ? this.petImages : undefined
-    };
+    // Crear FormData para enviar como multipart/form-data
+    const formData = new FormData();
 
-    this.petService.registerPet(petData).subscribe({
+    // Añadir todos los campos del formulario
+    Object.keys(this.petForm.value).forEach(key => {
+      const value = this.petForm.value[key];
+      formData.append(key, value !== null && value !== undefined ? value.toString() : '');
+    });
+
+    // Añadir las imágenes
+    this.uploadedFiles.forEach(file => {
+      formData.append('images', file, file.name);
+    });
+
+    this.petService.registerPet(formData).subscribe({
       next: (response) => {
         this.isSubmitting = false;
         this.messageService.add({
@@ -114,13 +115,13 @@ export class RegisterPetComponent implements OnInit {
           detail: 'The pet has been registered successfully'
         });
 
-        // Navigate to pet details page
         setTimeout(() => {
           this.router.navigate(['/hairy-paws/my-pets']);
         }, 1500);
       },
       error: (error) => {
         this.isSubmitting = false;
+        console.error('Registration error:', error);
         this.messageService.add({
           severity: 'error',
           summary: 'Registration Failed',
@@ -130,15 +131,12 @@ export class RegisterPetComponent implements OnInit {
     });
   }
 
-  /**
-   * Handle pet image upload
-   */
   onImageUpload(event: any): void {
     const files = event.files;
     if (!files || files.length === 0) return;
 
     // Check if maximum number of images is reached
-    if (this.petImages.length + files.length > 5) {
+    if (this.uploadedFiles.length + files.length > 5) {
       this.messageService.add({
         severity: 'error',
         summary: 'Upload Limit',
@@ -148,43 +146,37 @@ export class RegisterPetComponent implements OnInit {
     }
 
     for (let file of files) {
+      // Guardar el archivo real
+      this.uploadedFiles.push(file);
+
+      // Crear preview para mostrar en la UI
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.petImages.push(e.target.result);
+        this.petImagePreviews.push(e.target.result);
       };
       reader.readAsDataURL(file);
-      this.uploadedFiles.push(file);
     }
 
     this.messageService.add({
       severity: 'success',
-      summary: 'Images ready',
-      detail: 'Images will be sent upon registration of the pet.'
+      summary: 'Images selected',
+      detail: `${files.length} image(s) ready to be uploaded`
     });
 
-    // Reset the file uploader
-    event.clear();
+    // NO hacer clear aquí, mantener los archivos seleccionados
+    // event.clear(); // Comentar esta línea
   }
 
-  /**
-   * Remove an uploaded image
-   */
   removeImage(index: number): void {
-    this.petImages.splice(index, 1);
+    this.petImagePreviews.splice(index, 1);
     this.uploadedFiles.splice(index, 1);
   }
 
-  /**
-   * Check if a form field is invalid
-   */
   isInvalid(fieldName: string): boolean {
     const field = this.petForm.get(fieldName);
     return field ? field.invalid && (field.dirty || field.touched) : false;
   }
 
-  /**
-   * Get validation error message for a field
-   */
   getErrorMessage(fieldName: string): string {
     const field = this.petForm.get(fieldName);
 
@@ -205,4 +197,3 @@ export class RegisterPetComponent implements OnInit {
     return 'Invalid value';
   }
 }
-

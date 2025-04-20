@@ -1,5 +1,5 @@
 export interface OngInterface {
-  id?: string;
+  id: string;
   name: string;
   ruc: string;
   description: string;
@@ -7,6 +7,7 @@ export interface OngInterface {
   phone: string;
   email: string;
   website?: string;
+  logoUrl?: string;
   mission?: string;
   vision?: string;
   bankAccount?: string;

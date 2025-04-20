@@ -46,25 +46,56 @@ export class OngService {
   }
 
   /**
-   * Register a new ONG
+   * Register a new ONG with multipart/form-data support for logo
    */
-  registerOng(ongData: OngInterface): Observable<OngInterface> {
+  registerOng(ongData: FormData): Observable<OngInterface> {
     const url = `${this.baseUrl}/ongs`;
 
-    return this.http.post<OngInterface>(url, ongData, { headers: returnHeaders() }).pipe(
+    // For multipart/form-data, don't set Content-Type
+    // The browser will set it automatically with the correct boundary
+
+
+    return this.http.post<OngInterface>(url, ongData, { headers:returnHeaders() }).pipe(
       catchError(this.handleError)
     );
   }
 
   /**
-   * Update ONG information
+   * Update ONG information (with optional logo)
    */
-  updateOng(id: string, ongData: Partial<OngInterface>): Observable<OngInterface> {
+  updateOng(id: string, ongData: FormData | Partial<OngInterface>): Observable<OngInterface> {
     const url = `${this.baseUrl}/ongs/${id}`;
 
-    return this.http.put<OngInterface>(url, ongData, { headers: returnHeaders() }).pipe(
+    let headers = returnHeaders();
+
+    // If it's FormData (including logo), remove Content-Type
+
+
+    return this.http.put<OngInterface>(url, ongData, { headers }).pipe(
       catchError(this.handleError)
     );
+  }
+
+  /**
+   * Helper method to create FormData from ONG data
+   */
+  createOngFormData(ongData: Partial<OngInterface>, logoFile?: File): FormData {
+    const formData = new FormData();
+
+    // Add all ONG fields to FormData
+    Object.keys(ongData).forEach(key => {
+      const value = ongData[key as keyof OngInterface];
+      if (value !== null && value !== undefined) {
+        formData.append(key, value.toString());
+      }
+    });
+
+    // Add logo if provided
+    if (logoFile) {
+      formData.append('logo', logoFile, logoFile.name);
+    }
+
+    return formData;
   }
 
   /**

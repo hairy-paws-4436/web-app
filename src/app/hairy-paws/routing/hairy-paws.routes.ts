@@ -16,6 +16,8 @@ import {OngDetailsComponent} from '../components/ong-details/ong-details.compone
 import {EventsListPagesComponent} from '../pages/events-list-pages/events-list-pages.component';
 import {EventDetailsComponent} from '../components/event-details/event-details.component';
 import {EventEditComponent} from '../components/event-edit/event-edit.component';
+import {MeOngProfilePageComponent} from '../pages/me-ong-profile-page/me-ong-profile-page.component';
+import {EditOngComponent} from '../components/ong-edit/ong-edit.component';
 
 
 const routes: Routes = [
@@ -32,7 +34,9 @@ const routes: Routes = [
 
       {path: 'ong-register', component: OngRegistrationPageComponent},
       {path: 'ongs', component: OngsListPageComponent},
+      {path: 'my-ong', component: MeOngProfilePageComponent},
       {path: 'ong-details/:id', component: OngDetailsComponent},
+      {path: 'ong-edit/:id', component: EditOngComponent},
 
       {path: 'events', component: EventsListPagesComponent},
       {path: 'event-register', component: EventFormComponent},

@@ -42,8 +42,9 @@ export class PetService {
   /**
    * Register a new pet
    */
-  registerPet(petData: PetInterface): Observable<PetInterface> {
+  registerPet(petData: FormData): Observable<PetInterface> {
     const url = `${this.baseUrl}/animals`;
+
 
     return this.http.post<PetInterface>(url, petData, { headers: returnHeaders() }).pipe(
       catchError(this.handleError)

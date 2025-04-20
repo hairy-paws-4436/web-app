@@ -1,0 +1,205 @@
+<div class="ong-profile-container">
+  <p-toast></p-toast>
+
+  <div class="loading-container" *ngIf="isLoading">
+    <p-progressSpinner
+      [style]="{width: '50px', height: '50px'}"
+      strokeWidth="4">
+    </p-progressSpinner>
+  </div>
+
+  <div class="content-container" *ngIf="!isLoading && ong">
+    <!-- Header Section -->
+    <div class="header-section">
+      <div class="logo-container" (click)="showLogoUploadDialog()">
+        <img [src]="ong.logoUrl || 'assets/default-ong-logo.png'"
+             [alt]="ong.name + ' logo'"
+             class="ong-logo">
+        <div class="logo-overlay">
+          <i class="pi pi-camera"></i>
+          <span>Change Logo</span>
+        </div>
+      </div>
+
+      <div class="ong-header-info">
+        <h1 class="ong-name">{{ ong.name }}</h1>
+
+        <p class="ong-ruc">RUC: {{ ong.ruc }}</p>
+      </div>
+
+      <div class="action-buttons">
+        <p-button icon="pi pi-pencil"
+                  label="Edit Profile"
+                  (onClick)="navigateToEdit()">
+        </p-button>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="main-grid">
+      <!-- Left Column - Details -->
+      <div class="details-column">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="card-header">
+              <h2>Organization Details</h2>
+            </div>
+          </ng-template>
+
+          <div class="info-section">
+            <h3>Contact Information</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <i class="pi pi-envelope"></i>
+                <span>{{ ong.email }}</span>
+              </div>
+              <div class="info-item">
+                <i class="pi pi-phone"></i>
+                <span>{{ ong.phone }}</span>
+              </div>
+              <div class="info-item">
+                <i class="pi pi-map-marker"></i>
+                <span>{{ ong.address }}</span>
+              </div>
+              <div class="info-item" *ngIf="ong.website">
+                <i class="pi pi-globe"></i>
+                <a [href]="ong.website" target="_blank">{{ ong.website }}</a>
+              </div>
+            </div>
+          </div>
+
+          <p-divider></p-divider>
+
+          <div class="info-section">
+            <h3>About Us</h3>
+            <p class="description">{{ ong.description }}</p>
+          </div>
+
+          <div class="info-section" *ngIf="ong.mission">
+            <h3>Our Mission</h3>
+            <p>{{ ong.mission }}</p>
+          </div>
+
+          <div class="info-section" *ngIf="ong.vision">
+            <h3>Our Vision</h3>
+            <p>{{ ong.vision }}</p>
+          </div>
+        </p-card>
+      </div>
+
+      <!-- Right Column - Bank Info & Actions -->
+      <div class="actions-column">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="card-header">
+              <h2>Bank Information</h2>
+            </div>
+          </ng-template>
+
+          <div class="bank-info" *ngIf="ong.bankName || ong.bankAccount">
+            <div class="bank-item" *ngIf="ong.bankName">
+              <label>Bank Name</label>
+              <p>{{ ong.bankName }}</p>
+            </div>
+            <div class="bank-item" *ngIf="ong.bankAccount">
+              <label>Account Number</label>
+              <p>{{ ong.bankAccount }}</p>
+            </div>
+            <div class="bank-item" *ngIf="ong.interbankAccount">
+              <label>Interbank Account (CCI)</label>
+              <p>{{ ong.interbankAccount }}</p>
+            </div>
+          </div>
+
+          <div class="no-bank-info" *ngIf="!ong.bankName && !ong.bankAccount">
+            <i class="pi pi-info-circle"></i>
+            <p>No bank information provided</p>
+          </div>
+        </p-card>
+
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="card-header">
+              <h2>Quick Actions</h2>
+            </div>
+          </ng-template>
+
+          <div class="action-links">
+            <p-button
+              class="p-button-text action-button"
+              icon="pi pi-heart"
+              label="Manage Pets"
+              (onClick)="navigateToPets()">
+            </p-button>
+          </div>
+        </p-card>
+
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="card-header">
+              <h2>Account Information</h2>
+            </div>
+          </ng-template>
+
+          <div class="account-info">
+            <div class="info-item">
+              <label>Member Since</label>
+              <p>{{ formatDate(ong.createdAt!) }}</p>
+            </div>
+            <div class="info-item">
+              <label>Last Updated</label>
+              <p>{{ formatDate(ong.updatedAt!) }}</p>
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logo Upload Dialog -->
+  <p-dialog [(visible)]="showLogoDialog"
+            header="Update Logo"
+            [modal]="true"
+            [style]="{width: '450px'}"
+            [draggable]="false"
+            [resizable]="false">
+
+    <div class="dialog-content">
+      <p-fileUpload
+        mode="advanced"
+        name="logo"
+        [multiple]="false"
+        accept="image/*"
+        [maxFileSize]="5000000"
+        (onSelect)="onLogoSelect($event)"
+        [showUploadButton]="false"
+        [showCancelButton]="false"
+        [previewWidth]="200">
+        <ng-template pTemplate="content">
+          <div class="upload-area" *ngIf="!logoPreview">
+            <i class="pi pi-image upload-icon"></i>
+            <p>Drag and drop your logo here or click to browse</p>
+            <p class="upload-note">Max file size: 5MB. Supported formats: JPG, PNG, GIF</p>
+          </div>
+
+          <div class="preview-area" *ngIf="logoPreview">
+            <img [src]="logoPreview" alt="Logo preview" class="logo-preview">
+          </div>
+        </ng-template>
+      </p-fileUpload>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button label="Cancel"
+                icon="pi pi-times"
+                (onClick)="showLogoDialog = false"
+                styleClass="p-button-text">
+      </p-button>
+      <p-button label="Update"
+                icon="pi pi-check"
+                (onClick)="updateLogo()"
+                [disabled]="!uploadedFile">
+      </p-button>
+    </ng-template>
+  </p-dialog>
+</div>

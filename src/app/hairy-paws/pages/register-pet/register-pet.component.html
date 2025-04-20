@@ -170,24 +170,24 @@
             <p class="section-description">Upload up to 5 images of your pet</p>
 
             <p-fileUpload
-              name="petImages[]"
+              name="images[]"
               [multiple]="true"
               accept="image/*"
               [maxFileSize]="5000000"
               [customUpload]="true"
               (uploadHandler)="onImageUpload($event)"
-              [disabled]="petImages.length >= 5"
+              [disabled]="uploadedFiles.length >= 5"
               chooseLabel="Select Images"
               [auto]="true"
               class="mb-3">
               <ng-template pTemplate="content">
-                <div *ngIf="petImages.length === 0" class="upload-message">
+                <div *ngIf="uploadedFiles.length === 0" class="upload-message">
                   <i class="pi pi-image upload-icon"></i>
                   <p>Drag and drop images here or click to browse</p>
                   <p class="upload-note">Max file size: 5MB. Supported formats: JPG, PNG, GIF</p>
                 </div>
 
-                <div *ngIf="petImages.length >= 5" class="limit-message">
+                <div *ngIf="uploadedFiles.length >= 5" class="limit-message">
                   <i class="pi pi-exclamation-circle"></i>
                   <p>Maximum number of images (5) reached</p>
                 </div>

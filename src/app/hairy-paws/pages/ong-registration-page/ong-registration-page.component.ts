@@ -1,7 +1,7 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {OngService} from '../../services/ong.service';
-import {MessageService} from 'primeng/api';
+import {MessageService, PrimeTemplate} from 'primeng/api';
 import {OngInterface} from '../../interfaces/ong-interface';
 import {Router} from '@angular/router';
 import {InputText} from 'primeng/inputtext';
@@ -12,6 +12,8 @@ import {Card} from 'primeng/card';
 import {NgClass, NgIf} from '@angular/common';
 import {InputTextarea} from 'primeng/inputtextarea';
 import {Divider} from 'primeng/divider';
+import {FileUpload} from "primeng/fileupload";
+import {Textarea} from 'primeng/textarea';
 
 @Component({
   selector: 'app-ong-registration-page',
@@ -25,7 +27,10 @@ import {Divider} from 'primeng/divider';
     NgClass,
     NgIf,
     InputTextarea,
-    Divider
+    Divider,
+    FileUpload,
+    PrimeTemplate,
+    Textarea
   ],
   templateUrl: './ong-registration-page.component.html',
   styleUrl: './ong-registration-page.component.css'
@@ -36,6 +41,9 @@ export class OngRegistrationPageComponent implements OnInit {
   private messageService = inject(MessageService);
   private router = inject(Router);
 
+  uploadedFile: File | null = null; // Single file for logo
+  logoPreview: string | null = null; // Preview of the logo
+
   ongForm!: FormGroup;
   isSubmitting: boolean = false;
 
@@ -43,9 +51,6 @@ export class OngRegistrationPageComponent implements OnInit {
     this.initForm();
   }
 
-  /**
-   * Initialize the ONG registration form
-   */
   private initForm(): void {
     this.ongForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
@@ -63,9 +68,42 @@ export class OngRegistrationPageComponent implements OnInit {
     });
   }
 
-  /**
-   * Submit the ONG registration form
-   */
+  onLogoUpload(event: any): void {
+    const file = event.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Invalid File',
+        detail: 'Please upload an image file'
+      });
+      return;
+    }
+
+    // Store the actual file
+    this.uploadedFile = file;
+
+    // Create preview for display
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.logoPreview = e.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Logo uploaded',
+      detail: 'Logo will be saved with your ONG registration'
+    });
+  }
+
+  removeLogo(): void {
+    this.uploadedFile = null;
+    this.logoPreview = null;
+  }
+
   onSubmit(): void {
     if (this.ongForm.invalid) {
       this.ongForm.markAllAsTouched();
@@ -79,9 +117,23 @@ export class OngRegistrationPageComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    const ongData: OngInterface = this.ongForm.value;
+    // Create FormData to send as multipart/form-data
+    const formData = new FormData();
 
-    this.ongService.registerOng(ongData).subscribe({
+    // Add all form fields
+    Object.keys(this.ongForm.value).forEach(key => {
+      const value = this.ongForm.value[key];
+      if (value !== null && value !== undefined) {
+        formData.append(key, value.toString());
+      }
+    });
+
+    // Add logo if uploaded
+    if (this.uploadedFile) {
+      formData.append('logo', this.uploadedFile, this.uploadedFile.name);
+    }
+
+    this.ongService.registerOng(formData).subscribe({
       next: (response) => {
         this.isSubmitting = false;
         this.messageService.add({
@@ -90,13 +142,13 @@ export class OngRegistrationPageComponent implements OnInit {
           detail: 'Your NGO has been registered successfully'
         });
 
-        // Navigate to the ONG page after a delay
         setTimeout(() => {
-          this.router.navigate(['/hairy-paws/ongs', response.id]);
+          this.router.navigate(['/hairy-paws/ong-details', response.id]);
         }, 1500);
       },
       error: (error) => {
         this.isSubmitting = false;
+        console.error('Registration error:', error);
         this.messageService.add({
           severity: 'error',
           summary: 'Registration Failed',
@@ -106,17 +158,11 @@ export class OngRegistrationPageComponent implements OnInit {
     });
   }
 
-  /**
-   * Check if a form field is invalid
-   */
   isInvalid(fieldName: string): boolean {
     const field = this.ongForm.get(fieldName);
     return field ? field.invalid && (field.dirty || field.touched) : false;
   }
 
-  /**
-   * Get validation error message for a field
-   */
   getErrorMessage(fieldName: string): string {
     const field = this.ongForm.get(fieldName);
 

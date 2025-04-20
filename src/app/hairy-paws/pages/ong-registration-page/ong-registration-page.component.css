@@ -1,7 +1,7 @@
 /* ong-register-page.component.css */
 
 .ong-register-container {
-  background-color: var(--surface-ground, #ffffff);
+  background-color: var(#ffffff);
   min-height: 100vh;
 }
 
@@ -13,7 +13,7 @@
 }
 
 .register-header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-500) 100%);
+  background: linear-gradient(135deg, var(--p-primary-color) 0%, var(--p-primary-500) 100%);
   color: white;
   padding: 2rem 0;
   margin-bottom: 2rem;
@@ -25,6 +25,110 @@
   font-weight: 700;
   margin: 0;
   margin-bottom: 0.5rem;
+}
+
+/* ong-register-page.component.css */
+.ong-register-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card-container {
+  padding: 1rem;
+}
+
+.form-section {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.section-description {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.upload-message {
+  padding: 2rem;
+  text-align: center;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  color: #666;
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #999;
+}
+
+.upload-note {
+  font-size: 0.9rem;
+  color: #888;
+  margin-top: 0.5rem;
+}
+
+.limit-message {
+  padding: 2rem;
+  text-align: center;
+  color: #ff9800;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+.p-button-lg {
+  padding: 0.75rem 2rem;
+}
+
+/* Logo preview styles */
+.logo-preview-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.logo-preview-image {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo-remove-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ong-register-container {
+    padding: 1rem;
+  }
 }
 
 .header-subtitle {
@@ -42,7 +146,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0 0 1.5rem 0;
-  color: var(--primary-700);
+  color: var(--p-primary-700);
 }
 
 .form-section {

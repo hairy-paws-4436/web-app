@@ -99,7 +99,7 @@
                     <span class="font-medium">Register Event</span>
                   </a>
                 </li>
-                <li routerLink="/hairy-paws/ong-register">
+                <li *ngIf="isONG" routerLink="/hairy-paws/ong-register">
                   <a pRipple
                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
                     <i class="pi pi-plus-circle mr-2"></i>
@@ -125,6 +125,13 @@
                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
                     <i class="pi pi-user mr-2"></i>
                     <span class="font-medium">My Profile</span>
+                  </a>
+                </li>
+                <li routerLink="/hairy-paws/my-ong">
+                  <a pRipple
+                     class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors">
+                    <i class="pi pi-building mr-2"></i>
+                    <span class="font-medium">My ONG</span>
                   </a>
                 </li>
               </ul>
