@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable, catchError, map, of } from 'rxjs';
-import {OngService} from '../../hairy-paws/services/ong.service';
+import {OngService} from '../../hairy-paws/services/ong/ong.service';
 import {AuthService} from '../../auth/services/auth.service';
 import {MessageService} from 'primeng/api';
 import {jwtDecode} from 'jwt-decode';
@@ -20,7 +20,6 @@ export class OngOwnerGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> {
-    // First check if user has ONG role
     if (!this.authService.isONG()) {
       this.messageService.add({
         severity: 'error',
@@ -33,12 +32,10 @@ export class OngOwnerGuard implements CanActivate {
 
     const ongId = route.params['id'];
 
-    // If accessing my-ong, no need to check ownership
     if (route.routeConfig?.path === 'my-ong') {
       return of(true);
     }
 
-    // For other ONG operations, check ownership
     return this.ongService.getOngById(ongId).pipe(
       map(ong => {
         const currentUserOngId = this.getCurrentUserOngId();
@@ -68,8 +65,6 @@ export class OngOwnerGuard implements CanActivate {
   }
 
   private getCurrentUserOngId(): string | null {
-    // This method would need to be implemented based on how you store ONG ID
-    // It could come from the JWT token, user profile, or another source
     const access_token = localStorage.getItem('access_token');
     if (!access_token) return null;
 

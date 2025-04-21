@@ -1,8 +1,6 @@
-<!-- ongs-list-page.component.html -->
 <div class="ongs-list-container">
   <p-toast></p-toast>
 
-  <!-- Search Bar -->
   <div class="search-container">
     <div class="container">
       <div class="search-box">
@@ -19,19 +17,16 @@
     </div>
   </div>
 
-  <!-- Content -->
   <div class="main-content">
     <div class="container">
-      <!-- Loading spinner -->
       <div *ngIf="isLoading" class="spinner-container">
         <p-progressSpinner></p-progressSpinner>
         <p class="loading-text">Loading NGOs...</p>
       </div>
 
-      <!-- Empty state -->
       <div *ngIf="!isLoading && filteredOngs.length === 0" class="empty-state">
         <div class="empty-state-content">
-          <i class="pi pi-search" style="font-size: 3rem; color: var(--primary-color);"></i>
+          <i class="pi pi-search" style="font-size: 3rem; color: var(--p-primary-color);"></i>
           <h2 class="empty-title">No NGOs found</h2>
           <p class="empty-message" *ngIf="searchTerm">
             No NGOs match your search criteria. Try different keywords or clear the search.
@@ -50,7 +45,6 @@
         </div>
       </div>
 
-      <!-- NGOs Grid -->
       <div *ngIf="!isLoading && filteredOngs.length > 0" class="ongs-grid">
         <app-ong-card
           *ngFor="let ong of filteredOngs"

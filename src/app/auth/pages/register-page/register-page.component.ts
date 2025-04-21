@@ -15,6 +15,7 @@ import {RegisterRequestInterface} from '../../interfaces/request/register-reques
 import {Carousel} from 'primeng/carousel';
 import {CarouselRegisterComponent} from '../../components/carousel-register/carousel-register.component';
 import {AutoComplete} from 'primeng/autocomplete';
+import {MessageService} from 'primeng/api';
 
 @Component({
   selector: 'app-register-page',
@@ -38,6 +39,7 @@ import {AutoComplete} from 'primeng/autocomplete';
 export class RegisterPageComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private messageService = inject(MessageService);
 
   protected registerRequest: RegisterRequestInterface = {
     email: '',
@@ -74,25 +76,29 @@ export class RegisterPageComponent implements OnInit {
     if (!this.registerRequest.email || !this.registerRequest.password ||
       !this.registerRequest.firstName || !this.registerRequest.lastName ||
       !this.registerRequest.phoneNumber || !this.selectedRole) {
-      Swal.fire('Error', 'Please complete all fields', 'warning');
+      this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Please complete all fields' });
       return;
     }
 
     this.registerRequest.role = this.selectedRole as RoleEnum;
 
-
     this.authService.register(this.registerRequest).subscribe({
       next: () => {
-        Swal.fire('Registration successful', 'Your account has been created successfully', 'success').then(() => {
-          this.router.navigate(['/login']);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Registration Successful',
+          detail: 'Your account has been created successfully'
         });
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 1500);
       },
       error: (error) => {
-        console.log('Error en registro:', error);
+        console.log('Error in register:', error);
         const errorMessage = typeof error === 'string' ? error : 'An unexpected error occurred. Please try again.';
-        Swal.fire('Registration Error', errorMessage, 'error');
+        this.messageService.add({ severity: 'error', summary: 'Registration Error', detail: errorMessage });
       }
-
     });
   }
+
 }

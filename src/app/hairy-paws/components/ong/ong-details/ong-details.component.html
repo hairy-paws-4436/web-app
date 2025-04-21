@@ -1,0 +1,163 @@
+<div class="ong-details-container">
+  <p-toast></p-toast>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <p-progressSpinner></p-progressSpinner>
+    <p class="loading-text">Loading NGO details...</p>
+  </div>
+
+  <div *ngIf="!isLoading && ong" class="ong-content">
+    <div class="ong-header">
+      <div class="container">
+        <div class="header-content">
+          <div class="header-info">
+            <h1 class="ong-name">{{ ong.name }}</h1>
+            <p class="ong-ruc">RUC: {{ ong.ruc }}</p>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="content-grid">
+        <div class="main-info-column">
+          <p-card styleClass="description-card">
+            <h2 class="section-title">About the Organization</h2>
+            <p class="ong-description">{{ ong.description }}</p>
+
+            <div *ngIf="ong.mission || ong.vision" class="mission-vision">
+              <p-divider></p-divider>
+
+              <div *ngIf="ong.mission" class="mission-section">
+                <h3 class="subsection-title">Our Mission</h3>
+                <p class="mission-text">{{ ong.mission }}</p>
+              </div>
+
+              <div *ngIf="ong.vision" class="vision-section">
+                <h3 class="subsection-title">Our Vision</h3>
+                <p class="vision-text">{{ ong.vision }}</p>
+              </div>
+            </div>
+          </p-card>
+
+          <div class="events-section">
+            <h2 class="section-title">Events</h2>
+
+            <div *ngIf="eventsLoading" class="events-loading">
+              <p-progressSpinner [style]="{width: '40px', height: '40px'}"></p-progressSpinner>
+              <span>Loading events...</span>
+            </div>
+
+            <div *ngIf="!eventsLoading && events.length === 0" class="no-events">
+              <p>This NGO has no upcoming events at the moment.</p>
+            </div>
+
+            <div *ngIf="!eventsLoading && events.length > 0" class="events-list">
+              <div class="events-grid">
+                <app-event-card
+                  *ngFor="let event of events"
+                  [event]="event"
+                  (viewDetails)="viewEventDetails(event.id!)">
+                </app-event-card>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-info-column">
+          <p-card styleClass="contact-card">
+            <h2 class="section-title">Contact Information</h2>
+
+            <div class="contact-list">
+              <div class="contact-item">
+                <i class="pi pi-map-marker"></i>
+                <div class="contact-details">
+                  <h3 class="contact-label">Address</h3>
+                  <p class="contact-value">{{ ong.address }}</p>
+                </div>
+              </div>
+
+              <div class="contact-item">
+                <i class="pi pi-phone"></i>
+                <div class="contact-details">
+                  <h3 class="contact-label">Phone</h3>
+                  <p class="contact-value">{{ ong.phone }}</p>
+                </div>
+              </div>
+
+              <div class="contact-item">
+                <i class="pi pi-envelope"></i>
+                <div class="contact-details">
+                  <h3 class="contact-label">Email</h3>
+                  <p class="contact-value">{{ ong.email }}</p>
+                </div>
+              </div>
+
+              <div *ngIf="ong.website" class="contact-item">
+                <i class="pi pi-globe"></i>
+                <div class="contact-details">
+                  <h3 class="contact-label">Website</h3>
+                  <p class="contact-value">
+                    <a [href]="ong.website" target="_blank" rel="noopener noreferrer">{{ ong.website }}</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </p-card>
+
+          <p-card *ngIf="ong.bankName || ong.bankAccount || ong.interbankAccount" styleClass="donation-card">
+            <h2 class="section-title">Donation Information</h2>
+
+            <div class="donation-details">
+              <div *ngIf="ong.bankName" class="donation-item">
+                <h3 class="donation-label">Bank</h3>
+                <p class="donation-value">{{ ong.bankName }}</p>
+              </div>
+
+              <div *ngIf="ong.bankAccount" class="donation-item">
+                <h3 class="donation-label">Account Number</h3>
+                <p class="donation-value">{{ ong.bankAccount }}</p>
+              </div>
+
+              <div *ngIf="ong.interbankAccount" class="donation-item">
+                <h3 class="donation-label">Interbank Account (CCI)</h3>
+                <p class="donation-value">{{ ong.interbankAccount }}</p>
+              </div>
+            </div>
+
+            <div class="donation-cta">
+              <button
+                pButton
+                pRipple
+                label="Donate Now"
+                icon="pi pi-heart"
+                class="p-button-success p-button-lg w-full"
+                (click)="navigateToDonate()">
+              </button>
+            </div>
+          </p-card>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && !ong" class="not-found-container">
+    <div class="container">
+      <div class="not-found-content">
+        <i class="pi pi-exclamation-circle" style="font-size: 3rem; color: var(--p-orange-500);"></i>
+        <h2>NGO Not Found</h2>
+        <p>The NGO you are looking for does not exist or may have been removed.</p>
+        <button
+          pButton
+          pRipple
+          label="Back to NGOs"
+          icon="pi pi-arrow-left"
+          class="p-button-outlined mt-3"
+          routerLink="/ongs">
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

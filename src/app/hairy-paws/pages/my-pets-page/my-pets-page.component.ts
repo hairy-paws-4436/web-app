@@ -3,13 +3,13 @@ import {NgForOf, NgIf} from "@angular/common";
 
 import {ProgreessSpinnerComponent} from "../../../shared/components/progreess-spinner/progreess-spinner.component";
 import {Toast} from "primeng/toast";
-import {PetService} from '../../services/pet.service';
+import {PetService} from '../../services/pet/pet.service';
 import {ConfirmationService, MessageService} from 'primeng/api';
-import {PetInterface} from '../../interfaces/pet-interface';
+import {PetInterface} from '../../interfaces/pet/pet-interface';
 import {ConfirmDialog} from 'primeng/confirmdialog';
 import {ButtonDirective} from 'primeng/button';
-import {MyPetCardComponent} from '../../components/my-pet-card/my-pet-card.component';
-import {EditPetDialogComponent} from '../../components/edit-pet-dialog/edit-pet-dialog.component';
+import {MyPetCardComponent} from '../../components/pet/my-pet-card/my-pet-card.component';
+import {EditPetDialogComponent} from '../../components/pet/edit-pet-dialog/edit-pet-dialog.component';
 import {RouterLink} from '@angular/router';
 
 
@@ -36,8 +36,6 @@ export class MyPetsPageComponent implements OnInit {
 
   myPets: PetInterface[] = [];
   isLoading: boolean = true;
-
-  // For edit dialog
   displayEditDialog: boolean = false;
   selectedPet: PetInterface | null = null;
 
@@ -45,9 +43,6 @@ export class MyPetsPageComponent implements OnInit {
     this.loadMyPets();
   }
 
-  /**
-   * Load all pets owned by the authenticated user
-   */
   loadMyPets(): void {
     this.isLoading = true;
 
@@ -67,28 +62,19 @@ export class MyPetsPageComponent implements OnInit {
     });
   }
 
-  /**
-   * Open the edit pet dialog
-   */
   openEditDialog(pet: PetInterface): void {
     this.selectedPet = pet;
     this.displayEditDialog = true;
   }
 
-  /**
-   * Handle pet update from edit dialog
-   */
   handlePetUpdate(updatedPet: PetInterface): void {
-    // Find and update the pet in the local array
     const index = this.myPets.findIndex(p => p.id === updatedPet.id);
     if (index !== -1) {
       this.myPets[index] = updatedPet;
     }
 
-    // Close dialog
     this.displayEditDialog = false;
 
-    // Show success message
     this.messageService.add({
       severity: 'success',
       summary: 'Pet Updated',
@@ -96,9 +82,6 @@ export class MyPetsPageComponent implements OnInit {
     });
   }
 
-  /**
-   * Confirm and delete a pet
-   */
   confirmDeletePet(pet: PetInterface): void {
     this.confirmationService.confirm({
       message: `Are you sure you want to delete ${pet.name}? This action cannot be undone.`,
@@ -111,16 +94,11 @@ export class MyPetsPageComponent implements OnInit {
     });
   }
 
-  /**
-   * Delete a pet after confirmation
-   */
   private deletePet(pet: PetInterface): void {
     this.myPetsService.deleteMyPet(pet.id).subscribe({
       next: () => {
-        // Remove from local array
         this.myPets = this.myPets.filter(p => p.id !== pet.id);
 
-        // Show success message
         this.messageService.add({
           severity: 'success',
           summary: 'Pet Deleted',

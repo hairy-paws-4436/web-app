@@ -20,7 +20,6 @@ export class HasRoleDirective implements OnInit {
   private roles: RoleEnum[] = [];
 
   constructor() {
-    // Use effect to track authentication status changes
     effect(() => {
       const status = this.authService.authStatus();
       this.updateView();

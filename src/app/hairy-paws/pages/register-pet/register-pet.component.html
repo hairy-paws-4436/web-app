@@ -1,4 +1,3 @@
-<!-- pet-register-page.component.html -->
 <div class="pet-register-container">
   <p-toast></p-toast>
 
@@ -7,7 +6,6 @@
     <div class="register-card-container">
       <p-card>
         <form [formGroup]="petForm" (ngSubmit)="onSubmit()">
-          <!-- Basic Information -->
           <div class="form-section">
             <h2 class="section-title">Basic Information</h2>
 
@@ -98,7 +96,6 @@
 
           <p-divider></p-divider>
 
-          <!-- Health Information -->
           <div class="form-section">
             <h2 class="section-title">Health Information</h2>
 
@@ -142,7 +139,6 @@
 
           <p-divider></p-divider>
 
-          <!-- Description -->
           <div class="form-section">
             <h2 class="section-title">Description</h2>
 
@@ -164,7 +160,6 @@
 
           <p-divider></p-divider>
 
-          <!-- Images -->
           <div class="form-section">
             <h2 class="section-title">Pet Images</h2>
             <p class="section-description">Upload up to 5 images of your pet</p>
@@ -195,7 +190,6 @@
             </p-fileUpload>
           </div>
 
-          <!-- Submit Button -->
           <div class="form-footer">
             <button
               pButton

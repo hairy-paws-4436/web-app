@@ -12,6 +12,7 @@ import {Divider} from 'primeng/divider';
 import {ButtonDirective} from 'primeng/button';
 import {Ripple} from 'primeng/ripple';
 import {InputText} from 'primeng/inputtext';
+import {MessageService} from 'primeng/api';
 
 @Component({
   selector: 'app-login-page',
@@ -32,6 +33,7 @@ import {InputText} from 'primeng/inputtext';
 export class LoginPageComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private messageService = inject(MessageService);
 
   twoFaDialogVisible = false;
   userId: string | undefined = '';
@@ -43,7 +45,7 @@ export class LoginPageComponent {
 
   login() {
     if (!this.loginRequest?.email || !this.loginRequest?.password) {
-      Swal.fire('Error', 'Please complete all fields', 'warning');
+      this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Please complete all fields' });
       return;
     }
 
@@ -55,22 +57,21 @@ export class LoginPageComponent {
         } else if (response.access_token && response.user) {
           this.authService.setAuthentication(response.access_token, response.user.role);
           this.router.navigateByUrl('/hairy-paws');
+          this.messageService.add({ severity: 'success', summary: 'Login Successful', detail: 'Welcome to Hairy Paws!' });
         }
       },
       error: (error) => {
-        Swal.fire('Login Error', error, 'error');
+        this.messageService.add({ severity: 'error', summary: 'Login Error', detail: error.message });
       }
     });
   }
 
   onVerificationComplete() {
-    // Esta función se llamará cuando la verificación 2FA se complete exitosamente
     this.twoFaDialogVisible = false;
     this.router.navigateByUrl('/hairy-paws');
   }
 
   onDialogShow() {
-    // Esto asegura que los inputs de 2FA tengan el foco cuando el diálogo es visible
     setTimeout(() => {
       const firstInput = document.querySelector('input') as HTMLInputElement;
       firstInput?.focus();

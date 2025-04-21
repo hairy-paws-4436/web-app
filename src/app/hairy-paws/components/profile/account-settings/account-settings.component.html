@@ -1,0 +1,93 @@
+<div class="account-settings-container">
+  <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000"></p-confirmDialog>
+
+  <h3 class="section-title">Account Settings</h3>
+  <p class="section-description">Manage your account settings and preferences</p>
+
+  <div class="account-info-section">
+    <h4 class="subsection-title">Account Information</h4>
+
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">Account ID</div>
+        <div class="info-value text-monospace">{{ userProfile.id }}</div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-label">Account Status</div>
+        <div class="info-value">
+          <span class="status-badge" [ngClass]="{'verified': userProfile.verified, 'not-verified': !userProfile.verified}">
+            {{ userProfile.verified ? 'Verified' : 'Not Verified' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-label">Created On</div>
+        <div class="info-value">{{ getFormattedDate(userProfile.createdAt) }}</div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-label">Last Updated</div>
+        <div class="info-value">{{ getFormattedDate(userProfile.updatedAt) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <p-divider></p-divider>
+
+  <div class="security-section">
+    <h4 class="subsection-title">Security Settings</h4>
+
+    <div class="security-option">
+      <div class="option-info">
+        <h5 class="option-title">Two-Factor Authentication</h5>
+        <p class="option-description">Add an extra layer of security to your account</p>
+      </div>
+      <div class="option-status">
+        <span class="status-badge" [ngClass]="{'verified': userProfile.twoFactorEnabled, 'not-verified': !userProfile.twoFactorEnabled}">
+          {{ userProfile.twoFactorEnabled ? 'Enabled' : 'Disabled' }}
+        </span>
+      </div>
+    </div>
+
+    <div class="security-note">
+      <i class="pi pi-info-circle"></i>
+      <span>
+        Two-factor authentication settings can be managed on the security page.
+      </span>
+    </div>
+  </div>
+
+  <p-divider></p-divider>
+
+  <div class="danger-zone">
+    <h4 class="danger-title">Danger Zone</h4>
+    <p class="danger-description">Irreversible and destructive actions</p>
+
+    <div class="danger-card">
+      <div class="danger-action">
+        <div class="action-info">
+          <h5 class="action-title">Deactivate Account</h5>
+          <p class="action-description">
+            Permanently deactivate your account and delete all associated data.
+            This action cannot be undone.
+          </p>
+        </div>
+        <div class="action-button">
+          <button
+            pButton
+            pRipple
+            type="button"
+            label="Deactivate Account"
+            icon="pi pi-trash"
+            class="p-button-danger"
+            [loading]="isDeactivating"
+            [disabled]="isDeactivating"
+            (click)="confirmDeactivation()">
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

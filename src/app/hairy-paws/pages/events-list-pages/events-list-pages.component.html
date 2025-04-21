@@ -1,8 +1,6 @@
-<!-- events-list-page.component.html -->
 <div class="events-list-container">
   <p-toast></p-toast>
 
-  <!-- Filters -->
   <div class="filters-container">
     <div class="container">
       <div class="filters-box">
@@ -67,16 +65,13 @@
     </div>
   </div>
 
-  <!-- Content -->
   <div class="main-content">
     <div class="container">
-      <!-- Loading spinner -->
       <div *ngIf="isLoading" class="spinner-container">
         <p-progressSpinner></p-progressSpinner>
         <p class="loading-text">Loading events...</p>
       </div>
 
-      <!-- Empty state -->
       <div *ngIf="!isLoading && filteredEvents.length === 0" class="empty-state">
         <div class="empty-state-content">
           <i class="pi pi-calendar-times" style="font-size: 3rem; color: var(--p-primary-700);"></i>
@@ -108,7 +103,6 @@
         </div>
       </div>
 
-      <!-- Events Grid -->
       <div *ngIf="!isLoading && filteredEvents.length > 0" class="events-grid">
         <app-event-card
           *ngFor="let event of filteredEvents"
@@ -117,7 +111,6 @@
         </app-event-card>
       </div>
 
-      <!-- Results count -->
       <div *ngIf="!isLoading && filteredEvents.length > 0" class="results-count">
         Showing {{ filteredEvents.length }} {{ filteredEvents.length === 1 ? 'event' : 'events' }}
         <span *ngIf="events.length !== filteredEvents.length"> (filtered from {{ events.length }})</span>

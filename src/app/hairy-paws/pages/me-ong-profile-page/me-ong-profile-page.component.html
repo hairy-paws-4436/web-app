@@ -9,7 +9,6 @@
   </div>
 
   <div class="content-container" *ngIf="!isLoading && ong">
-    <!-- Header Section -->
     <div class="header-section">
       <div class="logo-container" (click)="showLogoUploadDialog()">
         <img [src]="ong.logoUrl || 'assets/default-ong-logo.png'"
@@ -35,9 +34,7 @@
       </div>
     </div>
 
-    <!-- Main Content Grid -->
     <div class="main-grid">
-      <!-- Left Column - Details -->
       <div class="details-column">
         <p-card>
           <ng-template pTemplate="header">
@@ -87,7 +84,6 @@
         </p-card>
       </div>
 
-      <!-- Right Column - Bank Info & Actions -->
       <div class="actions-column">
         <p-card>
           <ng-template pTemplate="header">
@@ -156,7 +152,6 @@
     </div>
   </div>
 
-  <!-- Logo Upload Dialog -->
   <p-dialog [(visible)]="showLogoDialog"
             header="Update Logo"
             [modal]="true"

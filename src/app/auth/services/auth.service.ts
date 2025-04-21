@@ -10,15 +10,7 @@ import {jwtDecode} from 'jwt-decode';
 import {RoleEnum} from '../enums/role-enum';
 import {LoginRequestInterface} from '../interfaces/request/login-request-interface';
 import {RegisterRequestInterface} from '../interfaces/request/register-request-interface';
-
-interface JwtPayload {
-  sub: string;
-  email: string;
-  role: RoleEnum;
-  ongId?: string;
-  userId: string;
-  exp: number;
-}
+import {JwtPayload} from '../interfaces/jwt-payload';
 
 @Injectable({
   providedIn: 'root'

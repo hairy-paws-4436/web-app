@@ -1,8 +1,8 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {OngService} from '../../services/ong.service';
+import {OngService} from '../../services/ong/ong.service';
 import {MessageService, PrimeTemplate} from 'primeng/api';
-import {OngInterface} from '../../interfaces/ong-interface';
+import {OngInterface} from '../../interfaces/ong/ong-interface';
 import {Router} from '@angular/router';
 import {InputText} from 'primeng/inputtext';
 import {ButtonDirective} from 'primeng/button';
@@ -41,8 +41,8 @@ export class OngRegistrationPageComponent implements OnInit {
   private messageService = inject(MessageService);
   private router = inject(Router);
 
-  uploadedFile: File | null = null; // Single file for logo
-  logoPreview: string | null = null; // Preview of the logo
+  uploadedFile: File | null = null;
+  logoPreview: string | null = null;
 
   ongForm!: FormGroup;
   isSubmitting: boolean = false;
@@ -72,7 +72,6 @@ export class OngRegistrationPageComponent implements OnInit {
     const file = event.files[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       this.messageService.add({
         severity: 'error',
@@ -82,10 +81,8 @@ export class OngRegistrationPageComponent implements OnInit {
       return;
     }
 
-    // Store the actual file
     this.uploadedFile = file;
 
-    // Create preview for display
     const reader = new FileReader();
     reader.onload = (e: any) => {
       this.logoPreview = e.target.result;
@@ -117,10 +114,8 @@ export class OngRegistrationPageComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    // Create FormData to send as multipart/form-data
     const formData = new FormData();
 
-    // Add all form fields
     Object.keys(this.ongForm.value).forEach(key => {
       const value = this.ongForm.value[key];
       if (value !== null && value !== undefined) {
@@ -128,7 +123,6 @@ export class OngRegistrationPageComponent implements OnInit {
       }
     });
 
-    // Add logo if uploaded
     if (this.uploadedFile) {
       formData.append('logo', this.uploadedFile, this.uploadedFile.name);
     }

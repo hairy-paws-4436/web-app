@@ -1,8 +1,6 @@
-/* events-list-page.component.css */
-
 .events-list-container {
   min-height: 100vh;
-  background-color: var(--surface-ground, #f8f9fa);
+  background-color: var(#f8f9fa);
 }
 
 .container {
@@ -12,9 +10,8 @@
   padding: 0 1rem;
 }
 
-/* Header Styles */
 .page-header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-500) 100%);
+  background: linear-gradient(135deg, var(--p-primary-color) 0%, var(--p-primary-500) 100%);
   color: white;
   padding: 2rem 0;
   margin-bottom: 0;
@@ -41,7 +38,6 @@
   max-width: 600px;
 }
 
-/* Filters */
 .filters-container {
   background-color: white;
   padding: 1rem 0;
@@ -80,7 +76,6 @@
   flex-shrink: 0;
 }
 
-/* Grid Layout */
 .events-grid {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
@@ -88,7 +83,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* Loading State */
 .spinner-container {
   display: flex;
   flex-direction: column;
@@ -99,11 +93,10 @@
 
 .loading-text {
   margin-top: 1rem;
-  color: var(--text-color-secondary);
+  color: var(--p-text-color);
   font-size: 1rem;
 }
 
-/* Empty State */
 .empty-state {
   display: flex;
   justify-content: center;
@@ -124,23 +117,21 @@
   font-size: 1.5rem;
   font-weight: 600;
   margin: 1rem 0 0.5rem 0;
-  color: var(--text-color);
+  color: var(--p-text-color);
 }
 
 .empty-message {
-  color: var(--text-color-secondary);
+  color: var(--p-text-color);
   margin-bottom: 0.5rem;
 }
 
-/* Results count */
 .results-count {
   text-align: center;
-  color: var(--text-color-secondary);
+  color: var(--p-text-color);
   font-size: 0.9rem;
   margin-bottom: 3rem;
 }
 
-/* PrimeNG customizations */
 :host ::ng-deep .p-calendar .p-inputtext {
   min-width: 130px;
 }
@@ -154,7 +145,6 @@
   font-size: 0.875rem;
 }
 
-/* Responsive styles */
 @media screen and (min-width: 992px) {
   .header-content {
     flex-direction: row;

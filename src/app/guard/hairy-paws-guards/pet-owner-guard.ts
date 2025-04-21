@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from
 import { Observable, catchError, map, of } from 'rxjs';
 
 import { MessageService } from 'primeng/api';
-import {PetService} from '../../hairy-paws/services/pet.service';
+import {PetService} from '../../hairy-paws/services/pet/pet.service';
 import {AuthService} from '../../auth/services/auth.service';
 
 @Injectable({
@@ -19,7 +19,6 @@ export class PetOwnerGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> {
-    // First check if user has Owner role
     if (!this.authService.isOwner()) {
       this.messageService.add({
         severity: 'error',
@@ -32,12 +31,10 @@ export class PetOwnerGuard implements CanActivate {
 
     const petId = route.params['id'];
 
-    // If registering a new pet, only Owner role is needed
     if (route.routeConfig?.path === 'pet-register') {
       return of(true);
     }
 
-    // For editing or deleting, check if the pet belongs to the user
     return this.petService.getPetById(petId).pipe(
       map(pet => {
         const currentUserId = this.authService.getCurrentUserId();

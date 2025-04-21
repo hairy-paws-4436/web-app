@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 import { MessageService } from 'primeng/api';
-import {NotificationService} from '../../hairy-paws/services/notification.service';
+import {NotificationService} from '../../hairy-paws/services/notification/notification.service';
 import {AuthService} from '../../auth/services/auth.service';
 
 @Injectable({
@@ -23,7 +23,7 @@ export class NotificationOwnerGuard implements CanActivate {
     const notificationId = route.params['id'];
 
     if (!notificationId) {
-      return of(true); // If no specific notification ID, allow access to general notifications page
+      return of(true);
     }
 
     return this.notificationService.getNotifications().pipe(
@@ -40,7 +40,6 @@ export class NotificationOwnerGuard implements CanActivate {
           return false;
         }
 
-        // Check if user owns the notification
         const userId = this.authService.getCurrentUserId();
         if (notification.userId !== userId) {
           this.messageService.add({

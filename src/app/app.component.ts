@@ -15,7 +15,6 @@ import {AuthStatusEnum} from './auth/enums/status-enum';
 })
 export class AppComponent {
   private authService = inject(AuthService);
-  private router = inject(Router);
 
   public finishedAuthCheck = computed<boolean>(() => {
     return this.authService.authStatus() !== AuthStatusEnum.checking;
@@ -26,7 +25,7 @@ export class AppComponent {
   constructor() {
     effect(() => {
       if (this.sessionExpired()) {
-        console.log('Sesión expirada, mostrando diálogo');
+        console.log('Session expired, showing dialog');
       }
     });
   }

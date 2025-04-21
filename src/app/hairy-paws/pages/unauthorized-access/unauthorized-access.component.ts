@@ -28,12 +28,10 @@ export class UnauthorizedAccessComponent {
   funnyMessage: string;
 
   constructor() {
-    // Pick a random message
     this.funnyMessage = this.messages[Math.floor(Math.random() * this.messages.length)];
   }
 
   goBack(): void {
-    // Navigate to appropriate page based on user role
     if (this.authService.isONG()) {
       this.router.navigate(['/hairy-paws/my-ong']);
     } else if (this.authService.isOwner() || this.authService.isAdopter()) {

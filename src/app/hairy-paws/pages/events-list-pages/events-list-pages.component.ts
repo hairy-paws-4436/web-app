@@ -1,7 +1,7 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {EventService} from '../../services/event.service';
+import {EventService} from '../../services/event/event.service';
 import {MessageService} from 'primeng/api';
-import {EventInterface} from '../../interfaces/event-interface';
+import {EventInterface} from '../../interfaces/event/event-interface';
 import {Router} from '@angular/router';
 import {Toast} from 'primeng/toast';
 import {ButtonDirective} from 'primeng/button';
@@ -13,7 +13,7 @@ import {Checkbox} from 'primeng/checkbox';
 import {SelectButton} from 'primeng/selectbutton';
 import {ProgressSpinner} from 'primeng/progressspinner';
 import {NgForOf, NgIf} from '@angular/common';
-import {EventCardComponent} from '../../components/event-card/event-card.component';
+import {EventCardComponent} from '../../components/event/event-card/event-card.component';
 
 
 
@@ -52,7 +52,6 @@ export class EventsListPagesComponent implements OnInit {
   filteredEvents: EventInterface[] = [];
   isLoading: boolean = true;
 
-  // Filter options
   filterOptions: FilterOptions = {
     searchTerm: '',
     volunteerOnly: false,
@@ -60,7 +59,6 @@ export class EventsListPagesComponent implements OnInit {
     sortBy: 'date'
   };
 
-  // Sort options
   sortOptions = [
     { label: 'Date (Nearest)', value: 'date' },
     { label: 'A-Z', value: 'title' }
@@ -70,9 +68,6 @@ export class EventsListPagesComponent implements OnInit {
     this.loadEvents();
   }
 
-  /**
-   * Load all events
-   */
   loadEvents(): void {
     this.isLoading = true;
 
@@ -93,13 +88,9 @@ export class EventsListPagesComponent implements OnInit {
     });
   }
 
-  /**
-   * Apply filters to events
-   */
   applyFilters(): void {
     let filtered = [...this.events];
 
-    // Filter by search term
     if (this.filterOptions.searchTerm) {
       const term = this.filterOptions.searchTerm.toLowerCase();
       filtered = filtered.filter(event =>
@@ -109,12 +100,10 @@ export class EventsListPagesComponent implements OnInit {
       );
     }
 
-    // Filter volunteer events only
     if (this.filterOptions.volunteerOnly) {
       filtered = filtered.filter(event => event.isVolunteerEvent);
     }
 
-    // Filter by date
     if (this.filterOptions.dateFilter) {
       const filterDate = new Date(this.filterOptions.dateFilter);
       filterDate.setHours(0, 0, 0, 0);
@@ -126,15 +115,11 @@ export class EventsListPagesComponent implements OnInit {
       });
     }
 
-    // Sort events
     this.sortEvents(filtered);
 
     this.filteredEvents = filtered;
   }
 
-  /**
-   * Sort events based on selected sort option
-   */
   private sortEvents(events: EventInterface[]): void {
     if (this.filterOptions.sortBy === 'date') {
       events.sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
@@ -143,39 +128,24 @@ export class EventsListPagesComponent implements OnInit {
     }
   }
 
-  /**
-   * Filter events on search input
-   */
   onSearchInput(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.filterOptions.searchTerm = target.value;
     this.applyFilters();
   }
 
-  /**
-   * Toggle volunteer events filter
-   */
   onVolunteerFilterChange(): void {
     this.applyFilters();
   }
 
-  /**
-   * Apply date filter
-   */
   onDateFilterChange(): void {
     this.applyFilters();
   }
 
-  /**
-   * Change sort option
-   */
   onSortChange(): void {
     this.applyFilters();
   }
 
-  /**
-   * Clear all filters
-   */
   clearFilters(): void {
     this.filterOptions = {
       searchTerm: '',
@@ -187,16 +157,10 @@ export class EventsListPagesComponent implements OnInit {
     this.applyFilters();
   }
 
-  /**
-   * Navigate to event details
-   */
   viewEventDetails(eventId: string): void {
     this.router.navigate(['/hairy-paws/event-details', eventId]);
   }
 
-  /**
-   * Navigate to create event page
-   */
   navigateToCreateEvent(): void {
     this.router.navigate(['/hairy-paws/event-register']);
   }

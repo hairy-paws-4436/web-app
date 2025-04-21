@@ -210,7 +210,6 @@
   margin-bottom: 0.25rem;
 }
 
-/* Dialog Styles */
 .dialog-content {
   padding: 1rem;
 }
@@ -246,7 +245,6 @@
   border-radius: 8px;
 }
 
-/* Responsive Styles */
 @media (max-width: 1200px) {
   .main-grid {
     grid-template-columns: 1fr;

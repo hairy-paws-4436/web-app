@@ -1,8 +1,6 @@
-/* ongs-list-page.component.css */
-
 .ongs-list-container {
   min-height: 100vh;
-  background-color: var(--surface-ground, #ffffff);
+  background-color: var(#ffffff);
 }
 
 .container {
@@ -12,9 +10,8 @@
   padding: 0 1rem;
 }
 
-/* Header Styles */
 .page-header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-500) 100%);
+  background: linear-gradient(135deg, var(--p-primary-color) 0%, var(--p-primary-500) 100%);
   color: white;
   padding: 2rem 0;
   margin-bottom: 2rem;
@@ -41,7 +38,6 @@
   max-width: 600px;
 }
 
-/* Search Bar */
 .search-container {
   margin-bottom: 2rem;
 }
@@ -62,7 +58,6 @@
   padding: 0.75rem 0.75rem 0.75rem 2.5rem;
 }
 
-/* Grid Layout */
 .ongs-grid {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
@@ -70,7 +65,6 @@
   margin-bottom: 3rem;
 }
 
-/* Loading State */
 .spinner-container {
   display: flex;
   flex-direction: column;
@@ -81,11 +75,10 @@
 
 .loading-text {
   margin-top: 1rem;
-  color: var(--text-color-secondary);
+  color: var(--p-text-color);
   font-size: 1rem;
 }
 
-/* Empty State */
 .empty-state {
   display: flex;
   justify-content: center;
@@ -106,15 +99,14 @@
   font-size: 1.5rem;
   font-weight: 600;
   margin: 1rem 0 0.5rem 0;
-  color: var(--text-color);
+  color: var(--p-text-color);
 }
 
 .empty-message {
-  color: var(--text-color-secondary);
+  color: var(--p-text-color);
   margin-bottom: 0.5rem;
 }
 
-/* Responsive Styles */
 @media (min-width: 576px) {
   .ongs-grid {
     grid-template-columns: repeat(2, 1fr);

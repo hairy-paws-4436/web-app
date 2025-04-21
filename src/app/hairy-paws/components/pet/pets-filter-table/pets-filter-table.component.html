@@ -1,0 +1,192 @@
+<div class="card p-3 p-md-5">
+  <p-toast/>
+  <p-table
+    #dt
+    [value]="pets"
+    [rows]="5"
+    [paginator]="true"
+    [globalFilterFields]="['name', 'breed', 'type', 'description']"
+    [(selection)]="selectedPets"
+    [rowHover]="true"
+    dataKey="id"
+    styleClass="p-datatable-sm p-datatable-responsive-demo"
+    [breakpoint]="'768px'"
+    [tableStyle]="{'min-width': '100%'}"
+    [scrollable]="true"
+    responsiveLayout="stack"
+    class="surface-ground"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+        <h5 class="text-900 text-xl font-medium mb-2 md:mb-0">Search Pets</h5>
+        <div class="p-input-icon-left w-full md:w-auto">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Search pets..."
+            class="w-full md:w-20rem"/>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr class="surface-section">
+        <th pSortableColumn="name" class="min-w-10rem">
+          <div class="flex align-items-center">
+            <span>Name</span>
+            <p-sortIcon field="name"></p-sortIcon>
+            <p-columnFilter type="text" field="name" display="menu" class="ml-auto"></p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="breed" class="min-w-8rem">
+          <div class="flex align-items-center">
+            <span>Breed</span>
+            <p-sortIcon field="breed"></p-sortIcon>
+            <p-columnFilter type="text" field="breed" display="menu" class="ml-auto"></p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="type" class="min-w-8rem">
+          <div class="flex align-items-center">
+            <span>Type</span>
+            <p-sortIcon field="type"></p-sortIcon>
+            <p-columnFilter type="text" field="type" display="menu" class="ml-auto"></p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="age" class="min-w-6rem">
+          <div class="flex align-items-center">
+            <span>Age</span>
+            <p-sortIcon field="age"></p-sortIcon>
+            <p-columnFilter type="numeric" field="age" display="menu" class="ml-auto"></p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="availableForAdoption" class="min-w-10rem">
+          <div class="flex align-items-center">
+            <span>Status</span>
+            <p-sortIcon field="availableForAdoption"></p-sortIcon>
+            <p-columnFilter field="availableForAdoption" matchMode="equals" display="menu" class="ml-auto">
+              <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                <p-dropdown [ngModel]="value" [options]="availabilityOptions" (onChange)="filter($event.value)" placeholder="Any" [showClear]="true">
+                  <ng-template let-option pTemplate="item">
+                    <p-tag [value]="option.label" [severity]="option.value ? 'success' : 'danger'" *ngIf="option.value !== null"></p-tag>
+                    <span *ngIf="option.value === null">{{option.label}}</span>
+                  </ng-template>
+                </p-dropdown>
+              </ng-template>
+            </p-columnFilter>
+          </div>
+        </th>
+        <th style="width: 12rem">
+          <div class="flex justify-content-center">
+            <span>Actions</span>
+          </div>
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-pet>
+      <tr class="surface-section">
+        <td>
+          <span class="p-column-title">Name</span>
+          <div class="flex align-items-center">
+            <span class="vertical-align-middle font-medium">{{ pet.name }}</span>
+          </div>
+        </td>
+        <td>
+          <span class="p-column-title">Breed</span>
+          <span class="p-text-nowrap">{{ pet.breed }}</span>
+        </td>
+        <td>
+          <span class="p-column-title">Type</span>
+          <span>{{ pet.type }}</span>
+        </td>
+        <td>
+          <span class="p-column-title">Age</span>
+          <span>{{ pet.age }} years</span>
+        </td>
+        <td>
+          <span class="p-column-title">Status</span>
+          <p-tag
+            [value]="pet.availableForAdoption ? 'Available' : 'Not Available'"
+            [severity]="pet.availableForAdoption ? 'success' : 'danger'">
+          </p-tag>
+        </td>
+        <td>
+          <span class="p-column-title">Actions</span>
+          <div class="flex flex-wrap justify-content-center gap-2">
+            <button
+              pButton
+              pRipple
+              type="button"
+              icon="pi pi-eye"
+              class="p-button-rounded p-button-text"
+              (click)="showDetails(pet)"
+              pTooltip="View Details"
+              tooltipPosition="top">
+            </button>
+
+            <button *ngIf="isAdopter"
+              pButton
+              pRipple
+              type="button"
+              icon="pi pi-calendar"
+              class="p-button-rounded p-button-text p-button-warning"
+              [disabled]="!pet.availableForAdoption"
+              (click)="requestVisit(pet)"
+              pTooltip="Schedule Visit"
+              tooltipPosition="top">
+            </button>
+
+            <button *ngIf="isAdopter"
+              pButton
+              pRipple
+              type="button"
+              icon="pi pi-heart"
+              class="p-button-rounded p-button-text p-button-success"
+              [disabled]="!pet.availableForAdoption"
+              (click)="requestAdoption(pet)"
+              pTooltip="Adopt Pet"
+              tooltipPosition="top">
+            </button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6">
+          <div class="flex flex-column align-items-center p-5">
+            <i class="pi pi-search text-6xl text-500 mb-3"></i>
+            <span class="text-700">No pets found</span>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="paginatorright">
+      <div class="text-xs text-right pr-2">
+        {{pets.length}} total pets
+      </div>
+    </ng-template>
+  </p-table>
+
+  <app-pets-details-dialog
+    [(visible)]="displayPetDetails"
+    [pet]="selectedPet"
+    (adoptionRequested)="handleAdoptionFromDetails($event)">
+  </app-pets-details-dialog>
+
+  <app-pet-visit-dialog
+    [(visible)]="displayVisitDialog"
+    [pet]="selectedPet"
+    (visitRequested)="handleVisitRequest($event)">
+  </app-pet-visit-dialog>
+
+  <app-pet-adoption-dialog
+    [(visible)]="displayAdoptionDialog"
+    [pet]="selectedPet"
+    (adoptionRequested)="handleAdoptionRequest($event)">
+  </app-pet-adoption-dialog>
+</div>

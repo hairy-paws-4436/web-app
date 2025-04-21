@@ -12,7 +12,6 @@ import {RoleEnum} from '../../auth/enums/role-enum';
 export class RoleGuard implements CanActivate {
   private authService = inject(AuthService);
   private router = inject(Router);
-  private messageService = inject(MessageService);
 
   canActivate(
     route: ActivatedRouteSnapshot,
@@ -35,7 +34,6 @@ export class RoleGuard implements CanActivate {
     if (requiredRoles.includes(userRole)) {
       return true;
     } else {
-      // Redirect to unauthorized page instead of just showing a message
       this.router.navigate(['/hairy-paws/unauthorized']);
       return false;
     }

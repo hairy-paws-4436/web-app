@@ -8,7 +8,7 @@ import {RouterLink, RouterOutlet} from '@angular/router';
 import {ButtonModule} from 'primeng/button';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
 import {NgIf} from '@angular/common';
-import {OngService} from '../../../hairy-paws/services/ong.service';
+import {OngService} from '../../../hairy-paws/services/ong/ong.service';
 import {MessageService} from 'primeng/api';
 
 @Component({
@@ -30,7 +30,6 @@ import {MessageService} from 'primeng/api';
 export class SidebarComponent implements OnInit {
   private authService = inject(AuthService);
   private ongService = inject(OngService);
-  private messageService = inject(MessageService);
 
   isOwner = false;
   isAdopter = false;

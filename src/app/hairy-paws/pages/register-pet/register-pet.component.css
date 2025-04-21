@@ -1,8 +1,6 @@
-/* pet-register-page.component.css */
-
 .pet-register-container {
   min-height: 100vh;
-  background-color: var(--surface-ground, #ffffff);
+  background-color: var(#ffffff);
 }
 
 .container {
@@ -12,9 +10,8 @@
   padding: 0 1rem;
 }
 
-/* Page Header */
 .page-header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-500) 100%);
+  background: linear-gradient(135deg, var(--p-primary-color) 0%, var(--p-primary-500) 100%);
   color: white;
   padding: 2rem 0;
   margin-bottom: 2rem;
@@ -43,11 +40,11 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0 0 1.5rem 0;
-  color: var(--primary-700);
+  color: var(--p-primary-700);
 }
 
 .section-description {
-  color: var(--text-color-secondary);
+  color: var(--p-text-color);
   margin-top: -1rem;
   margin-bottom: 1.5rem;
 }
@@ -56,7 +53,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* Form Layout */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -81,7 +77,6 @@
   margin-bottom: 0.75rem;
 }
 
-/* Health Checks */
 .health-checks {
   margin-bottom: 1.5rem;
 }
@@ -92,7 +87,6 @@
   margin-bottom: 1rem;
 }
 
-/* Image Upload Section */
 .uploaded-images {
   display: flex;
   flex-wrap: wrap;
@@ -129,13 +123,13 @@
 .upload-message {
   text-align: center;
   padding: 2rem 1rem;
-  color: var(--text-color-secondary);
+  color: var(--p-text-color);
 }
 
 .upload-icon {
   font-size: 2rem;
   margin-bottom: 0.5rem;
-  color: var(--primary-color);
+  color: var(--p-primary-color);
 }
 
 .uploaded-images {
@@ -155,9 +149,9 @@
 .limit-message {
   text-align: center;
   padding: 1rem;
-  background-color: var(--surface-100);
+  background-color: var(--p-surface-100);
   border-radius: 8px;
-  color: var(--text-color-secondary);
+  color: var(--p-text-color);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -166,7 +160,7 @@
 .limit-message i {
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
-  color: var(--orange-500);
+  color: var(--p-orange-500);
 }
 
 .form-footer {
@@ -175,7 +169,6 @@
   justify-content: flex-end;
 }
 
-/* PrimeNG Overrides */
 :host ::ng-deep .p-card {
   border-radius: 0.5rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -204,8 +197,8 @@
 }
 
 :host ::ng-deep .p-checkbox .p-checkbox-box.p-highlight {
-  border-color: var(--primary-color);
-  background: var(--primary-color);
+  border-color: var(--p-primary-color);
+  background: var(--p-primary-color);
 }
 
 :host ::ng-deep .p-divider.p-divider-horizontal {
@@ -214,13 +207,13 @@
 
 :host ::ng-deep .p-fileupload .p-fileupload-buttonbar {
   padding: 1rem;
-  background-color: var(--surface-50);
-  border-color: var(--surface-200);
+  background-color: var(--p-surface-50);
+  border-color: var(--p-surface-200);
 }
 
 :host ::ng-deep .p-fileupload .p-fileupload-content {
   padding: 1.5rem;
-  border-color: var(--surface-200);
+  border-color: var(--p-surface-200);
 }
 
 :host ::ng-deep .p-button.p-button-lg {
@@ -228,7 +221,6 @@
   padding: 0.75rem 1.5rem;
 }
 
-/* Responsive Adjustments */
 @media (max-width: 576px) {
   .page-header {
     padding: 1.5rem 0;

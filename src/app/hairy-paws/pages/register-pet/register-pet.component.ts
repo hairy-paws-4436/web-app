@@ -1,9 +1,9 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {PetService} from '../../services/pet.service';
+import {PetService} from '../../services/pet/pet.service';
 import {Router} from '@angular/router';
 import {MessageService} from 'primeng/api';
-import {PetInterface} from '../../interfaces/pet-interface';
+import {PetInterface} from '../../interfaces/pet/pet-interface';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {ButtonDirective} from 'primeng/button';
 import {Ripple} from 'primeng/ripple';
@@ -46,10 +46,9 @@ export class RegisterPetComponent implements OnInit {
 
   petForm!: FormGroup;
   isSubmitting: boolean = false;
-  petImagePreviews: string[] = []; // Solo para mostrar previews
-  uploadedFiles: File[] = []; // Archivos reales para enviar
+  petImagePreviews: string[] = [];
+  uploadedFiles: File[] = [];
 
-  // Dropdown options
   petTypes = [
     {label: 'Dog', value: 'dog'},
     {label: 'Cat', value: 'cat'},
@@ -92,22 +91,19 @@ export class RegisterPetComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    // Crear FormData para enviar como multipart/form-data
     const formData = new FormData();
 
-    // Añadir todos los campos del formulario
     Object.keys(this.petForm.value).forEach(key => {
       const value = this.petForm.value[key];
       formData.append(key, value !== null && value !== undefined ? value.toString() : '');
     });
 
-    // Añadir las imágenes
     this.uploadedFiles.forEach(file => {
       formData.append('images', file, file.name);
     });
 
     this.petService.registerPet(formData).subscribe({
-      next: (response) => {
+      next: () => {
         this.isSubmitting = false;
         this.messageService.add({
           severity: 'success',
@@ -135,7 +131,6 @@ export class RegisterPetComponent implements OnInit {
     const files = event.files;
     if (!files || files.length === 0) return;
 
-    // Check if maximum number of images is reached
     if (this.uploadedFiles.length + files.length > 5) {
       this.messageService.add({
         severity: 'error',
@@ -146,10 +141,7 @@ export class RegisterPetComponent implements OnInit {
     }
 
     for (let file of files) {
-      // Guardar el archivo real
       this.uploadedFiles.push(file);
-
-      // Crear preview para mostrar en la UI
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.petImagePreviews.push(e.target.result);
@@ -162,14 +154,6 @@ export class RegisterPetComponent implements OnInit {
       summary: 'Images selected',
       detail: `${files.length} image(s) ready to be uploaded`
     });
-
-    // NO hacer clear aquí, mantener los archivos seleccionados
-    // event.clear(); // Comentar esta línea
-  }
-
-  removeImage(index: number): void {
-    this.petImagePreviews.splice(index, 1);
-    this.uploadedFiles.splice(index, 1);
   }
 
   isInvalid(fieldName: string): boolean {

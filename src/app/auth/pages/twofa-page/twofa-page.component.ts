@@ -2,7 +2,6 @@ import {
   Component,
   inject,
   Input,
-  ViewChild,
   ElementRef,
   QueryList,
   ViewChildren,
@@ -12,7 +11,7 @@ import {
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { KeyFilter } from 'primeng/keyfilter';
-import { ButtonDirective, ButtonIcon } from 'primeng/button';
+import { ButtonDirective } from 'primeng/button';
 import { Ripple } from 'primeng/ripple';
 import { PrimeTemplate } from 'primeng/api';
 import { AuthService } from '../../services/auth.service';
@@ -64,7 +63,6 @@ export class TwofaPageComponent {
     this.inputFields.toArray().forEach(input => input.nativeElement.value = '');
   }
 
-  // Function to get the code from the 6 inputs
   getCodeFromInputs(): string {
     const code = this.inputFields.toArray().map(input => input.nativeElement.value).join('');
     return code;

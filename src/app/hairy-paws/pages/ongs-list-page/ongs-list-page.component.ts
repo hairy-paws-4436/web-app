@@ -1,14 +1,14 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {MessageService} from 'primeng/api';
 import {Router} from '@angular/router';
-import {OngService} from '../../services/ong.service';
-import {OngInterface} from '../../interfaces/ong-interface';
+import {OngService} from '../../services/ong/ong.service';
+import {OngInterface} from '../../interfaces/ong/ong-interface';
 import {Toast} from 'primeng/toast';
 import {ButtonDirective} from 'primeng/button';
 import {Ripple} from 'primeng/ripple';
 import {ProgressSpinner} from 'primeng/progressspinner';
 import {NgForOf, NgIf} from '@angular/common';
-import {OngCardComponent} from '../../components/ong-card/ong-card.component';
+import {OngCardComponent} from '../../components/ong/ong-card/ong-card.component';
 import {InputText} from 'primeng/inputtext';
 
 @Component({
@@ -40,9 +40,6 @@ export class OngsListPageComponent implements OnInit {
     this.loadOngs();
   }
 
-  /**
-   * Load all ONGs
-   */
   loadOngs(): void {
     this.isLoading = true;
 
@@ -63,9 +60,6 @@ export class OngsListPageComponent implements OnInit {
     });
   }
 
-  /**
-   * Filter ONGs based on search term
-   */
   filterOngs(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.searchTerm = target.value.toLowerCase();
@@ -81,23 +75,14 @@ export class OngsListPageComponent implements OnInit {
     );
   }
 
-  /**
-   * Navigate to ONG registration page
-   */
   navigateToRegister(): void {
     this.router.navigate(['/hairy-paws/ong-register']);
   }
 
-  /**
-   * View ONG details
-   */
   viewOngDetails(ongId: string): void {
     this.router.navigate(['/hairy-paws/ong-details', ongId]);
   }
 
-  /**
-   * Make a donation to an ONG
-   */
   donate(ongId: string): void {
     this.router.navigate(['hairy-paws/donations-register'], { queryParams: { ongId } });
   }

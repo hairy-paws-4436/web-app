@@ -1,9 +1,9 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {OngService} from '../../services/ong.service';
+import {OngService} from '../../services/ong/ong.service';
 
 import {MessageService, PrimeTemplate} from 'primeng/api';
 import {Router} from '@angular/router';
-import {OngInterface} from '../../interfaces/ong-interface';
+import {OngInterface} from '../../interfaces/ong/ong-interface';
 import {Button} from 'primeng/button';
 import {InputText} from 'primeng/inputtext';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -39,7 +39,6 @@ import {AuthService} from '../../../auth/services/auth.service';
 })
 export class MeOngProfilePageComponent implements OnInit {
   private ongService = inject(OngService);
-  private authService = inject(AuthService);
   private messageService = inject(MessageService);
   private router = inject(Router);
 
@@ -48,7 +47,7 @@ export class MeOngProfilePageComponent implements OnInit {
   showLogoDialog = false;
   uploadedFile: File | null = null;
   logoPreview: string | null = null;
-  isOwner = true; // Changed to default true for the current user's ONG profile
+  isOwner = true;
 
   ngOnInit(): void {
     this.loadMyOng();
@@ -60,7 +59,6 @@ export class MeOngProfilePageComponent implements OnInit {
       next: (data) => {
         this.ong = data;
         this.isLoading = false;
-        // For the current user's ONG profile, they are always the owner
         this.isOwner = true;
       },
       error: (error) => {
@@ -124,7 +122,6 @@ export class MeOngProfilePageComponent implements OnInit {
   updateLogo(): void {
     if (!this.uploadedFile || !this.ong || !this.isOwner) return;
 
-    // Create FormData with only the logo
     const formData = this.ongService.createOngFormData({}, this.uploadedFile);
 
     this.ongService.updateOng(this.ong.id, formData).subscribe({
@@ -170,17 +167,11 @@ export class MeOngProfilePageComponent implements OnInit {
       return;
     }
 
-    // Navigate using 'me' as the ID instead of the actual ONG ID
-    // This way, the route will work with the ONG owner's token
     this.router.navigate(['/hairy-paws/ong-edit/me']);
   }
 
   navigateToPets(): void {
     this.router.navigate(['/hairy-paws/ong-pets']);
-  }
-
-  navigateToApplications(): void {
-    this.router.navigate(['/hairy-paws/ong-applications']);
   }
 
   formatDate(date: string): string {
@@ -189,18 +180,5 @@ export class MeOngProfilePageComponent implements OnInit {
       month: 'long',
       day: 'numeric'
     });
-  }
-
-  getStatusSeverity(status: string): 'success' | 'info' | 'warning' | 'danger' {
-    switch (status) {
-      case 'available':
-        return 'success';
-      case 'inactive':
-        return 'warning';
-      case 'suspended':
-        return 'danger';
-      default:
-        return 'info';
-    }
   }
 }

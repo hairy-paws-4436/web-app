@@ -1,0 +1,49 @@
+<div class="ong-card">
+  <div class="ong-card-content">
+    <div class="ong-header">
+      <h3 class="ong-name">{{ ong.name }}</h3>
+    </div>
+
+    <div class="ong-body">
+      <p class="ong-description">{{ truncateText(ong.description, 120) }}</p>
+
+      <div class="ong-contact-info">
+        <div class="info-item">
+          <i class="pi pi-map-marker"></i>
+          <span class="info-text">{{ truncateText(ong.address, 50) }}</span>
+        </div>
+
+        <div class="info-item">
+          <i class="pi pi-phone"></i>
+          <span class="info-text">{{ ong.phone }}</span>
+        </div>
+
+        <div class="info-item">
+          <i class="pi pi-envelope"></i>
+          <span class="info-text">{{ ong.email }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ong-footer">
+      <button
+        pButton
+        pRipple
+        type="button"
+        label="View Details"
+        class="p-button-text"
+        (click)="onViewDetails()">
+      </button>
+
+      <button
+        pButton
+        pRipple
+        type="button"
+        label="Donate"
+        icon="pi pi-heart"
+        class="p-button-raised p-button-success"
+        (click)="onDonate()">
+      </button>
+    </div>
+  </div>
+</div>

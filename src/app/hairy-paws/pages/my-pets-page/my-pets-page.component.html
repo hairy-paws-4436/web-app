@@ -1,11 +1,8 @@
-<!-- my-pets-page.component.html -->
 <div class="my-pets-container">
   <p-toast></p-toast>
   <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
-  <!-- Content -->
   <div class="container">
-    <!-- Empty state -->
     <div *ngIf="!isLoading && myPets.length === 0" class="empty-state">
       <div class="empty-state-content">
         <i class="pi pi-paw" style="font-size: 3rem; color: var(--p-primary-color);"></i>
@@ -15,7 +12,6 @@
       </div>
     </div>
 
-    <!-- Pet Cards Grid -->
     <div *ngIf="!isLoading && myPets.length > 0" class="my-pets-grid">
       <app-my-pet-card
         *ngFor="let pet of myPets"
@@ -26,11 +22,9 @@
       </app-my-pet-card>
     </div>
 
-    <!-- Loading Spinner -->
     <app-progreess-spinner [isLoading]="isLoading"></app-progreess-spinner>
   </div>
 
-  <!-- Edit Pet Dialog -->
   <app-edit-pet-dialog
     [(visible)]="displayEditDialog"
     [pet]="selectedPet"

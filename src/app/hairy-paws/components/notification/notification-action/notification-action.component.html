@@ -1,0 +1,119 @@
+<div class="notification-action-container">
+  <p-toast></p-toast>
+
+  <div class="action-buttons" *ngIf="requiresAction()">
+    <ng-container [ngSwitch]="notification.type">
+      <ng-container *ngSwitchCase="'adoption_request'">
+        <button
+          pButton
+          pRipple
+          label="Approve"
+          icon="pi pi-check"
+          class="p-button-success p-button-sm mr-2"
+          (click)="openApproveDialog()"
+          [disabled]="!canPerformAction">
+        </button>
+        <button
+          pButton
+          pRipple
+          label="Reject"
+          icon="pi pi-times"
+          class="p-button-danger p-button-sm"
+          (click)="openRejectDialog()"
+          [disabled]="!canPerformAction">
+        </button>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'visit_request'">
+        <button
+          pButton
+          pRipple
+          label="Approve"
+          icon="pi pi-check"
+          class="p-button-success p-button-sm mr-2"
+          (click)="openApproveDialog()"
+          [disabled]="!canPerformAction">
+        </button>
+        <button
+          pButton
+          pRipple
+          label="Reject"
+          icon="pi pi-times"
+          class="p-button-danger p-button-sm"
+          (click)="openRejectDialog()"
+          [disabled]="!canPerformAction">
+        </button>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'donation_received'">
+        <button
+          pButton
+          pRipple
+          label="Confirm"
+          icon="pi pi-check"
+          class="p-button-success p-button-sm mr-2"
+          (click)="openApproveDialog()"
+          [disabled]="!canPerformAction">
+        </button>
+        <button
+          pButton
+          pRipple
+          label="Cancel"
+          icon="pi pi-times"
+          class="p-button-danger p-button-sm"
+          (click)="openRejectDialog()"
+          [disabled]="!canPerformAction">
+        </button>
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <p-dialog
+    [(visible)]="showDialog"
+    [header]="dialogTitle"
+    [style]="{width: '450px'}"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false">
+
+    <div class="action-dialog-content">
+      <form [formGroup]="actionForm" (ngSubmit)="submitAction()">
+        <div class="field">
+          <label for="action-text" class="block font-medium mb-2">{{ getFieldLabel() }} *</label>
+          <textarea
+            id="action-text"
+            formControlName="text"
+            pTextarea
+            [rows]="4"
+            [autoResize]="true"
+            [placeholder]="getFieldPlaceholder()"
+            [ngClass]="{'ng-invalid ng-dirty': isInvalid('text')}"
+            class="w-full">
+          </textarea>
+          <small *ngIf="isInvalid('text')" class="p-error">{{ getErrorMessage('text') }}</small>
+        </div>
+      </form>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        pRipple
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="closeDialog()">
+      </button>
+      <button
+        pButton
+        pRipple
+        [label]="getButtonLabel()"
+        [icon]="actionType === 'approve' ? 'pi pi-check' : 'pi pi-times'"
+        [disabled]="actionForm.invalid || isSubmitting"
+        [loading]="isSubmitting"
+        (click)="submitAction()"
+        [ngClass]="{'p-button-success': actionType === 'approve', 'p-button-danger': actionType === 'reject'}">
+      </button>
+    </ng-template>
+  </p-dialog>
+</div>

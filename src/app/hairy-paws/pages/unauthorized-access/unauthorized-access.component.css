@@ -76,7 +76,6 @@
   color: #ccc;
 }
 
-/* Animations */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
@@ -95,12 +94,12 @@
   100% { transform: scale(1); }
 }
 
-/* Button overrides */
+
 ::ng-deep .p-button-raised {
   animation: pulse 2s infinite;
 }
 
-/* Responsive design */
+
 @media screen and (max-width: 768px) {
   .unauthorized-content {
     padding: 2rem;

@@ -1,8 +1,6 @@
-/* my-pets-page.component.css */
-
 .my-pets-container {
   min-height: 100vh;
-  background-color: var(--surface-ground, #ffffff);
+  background-color: var(#ffffff);
 }
 
 .container {
@@ -13,7 +11,7 @@
 }
 
 .page-header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-400) 100%);
+  background: linear-gradient(135deg, var(--p-primary-color) 0%, var(--p-primary-400) 100%);
   color: white;
   padding: 2rem 0;
   margin-bottom: 2rem;
@@ -40,7 +38,6 @@
   padding-bottom: 2rem;
 }
 
-/* Responsive grid adjustments */
 @media screen and (min-width: 576px) {
   .my-pets-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -59,7 +56,6 @@
   }
 }
 
-/* Empty state styling */
 .empty-state {
   display: flex;
   justify-content: center;
@@ -80,15 +76,14 @@
 .empty-state-content h2 {
   margin-top: 1rem;
   margin-bottom: 0.5rem;
-  color: var(--text-color);
+  color: var(--p-text-color);
 }
 
 .empty-state-content p {
   margin-bottom: 1.5rem;
-  color: var(--text-color-secondary);
+  color: var(--p-text-color);
 }
 
-/* Pet card item styling (for consistent height) */
 .pet-card-item {
   height: 100%;
   display: block;
