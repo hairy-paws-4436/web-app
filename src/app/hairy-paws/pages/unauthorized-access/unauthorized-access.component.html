@@ -1,0 +1,35 @@
+<div class="unauthorized-container">
+  <div class="unauthorized-content">
+    <div class="unauthorized-icon">
+      <i class="pi pi-ban"></i>
+    </div>
+
+    <h1 class="unauthorized-title">ACCESS DENIED</h1>
+
+    <p class="funny-message">{{ funnyMessage }}</p>
+
+    <div class="security-dog">
+      <img src="https://i.postimg.cc/QCXZS61P/unauthorized-access.gif" alt="Security Dog" class="dog-image">
+      <p class="dog-message">Our security dog says: "Woof! No entry allowed!"</p>
+    </div>
+
+    <div class="unauthorized-actions">
+      <p-button
+        label="Take me back to safety"
+        icon="pi pi-arrow-left"
+        (onClick)="goBack()"
+        styleClass="p-button-raised p-button-rounded">
+      </p-button>
+      <p-button
+        label="Go to homepage"
+        icon="pi pi-home"
+        (onClick)="goHome()"
+        styleClass="p-button-outlined p-button-rounded">
+      </p-button>
+    </div>
+
+    <div class="security-info">
+      <p>This incident has been <s>reported to the authorities</s> forgiven... this time! 😉</p>
+    </div>
+  </div>
+</div>

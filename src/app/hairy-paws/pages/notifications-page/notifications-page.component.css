@@ -13,7 +13,7 @@
 }
 
 .page-header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-400) 100%);
+  background: linear-gradient(135deg, var(--p-primary-color) 0%, var(--p-primary-400) 100%);
   color: white;
   padding: 1.5rem 0;
   margin-bottom: 2rem;
@@ -40,13 +40,13 @@
   padding: 0.75rem 1.25rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   font-size: 0.95rem;
-  color: var(--text-color-secondary);
+  color: var(--p-text-color);
   display: inline-flex;
   align-items: center;
 }
 
 .unread-badge {
-  background-color: var(--primary-color);
+  background-color: var(--p-primary-color);
   color: white;
   border-radius: 50%;
   width: 24px;
@@ -88,12 +88,12 @@
 .empty-state-content h2 {
   margin-top: 1rem;
   margin-bottom: 0.5rem;
-  color: var(--text-color);
+  color: var(--p-text-color);
 }
 
 .empty-state-content p {
   margin-bottom: 0;
-  color: var(--text-color-secondary);
+  color: var(--p-text-color);
 }
 
 /* Responsive adjustments */

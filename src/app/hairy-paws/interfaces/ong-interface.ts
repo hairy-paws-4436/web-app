@@ -1,5 +1,6 @@
 export interface OngInterface {
   id: string;
+  userId: string;
   name: string;
   ruc: string;
   description: string;

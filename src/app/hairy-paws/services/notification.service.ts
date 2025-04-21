@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
 import {returnHeaders} from '../../shared/models/headers';
-import {NotificationActionParams, NotificationInterface} from '../interfaces/notification-interface';
+import {NotificationInterface} from '../interfaces/notification-interface';
 
 
 @Injectable({

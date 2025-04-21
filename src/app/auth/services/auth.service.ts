@@ -11,6 +11,15 @@ import {RoleEnum} from '../enums/role-enum';
 import {LoginRequestInterface} from '../interfaces/request/login-request-interface';
 import {RegisterRequestInterface} from '../interfaces/request/register-request-interface';
 
+interface JwtPayload {
+  sub: string;
+  email: string;
+  role: RoleEnum;
+  ongId?: string;
+  userId: string;
+  exp: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,7 +30,9 @@ export class AuthService {
   public authStatus = computed(() => this._authStatus());
   private router = inject(Router);
   public sessionExpired = signal<boolean>(false);
-  private _userRole = signal<RoleEnum | null>(null);
+  public _userRole = signal<RoleEnum | null>(null);
+  private _userId = signal<string | null>(null);
+  private _ongId = signal<string | null>(null);
 
   constructor() {
     this.initializeAuthStatus();
@@ -32,20 +43,29 @@ export class AuthService {
     const access_token = localStorage.getItem('access_token');
     if (access_token) {
       this._authStatus.set(AuthStatusEnum.authenticated);
-      this.loadUserRole(access_token);
+      this.loadUserFromToken(access_token);
     } else {
       this._authStatus.set(AuthStatusEnum.notAuthenticated);
     }
   }
 
-  private loadUserRole(access_token: string): void {
+  private loadUserFromToken(access_token: string): void {
     try {
-      const decoded: any = jwtDecode(access_token);
+      const decoded = jwtDecode<JwtPayload>(access_token);
       if (decoded.role) {
-        this._userRole.set(decoded.role as RoleEnum);
+        this._userRole.set(decoded.role);
+      }
+      if (decoded.userId) {
+        this._userId.set(decoded.userId);
+      }
+      if (decoded.ongId) {
+        this._ongId.set(decoded.ongId);
       }
     } catch (error) {
+      console.error('Error decoding token:', error);
       this._userRole.set(null);
+      this._userId.set(null);
+      this._ongId.set(null);
     }
   }
 
@@ -53,11 +73,7 @@ export class AuthService {
     if (!access_token) return false;
     localStorage.setItem('access_token', access_token);
     this._authStatus.set(AuthStatusEnum.authenticated);
-
-    if (role) {
-      this._userRole.set(role as RoleEnum);
-    }
-
+    this.loadUserFromToken(access_token);
     return true;
   }
 
@@ -82,7 +98,6 @@ export class AuthService {
     );
   }
 
-
   verifyTwoFactorCode(userId: string, token: string): Observable<boolean> {
     const url = `${this.baseUrl}/auth/2fa/verify`;
 
@@ -99,7 +114,6 @@ export class AuthService {
       )
     );
   }
-
 
   register(registerRequest: RegisterRequestInterface): Observable<LoginResponseInterface> {
     const url = `${this.baseUrl}/auth/register`;
@@ -122,6 +136,8 @@ export class AuthService {
     this._authStatus.set(AuthStatusEnum.notAuthenticated);
     this.sessionExpired.set(false);
     this._userRole.set(null);
+    this._userId.set(null);
+    this._ongId.set(null);
     this.router.navigateByUrl('/auth/login').then();
   }
 
@@ -130,7 +146,7 @@ export class AuthService {
     if (!access_token) return null;
 
     try {
-      const decoded: any = jwtDecode(access_token);
+      const decoded = jwtDecode<JwtPayload>(access_token);
       return decoded.exp ? decoded.exp * 1000 : null;
     } catch (error) {
       return null;
@@ -168,4 +184,24 @@ export class AuthService {
     return this._userRole() === RoleEnum.ONG;
   }
 
+  getCurrentUserId(): string | null {
+    return this._userId();
+  }
+
+  getCurrentOngId(): string | null {
+    return this._ongId();
+  }
+
+  getUserRole(): RoleEnum | null {
+    return this._userRole();
+  }
+
+  hasRole(role: RoleEnum): boolean {
+    return this._userRole() === role;
+  }
+
+  hasAnyRole(roles: RoleEnum[]): boolean {
+    const currentRole = this._userRole();
+    return currentRole ? roles.includes(currentRole) : false;
+  }
 }

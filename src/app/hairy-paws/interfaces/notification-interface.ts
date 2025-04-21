@@ -1,15 +1,14 @@
-// notification.interface.ts
 export interface NotificationInterface {
   id: string;
+  userId: string;  // ID of the user who should receive this notification
+  type: NotificationType;
   title: string;
   message: string;
-  type: NotificationType;
   read: boolean;
-  referenceId: string;
   createdAt: string;
-  relatedEntityId?: string;
-  relatedEntityType?: string;
-  link: string;
+  link?: string;
+  referenceId: string;  // ID of the related resource (adoption/donation/visit)
+  referenceType: 'adoption' | 'donation' | 'visit';  // Type of related resource
 }
 
 export enum NotificationType {
@@ -27,12 +26,7 @@ export enum NotificationType {
   DONATION_RECEIVED = 'donation_received',
   DONATION_CONFIRMED = 'donation_confirmed',
   EVENT_REMINDER = 'event_reminder',
-  ACCOUNT_VERIFIED = 'account_verified',
   NEW_EVENT = 'new_event',
+  ACCOUNT_VERIFIED = 'account_verified'
 }
 
-export interface NotificationActionParams {
-  id: string; // ID of the related entity (adoption request, visit request, donation)
-  notes?: string; // Optional notes for approval/rejection
-  reason?: string; // Optional reason for rejection
-}

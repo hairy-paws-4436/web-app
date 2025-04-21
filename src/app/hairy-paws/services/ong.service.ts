@@ -27,6 +27,11 @@ export class OngService {
    * Get ONG by ID
    */
   getOngById(id: string): Observable<OngInterface> {
+    // Handle 'me' route for current user's ONG
+    if (id === 'me') {
+      return this.getMyOng();
+    }
+
     const url = `${this.baseUrl}/ongs/${id}`;
 
     return this.http.get<OngInterface>(url).pipe(
@@ -53,9 +58,12 @@ export class OngService {
 
     // For multipart/form-data, don't set Content-Type
     // The browser will set it automatically with the correct boundary
+    const headers = {
+      ...returnHeaders(),
+    };
+    delete headers['Content-Type'];
 
-
-    return this.http.post<OngInterface>(url, ongData, { headers:returnHeaders() }).pipe(
+    return this.http.post<OngInterface>(url, ongData, { headers }).pipe(
       catchError(this.handleError)
     );
   }
@@ -69,7 +77,9 @@ export class OngService {
     let headers = returnHeaders();
 
     // If it's FormData (including logo), remove Content-Type
-
+    if (ongData instanceof FormData) {
+      delete headers['Content-Type'];
+    }
 
     return this.http.put<OngInterface>(url, ongData, { headers }).pipe(
       catchError(this.handleError)

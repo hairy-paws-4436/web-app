@@ -2,16 +2,15 @@ import {Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/c
 import {NotificationService} from '../../services/notification.service';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MessageService, PrimeTemplate} from 'primeng/api';
-import {
-
-  NotificationInterface, NotificationType
-} from '../../interfaces/notification-interface';
+import {NotificationInterface, NotificationType} from '../../interfaces/notification-interface';
 import {NgClass, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 import {ButtonDirective} from 'primeng/button';
 import {Ripple} from 'primeng/ripple';
 import {Dialog} from 'primeng/dialog';
 import {Textarea} from 'primeng/textarea';
 import {Toast} from 'primeng/toast';
+import {AuthService} from '../../../auth/services/auth.service';
+
 
 @Component({
   selector: 'app-notification-action',
@@ -38,39 +37,77 @@ export class NotificationActionComponent implements OnInit {
   private fb = inject(FormBuilder);
   private notificationService = inject(NotificationService);
   private messageService = inject(MessageService);
+  private authService = inject(AuthService);
 
   actionForm!: FormGroup;
   showDialog: boolean = false;
   isSubmitting: boolean = false;
   dialogTitle: string = '';
   actionType: string = '';
+  canPerformAction: boolean = false;
 
   ngOnInit(): void {
     this.initForm();
+    this.checkPermissions();
   }
 
   private initForm(): void {
     this.actionForm = this.fb.group({
-      notes: ['', [Validators.required, Validators.minLength(5)]],
-      reason: ['', [Validators.required, Validators.minLength(5)]]
+      text: ['', [Validators.required, Validators.minLength(5)]]
     });
   }
 
+  private checkPermissions(): void {
+    // Check if user is the recipient of this notification and has the right role
+    const currentUserId = this.authService.getCurrentUserId();
+    this.canPerformAction = this.notification.userId === currentUserId;
+
+    // Additional role-based checks based on referenceType
+    if (this.notification.referenceType === 'adoption') {
+      // Only OWNERs can approve/reject adoption requests
+      this.canPerformAction = this.canPerformAction && this.authService.isOwner() || this.authService.isONG();
+    } else if (this.notification.referenceType === 'donation') {
+      // Only ONGs can confirm/cancel donations
+      this.canPerformAction = this.canPerformAction && this.authService.isONG();
+    } else if (this.notification.referenceType === 'visit') {
+      // Only OWNERs can approve/reject visit requests
+      this.canPerformAction = this.canPerformAction && this.authService.isOwner()|| this.authService.isONG();
+    }
+  }
+
   openApproveDialog(): void {
-    this.dialogTitle = 'Approve Request';
+    if (!this.canPerformAction) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Unauthorized',
+        detail: 'You do not have permission to perform this action'
+      });
+      return;
+    }
+
+    this.dialogTitle = this.getApproveDialogTitle();
     this.actionType = 'approve';
-    this.actionForm.get('reason')?.clearValidators();
-    this.actionForm.get('notes')?.setValidators([Validators.required, Validators.minLength(5)]);
-    this.actionForm.updateValueAndValidity();
+    this.actionForm.reset({ text: '' });
+    this.actionForm.get('text')?.setValidators([Validators.required, Validators.minLength(5)]);
+    this.actionForm.get('text')?.updateValueAndValidity();
     this.showDialog = true;
   }
 
   openRejectDialog(): void {
-    this.dialogTitle = 'Reject Request';
+    if (!this.canPerformAction) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Unauthorized',
+        detail: 'You do not have permission to perform this action'
+      });
+      return;
+    }
+
+    this.dialogTitle = this.getRejectDialogTitle();
     this.actionType = 'reject';
-    this.actionForm.get('notes')?.clearValidators();
-    this.actionForm.get('reason')?.setValidators([Validators.required, Validators.minLength(5)]);
-    this.actionForm.updateValueAndValidity();
+    this.actionForm.reset({ text: '' });
+    this.actionForm.get('text')?.setValidators([Validators.required, Validators.minLength(5)]);
+    this.actionForm.get('text')?.updateValueAndValidity();
     this.showDialog = true;
   }
 
@@ -80,18 +117,22 @@ export class NotificationActionComponent implements OnInit {
   }
 
   submitAction(): void {
-
     if (this.actionForm.invalid) {
       this.actionForm.markAllAsTouched();
       return;
     }
 
-    this.isSubmitting = true;
-
-    if (!this.notification.relatedEntityId) {
-      this.handleError('No related entity found for this notification');
+    if (!this.canPerformAction) {
+      this.handleError('You do not have permission to perform this action');
       return;
     }
+
+    if (!this.notification.referenceId) {
+      this.handleError('No reference ID found for this notification');
+      return;
+    }
+
+    this.isSubmitting = true;
 
     switch (this.actionType) {
       case 'approve':
@@ -106,40 +147,60 @@ export class NotificationActionComponent implements OnInit {
   }
 
   private approveRequest(): void {
-    const entityId = this.notification.relatedEntityId as string;
-    const notes = this.actionForm.get('notes')?.value;
+    const referenceId = this.notification.referenceId;
+    const text = this.actionForm.get('text')?.value;
 
-    if (this.notification.type === NotificationType.ADOPTION_REQUEST) {
-      this.notificationService.approveAdoption(entityId, {notes}).subscribe({
-        next: () => this.handleSuccess('Adoption request approved successfully'),
-        error: (error) => this.handleError(error.message || 'Failed to approve adoption request')
-      });
-    } else if (this.notification.type === NotificationType.DONATION_RECEIVED) {
-      this.notificationService.confirmDonation(entityId, {notes}).subscribe({
-        next: () => this.handleSuccess('Donation confirmed successfully'),
-        error: (error) => this.handleError(error.message || 'Failed to confirm donation')
-      });
-    } else {
-      this.handleError('Unsupported notification type for approval');
+    switch (this.notification.referenceType) {
+      case 'adoption':
+        this.notificationService.approveAdoption(referenceId, { notes: text }).subscribe({
+          next: () => this.handleSuccess('Adoption request approved successfully'),
+          error: (error) => this.handleError(error.message || 'Failed to approve adoption request')
+        });
+        break;
+
+      case 'donation':
+        this.notificationService.confirmDonation(referenceId, { notes: text }).subscribe({
+          next: () => this.handleSuccess('Donation confirmed successfully'),
+          error: (error) => this.handleError(error.message || 'Failed to confirm donation')
+        });
+        break;
+
+      case 'visit':
+        // Add visit approval method when available
+        this.handleError('Visit approval not implemented yet');
+        break;
+
+      default:
+        this.handleError('Unsupported reference type for approval');
     }
   }
 
   private rejectRequest(): void {
-    const entityId = this.notification.relatedEntityId as string;
-    const reason = this.actionForm.get('reason')?.value;
+    const referenceId = this.notification.referenceId;
+    const text = this.actionForm.get('text')?.value;
 
-    if (this.notification.type === NotificationType.ADOPTION_REQUEST) {
-      this.notificationService.rejectAdoption(entityId, {reason}).subscribe({
-        next: () => this.handleSuccess('Adoption request rejected'),
-        error: (error) => this.handleError(error.message || 'Failed to reject adoption request')
-      });
-    } else if (this.notification.type === NotificationType.DONATION_RECEIVED) {
-      this.notificationService.cancelDonation(entityId).subscribe({
-        next: () => this.handleSuccess('Donation cancelled'),
-        error: (error) => this.handleError(error.message || 'Failed to cancel donation')
-      });
-    } else {
-      this.handleError('Unsupported notification type for rejection');
+    switch (this.notification.referenceType) {
+      case 'adoption':
+        this.notificationService.rejectAdoption(referenceId, { reason: text }).subscribe({
+          next: () => this.handleSuccess('Adoption request rejected'),
+          error: (error) => this.handleError(error.message || 'Failed to reject adoption request')
+        });
+        break;
+
+      case 'donation':
+        this.notificationService.cancelDonation(referenceId).subscribe({
+          next: () => this.handleSuccess('Donation cancelled'),
+          error: (error) => this.handleError(error.message || 'Failed to cancel donation')
+        });
+        break;
+
+      case 'visit':
+        // Add visit rejection method when available
+        this.handleError('Visit rejection not implemented yet');
+        break;
+
+      default:
+        this.handleError('Unsupported reference type for rejection');
     }
   }
 
@@ -191,51 +252,115 @@ export class NotificationActionComponent implements OnInit {
   }
 
   requiresAction(): boolean {
-    return this.notification.type === NotificationType.ADOPTION_REQUEST ||
-      this.notification.type === NotificationType.DONATION_RECEIVED;
+    // Check if notification type requires action and user has permission
+    return this.canPerformAction && (
+      this.notification.type === NotificationType.ADOPTION_REQUEST ||
+      this.notification.type === NotificationType.DONATION_RECEIVED ||
+      this.notification.type === NotificationType.VISIT_REQUEST
+    );
   }
 
-  getFieldName(): string {
-    return this.actionType === 'approve' ? 'notes' : 'reason';
+  getApproveDialogTitle(): string {
+    switch (this.notification.referenceType) {
+      case 'adoption':
+        return 'Approve Adoption Request';
+      case 'donation':
+        return 'Confirm Donation';
+      case 'visit':
+        return 'Approve Visit Request';
+      default:
+        return 'Approve Request';
+    }
+  }
+
+  getRejectDialogTitle(): string {
+    switch (this.notification.referenceType) {
+      case 'adoption':
+        return 'Reject Adoption Request';
+      case 'donation':
+        return 'Cancel Donation';
+      case 'visit':
+        return 'Reject Visit Request';
+      default:
+        return 'Reject Request';
+    }
   }
 
   getFieldLabel(): string {
     if (this.actionType === 'approve') {
-      if (this.notification.type === NotificationType.ADOPTION_REQUEST) {
-        return 'Approval Notes';
-      } else {
-        return 'Confirmation Notes';
+      switch (this.notification.referenceType) {
+        case 'adoption':
+          return 'Approval Notes';
+        case 'donation':
+          return 'Confirmation Notes';
+        case 'visit':
+          return 'Approval Notes';
+        default:
+          return 'Notes';
       }
     } else {
-      if (this.notification.type === NotificationType.ADOPTION_REQUEST) {
-        return 'Rejection Reason';
-      } else {
-        return 'Cancellation Reason';
+      switch (this.notification.referenceType) {
+        case 'adoption':
+          return 'Rejection Reason';
+        case 'donation':
+          return 'Cancellation Reason';
+        case 'visit':
+          return 'Rejection Reason';
+        default:
+          return 'Reason';
       }
     }
   }
 
   getFieldPlaceholder(): string {
     if (this.actionType === 'approve') {
-      if (this.notification.type === NotificationType.ADOPTION_REQUEST) {
-        return 'Enter notes for the adopter (e.g., pickup details, next steps)';
-      } else {
-        return 'Enter confirmation notes (e.g., items received, condition)';
+      switch (this.notification.referenceType) {
+        case 'adoption':
+          return 'Enter notes for the adopter (e.g., pickup details, next steps)';
+        case 'donation':
+          return 'Enter confirmation notes (e.g., items received, condition)';
+        case 'visit':
+          return 'Enter notes for the visitor (e.g., visit details, timing)';
+        default:
+          return 'Enter notes';
       }
     } else {
-      if (this.notification.type === NotificationType.ADOPTION_REQUEST) {
-        return 'Enter reason for rejecting the adoption request';
-      } else {
-        return 'Enter reason for cancelling the donation';
+      switch (this.notification.referenceType) {
+        case 'adoption':
+          return 'Enter reason for rejecting the adoption request';
+        case 'donation':
+          return 'Enter reason for cancelling the donation';
+        case 'visit':
+          return 'Enter reason for rejecting the visit request';
+        default:
+          return 'Enter reason';
       }
     }
   }
 
   getButtonLabel(): string {
     if (this.actionType === 'approve') {
-      return this.notification.type === NotificationType.ADOPTION_REQUEST ? 'Approve Adoption' : 'Confirm Donation';
+      switch (this.notification.referenceType) {
+        case 'adoption':
+          return 'Approve Adoption';
+        case 'donation':
+          return 'Confirm Donation';
+        case 'visit':
+          return 'Approve Visit';
+        default:
+          return 'Approve';
+      }
     } else {
-      return this.notification.type === NotificationType.ADOPTION_REQUEST ? 'Reject Adoption' : 'Cancel Donation';
+      switch (this.notification.referenceType) {
+        case 'adoption':
+          return 'Reject Adoption';
+        case 'donation':
+          return 'Cancel Donation';
+        case 'visit':
+          return 'Reject Visit';
+        default:
+          return 'Reject';
+      }
     }
   }
 }

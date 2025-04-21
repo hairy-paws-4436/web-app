@@ -64,4 +64,12 @@ export class PetService {
     return Promise.reject(error.message || error);
   }
 
+  getPetById(id: string): Observable<PetInterface> {
+    const url = `${this.baseUrl}/animals/${id}`;
+    return this.http.get<PetInterface>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+
 }

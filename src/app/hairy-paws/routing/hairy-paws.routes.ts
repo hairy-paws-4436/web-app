@@ -18,6 +18,11 @@ import {EventDetailsComponent} from '../components/event-details/event-details.c
 import {EventEditComponent} from '../components/event-edit/event-edit.component';
 import {MeOngProfilePageComponent} from '../pages/me-ong-profile-page/me-ong-profile-page.component';
 import {EditOngComponent} from '../components/ong-edit/ong-edit.component';
+import {RoleEnum} from '../../auth/enums/role-enum';
+import {RoleGuard} from '../../guard/hairy-paws-guards/role-guard';
+import {EventOwnerGuard} from '../../guard/hairy-paws-guards/event-owner-guard';
+import {OngOwnerGuard} from '../../guard/hairy-paws-guards/ong-owner-guard';
+import {UnauthorizedAccessComponent} from '../pages/unauthorized-access/unauthorized-access.component';
 
 
 const routes: Routes = [
@@ -25,28 +30,81 @@ const routes: Routes = [
     path: '',
     component: HairyPawsPageComponent,
     children: [
+      // Public routes (available to all authenticated users)
+      {path: '', redirectTo: 'pets', pathMatch: 'full'},
       {path: 'pets', component: PetsPageComponent},
-      {path: 'my-pets', component: MyPetsPageComponent},
       {path: 'filter-pets', component: PetsFilterTableComponent},
-      {path: 'pet-register', component: RegisterPetComponent},
-
       {path: 'notifications', component: NotificationsPageComponent},
-
-      {path: 'ong-register', component: OngRegistrationPageComponent},
       {path: 'ongs', component: OngsListPageComponent},
-      {path: 'my-ong', component: MeOngProfilePageComponent},
-      {path: 'ong-details/:id', component: OngDetailsComponent},
-      {path: 'ong-edit/:id', component: EditOngComponent},
-
       {path: 'events', component: EventsListPagesComponent},
-      {path: 'event-register', component: EventFormComponent},
-      {path: 'event-details/:id', component: EventDetailsComponent},
-      {path: 'event-edit/:id', component: EventEditComponent},
-
-      {path: 'donations-register', component: DonationFormComponent},
-
       {path: 'profile', component: ProfilePageComponent},
+      {path: 'unauthorized', component: UnauthorizedAccessComponent},
 
+      // Pet routes (available to specific roles)
+      {
+        path: 'my-pets',
+        component: MyPetsPageComponent,
+        canActivate: [RoleGuard],
+        data: { roles: [RoleEnum.ONG, RoleEnum.OWNER] }
+      },
+      {
+        path: 'pet-register',
+        component: RegisterPetComponent,
+        canActivate: [RoleGuard],
+        data: { roles: [RoleEnum.OWNER, RoleEnum.ONG] }
+      },
+
+      // ONG routes (ONG role required)
+      {
+        path: 'my-ong',
+        component: MeOngProfilePageComponent,
+        canActivate: [RoleGuard],
+        data: { roles: [RoleEnum.ONG] }
+      },
+      {
+        path: 'ong-register',
+        component: OngRegistrationPageComponent,
+        canActivate: [RoleGuard],
+        data: { roles: [RoleEnum.ONG] }
+      },
+      {
+        path: 'ong-edit/:id',
+        component: EditOngComponent,
+        canActivate: [RoleGuard],
+        data: { roles: [RoleEnum.ONG] }
+      },
+      {
+        path: 'ong-details/:id',
+        component: OngDetailsComponent
+        // Public, no guard needed
+      },
+
+      // Event routes (ONG role required + ownership verification)
+      {
+        path: 'event-register',
+        component: EventFormComponent,
+        canActivate: [RoleGuard, EventOwnerGuard],
+        data: { roles: [RoleEnum.ONG] }
+      },
+      {
+        path: 'event-edit/:id',
+        component: EventEditComponent,
+        canActivate: [RoleGuard, EventOwnerGuard],
+        data: { roles: [RoleEnum.ONG] }
+      },
+      {
+        path: 'event-details/:id',
+        component: EventDetailsComponent
+        // Public, no guard needed
+      },
+
+      // Donation routes
+      {
+        path: 'donations-register',
+        component: DonationFormComponent,
+        canActivate: [RoleGuard],
+          data: { roles: [RoleEnum.ADOPTER, RoleEnum.OWNER, RoleEnum.ONG] }
+      },
     ]
   }
 ];

@@ -34,7 +34,7 @@
 
           <h1 class="event-title">{{ event.title }}</h1>
 
-          <div class="event-actions" *ngIf="isAdmin">
+          <div class="event-actions" *ngIf="isOwner">
             <button
               pButton
               pRipple
@@ -42,16 +42,15 @@
               label="Edit Event"
               icon="pi pi-pencil"
               severity="success"
-              class=" mr-2"
+              class="mr-2"
               (click)="editEvent()">
             </button>
 
-            <!-- Usar el componente de eliminación -->
             <app-event-delete
               [eventId]="event.id!"
               buttonLabel="Delete Event"
               buttonIcon="pi pi-trash"
-              buttonClass=" p-button-danger"
+              buttonClass="p-button-danger"
               (deleted)="onEventDeleted()"
               (error)="onDeleteError($event)">
             </app-event-delete>

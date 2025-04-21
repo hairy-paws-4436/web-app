@@ -11,10 +11,13 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { RippleModule } from 'primeng/ripple';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-
+import { switchMap, map, catchError, of } from 'rxjs';
 import { EventService } from '../../services/event.service';
+
+import { OngService } from '../../services/ong.service';
 import { EventInterface } from '../../interfaces/event-interface';
-import {EventDeleteComponent} from '../event-delete/event-delete.component';
+import { EventDeleteComponent } from '../event-delete/event-delete.component';
+import {AuthService} from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-event-details',
@@ -38,40 +41,52 @@ import {EventDeleteComponent} from '../event-delete/event-delete.component';
 })
 export class EventDetailsComponent implements OnInit {
   private eventService = inject(EventService);
+  private authService = inject(AuthService);
+  private ongService = inject(OngService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private messageService = inject(MessageService);
-  private confirmationService = inject(ConfirmationService);
 
   event: EventInterface | null = null;
   isLoading: boolean = true;
-  isAdmin: boolean = false; // Could be dynamically determined based on user role
+  isOwner: boolean = false;
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
 
       if (id) {
-        this.loadEventDetails(id);
+        this.loadEventDetailsWithOwnershipCheck(id);
       } else {
         this.router.navigate(['/hairy-paws/events']);
       }
     });
-
-    // Check if user is admin (this would be based on your auth service)
-    // For demo purposes, we'll set it to true
-    this.isAdmin = true;
   }
 
   /**
-   * Load event details
+   * Load event details and check if the user is the owner
    */
-  private loadEventDetails(id: string): void {
+  private loadEventDetailsWithOwnershipCheck(id: string): void {
     this.isLoading = true;
 
-    this.eventService.getEventById(id).subscribe({
-      next: (event) => {
+    this.eventService.getEventById(id).pipe(
+      switchMap(event => {
         this.event = event;
+
+        // If user is not ONG, they can't be owner
+        if (!this.authService.isONG()) {
+          return of(false);
+        }
+
+        // Check if the event belongs to the user's ONG
+        return this.ongService.getMyOng().pipe(
+          map(myOng => event.ongId === myOng.id),
+          catchError(() => of(false))
+        );
+      })
+    ).subscribe({
+      next: (isOwner) => {
+        this.isOwner = isOwner;
         this.isLoading = false;
       },
       error: (error) => {
@@ -90,8 +105,14 @@ export class EventDetailsComponent implements OnInit {
    * Navigate to edit event page
    */
   editEvent(): void {
-    if (this.event && this.event.id) {
+    if (this.event && this.event.id && this.isOwner) {
       this.router.navigate(['/hairy-paws/event-edit', this.event.id]);
+    } else if (!this.isOwner) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Unauthorized',
+        detail: 'You are not authorized to edit this event'
+      });
     }
   }
 
@@ -99,6 +120,12 @@ export class EventDetailsComponent implements OnInit {
    * Handle successful event deletion
    */
   onEventDeleted(): void {
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Event deleted successfully'
+    });
+
     // Navigate back to events list after deletion
     setTimeout(() => {
       this.router.navigate(['/hairy-paws/events']);
