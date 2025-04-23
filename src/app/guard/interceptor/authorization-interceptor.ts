@@ -33,8 +33,10 @@ export class AuthorizationInterceptor implements HttpInterceptor {
 
           if (this.authService.isONG()) {
             this.router.navigate(['/hairy-paws/my-ong']);
+
           } else if (this.authService.isOwner() || this.authService.isAdopter()) {
             this.router.navigate(['/hairy-paws/pets']);
+
           } else {
             this.router.navigate(['/']);
           }

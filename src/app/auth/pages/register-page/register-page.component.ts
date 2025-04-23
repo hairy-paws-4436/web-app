@@ -10,9 +10,7 @@ import {Router, RouterLink} from '@angular/router';
 import {RoleEnum} from '../../enums/role-enum';
 import {DropdownModule} from 'primeng/dropdown';
 import {FormsModule} from '@angular/forms';
-import Swal from 'sweetalert2';
 import {RegisterRequestInterface} from '../../interfaces/request/register-request-interface';
-import {Carousel} from 'primeng/carousel';
 import {CarouselRegisterComponent} from '../../components/carousel-register/carousel-register.component';
 import {AutoComplete} from 'primeng/autocomplete';
 import {MessageService} from 'primeng/api';
@@ -76,7 +74,11 @@ export class RegisterPageComponent implements OnInit {
     if (!this.registerRequest.email || !this.registerRequest.password ||
       !this.registerRequest.firstName || !this.registerRequest.lastName ||
       !this.registerRequest.phoneNumber || !this.selectedRole) {
-      this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Please complete all fields' });
+      this.messageService.add({
+          severity: 'warn',
+          summary: 'Error',
+          detail: 'Please complete all fields'
+        });
       return;
     }
 
@@ -94,7 +96,6 @@ export class RegisterPageComponent implements OnInit {
         }, 1500);
       },
       error: (error) => {
-        console.log('Error in register:', error);
         const errorMessage = typeof error === 'string' ? error : 'An unexpected error occurred. Please try again.';
         this.messageService.add({ severity: 'error', summary: 'Registration Error', detail: errorMessage });
       }

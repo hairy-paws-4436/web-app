@@ -42,8 +42,13 @@ export class PetService {
   registerPet(petData: FormData): Observable<PetInterface> {
     const url = `${this.baseUrl}/animals`;
 
+    const headers = {
+      ...returnHeaders()
+    };
 
-    return this.http.post<PetInterface>(url, petData, { headers: returnHeaders() }).pipe(
+    delete headers['Content-Type'];
+
+    return this.http.post<PetInterface>(url, petData, { headers }).pipe(
       catchError(this.handleError)
     );
   }

@@ -81,7 +81,7 @@ export class ProfilePageComponent implements OnInit {
       detail: 'Your account has been deactivated. You will be logged out soon.'
     });
     setTimeout(() => {
-      window.location.href = '/auth/logout';
+      window.location.href = '/auth/login';
     }, 3000);
   }
 }
