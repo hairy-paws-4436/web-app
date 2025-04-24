@@ -1,10 +1,10 @@
-import { Component, inject } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
-import { Router, RouterLink } from '@angular/router';
+import {Component, inject} from '@angular/core';
+import {AuthService} from '../../services/auth.service';
+import {Router, RouterLink} from '@angular/router';
 import Swal from 'sweetalert2';
 
-import { LoginRequestInterface } from '../../interfaces/request/login-request-interface';
-import { TwofaPageComponent } from '../twofa-page/twofa-page.component';
+import {LoginRequestInterface} from '../../interfaces/request/login-request-interface';
+import {TwofaPageComponent} from '../twofa-page/twofa-page.component';
 import {LoginResponseInterface} from '../../interfaces/response/login-response-interface';
 import {FormsModule} from '@angular/forms';
 import {Checkbox} from 'primeng/checkbox';
@@ -13,6 +13,7 @@ import {ButtonDirective} from 'primeng/button';
 import {Ripple} from 'primeng/ripple';
 import {InputText} from 'primeng/inputtext';
 import {MessageService} from 'primeng/api';
+import {Toast} from 'primeng/toast';
 
 @Component({
   selector: 'app-login-page',
@@ -26,6 +27,7 @@ import {MessageService} from 'primeng/api';
     Ripple,
     InputText,
     RouterLink,
+    Toast,
     /* tus imports */],
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.css']
@@ -45,7 +47,7 @@ export class LoginPageComponent {
 
   login() {
     if (!this.loginRequest?.email || !this.loginRequest?.password) {
-      this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Please complete all fields' });
+      this.messageService.add({severity: 'warn', summary: 'Error', detail: 'Please complete all fields'});
       return;
     }
 
@@ -57,11 +59,11 @@ export class LoginPageComponent {
         } else if (response.access_token && response.user) {
           this.authService.setAuthentication(response.access_token, response.user.role);
           this.router.navigateByUrl('/hairy-paws');
-          this.messageService.add({ severity: 'success', summary: 'Login Successful', detail: 'Welcome to Hairy Paws!' });
+          this.messageService.add({severity: 'success', summary: 'Login Successful', detail: 'Welcome to Hairy Paws!'});
         }
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Login Error', detail: error.message });
+        this.messageService.add({severity: 'error', summary: 'Login Error', detail: error.message});
       }
     });
   }

@@ -14,6 +14,7 @@ import {RegisterRequestInterface} from '../../interfaces/request/register-reques
 import {CarouselRegisterComponent} from '../../components/carousel-register/carousel-register.component';
 import {AutoComplete} from 'primeng/autocomplete';
 import {MessageService} from 'primeng/api';
+import {Toast} from 'primeng/toast';
 
 @Component({
   selector: 'app-register-page',
@@ -30,6 +31,7 @@ import {MessageService} from 'primeng/api';
     FormsModule,
     CarouselRegisterComponent,
     AutoComplete,
+    Toast,
   ],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.css'

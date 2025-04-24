@@ -13,10 +13,10 @@ import { InputText } from 'primeng/inputtext';
 import { KeyFilter } from 'primeng/keyfilter';
 import { ButtonDirective } from 'primeng/button';
 import { Ripple } from 'primeng/ripple';
-import { PrimeTemplate } from 'primeng/api';
+import { PrimeTemplate, MessageService } from 'primeng/api';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import Swal from 'sweetalert2';
+import { Toast } from 'primeng/toast';
 
 @Component({
   selector: 'app-twofa-page',
@@ -28,20 +28,24 @@ import Swal from 'sweetalert2';
     ButtonDirective,
     Ripple,
     PrimeTemplate,
+    Toast,
   ],
   templateUrl: './twofa-page.component.html',
-  styleUrl: './twofa-page.component.css'
+  styleUrl: './twofa-page.component.css',
+  providers: [MessageService] // Añadimos MessageService como proveedor
 })
 export class TwofaPageComponent {
   @Input() visible: boolean = false;
   @Input() userId: string = '';
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() verificationComplete = new EventEmitter<void>();
+  @Output() onShow = new EventEmitter<void>();
 
   @ViewChildren('input1, input2, input3, input4, input5, input6') inputFields!: QueryList<ElementRef<HTMLInputElement>>;
 
   private authService = inject(AuthService);
   private router = inject(Router);
+  private messageService = inject(MessageService);
 
   regexNum: RegExp = /^\d+$/;
 
@@ -51,7 +55,6 @@ export class TwofaPageComponent {
       input.focus();
     }
   }
-
 
   closeDialog() {
     this.visible = false;
@@ -70,14 +73,22 @@ export class TwofaPageComponent {
 
   submitCode() {
     if (!this.userId) {
-      Swal.fire('Error', 'No user ID found for verification', 'error').then();
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No user ID found for verification'
+      });
       return;
     }
 
     const code = this.getCodeFromInputs();
 
     if (code.length !== 6) {
-      Swal.fire('Error', 'Please enter a 6-digit code', 'error');
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Please enter a 6-digit code'
+      });
       return;
     }
 
@@ -86,16 +97,26 @@ export class TwofaPageComponent {
         this.closeDialog();
         this.verificationComplete.emit();
         this.router.navigateByUrl('/hairy-paws');
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Verification completed successfully'
+        });
       },
       error: (err) => {
-        Swal.fire('Error', err, 'error');
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Verification Error',
+          detail: err.message || 'Failed to verify code'
+        });
       }
     });
   }
+
   onDialogShow() {
     setTimeout(() => {
       this.inputFields.first?.nativeElement.focus();
+      this.onShow.emit();
     }, 50);
   }
-
 }
