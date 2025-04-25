@@ -1,0 +1,232 @@
+.twofa-setup-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Card Header */
+.card-header {
+  text-align: center;
+  padding: 1rem 0;
+  background-color: #f8f9fa;
+  border-radius: 6px 6px 0 0;
+}
+
+.card-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.75rem;
+}
+
+.card-content {
+  padding: 1.5rem 0.5rem;
+}
+
+/* Steps */
+::ng-deep .p-steps {
+  margin-bottom: 2rem;
+}
+
+::ng-deep .p-steps .p-steps-item .p-menuitem-link {
+  background: transparent;
+}
+
+::ng-deep .p-steps .p-steps-item.p-highlight .p-steps-number {
+  background: var(--p-primary-color);
+}
+
+/* Step Content */
+.step-content {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Status */
+.twofa-status {
+  margin-bottom: 2rem;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  gap: 0.5rem;
+}
+
+.status-badge.enabled {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-badge.disabled {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Description */
+.twofa-description {
+  margin-bottom: 2rem;
+}
+
+.twofa-description h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+.twofa-description p,
+.twofa-description li {
+  line-height: 1.6;
+  color: #555;
+}
+
+.twofa-description ol {
+  padding-left: 1.5rem;
+}
+
+/* QR Code */
+.qr-code-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.qr-image {
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.qr-image img {
+  width: 200px;
+  height: auto;
+}
+
+.qr-instructions {
+  max-width: 500px;
+  text-align: center;
+}
+
+/* Verification Inputs */
+.verify-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.verification-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 2rem 0;
+}
+
+.code-input {
+  width: 4rem;
+  height: 4rem;
+  font-size: 1.5rem;
+  text-align: center;
+  border: 2px solid #ced4da;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.code-input:focus {
+  border-color: var(--p-primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(var(--p-primary-color), 0.25);
+}
+
+.timer-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+/* Completion */
+.completion-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.completion-icon {
+  font-size: 4rem;
+  color: #28a745;
+  margin-bottom: 1.5rem;
+}
+
+.important-note {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+  border-radius: 4px;
+  text-align: left;
+  max-width: 500px;
+}
+
+.important-note h4 {
+  color: #856404;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.important-note p {
+  color: #856404;
+  margin: 0;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: auto;
+  padding-top: 1.5rem;
+}
+
+/* Loading Indicator */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .verification-inputs {
+    gap: 0.25rem;
+  }
+
+  .code-input {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.25rem;
+  }
+
+  ::ng-deep .p-steps .p-steps-item .p-menuitem-link .p-steps-title {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .code-input {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+  }
+}

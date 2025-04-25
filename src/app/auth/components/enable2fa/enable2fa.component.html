@@ -1,0 +1,136 @@
+<div class="twofa-setup-container">
+  <p-toast></p-toast>
+
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="card-header">
+        <h2>Two-Factor Authentication</h2>
+      </div>
+    </ng-template>
+
+    <div class="card-content">
+      <p-steps [model]="steps" [activeIndex]="currentStep" [readonly]="true"></p-steps>
+
+      <div class="step-content" [ngSwitch]="currentStep">
+        <!-- Step 0: Introduction -->
+        <div *ngSwitchCase="0" class="intro-step">
+          <div class="twofa-status">
+            <h3>Current Status</h3>
+            <div *ngIf="isLoading" class="loading-indicator">
+              <i class="pi pi-spin pi-spinner"></i> Checking status...
+            </div>
+            <div *ngIf="!isLoading" class="status-display">
+              <span class="status-badge" [ngClass]="{'enabled': is2FAEnabled, 'disabled': !is2FAEnabled}">
+                <i class="pi" [ngClass]="{'pi-check-circle': is2FAEnabled, 'pi-times-circle': !is2FAEnabled}"></i>
+                <span>{{ is2FAEnabled ? 'Enabled' : 'Disabled' }}</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="twofa-description">
+            <h3>What is Two-Factor Authentication?</h3>
+            <p>Two-Factor Authentication (2FA) adds an extra layer of security to your account. In addition to your password, you'll need to enter a verification code from an authenticator app on your phone when logging in.</p>
+
+            <h3>How it works:</h3>
+            <ol>
+              <li>You'll set up an authenticator app on your phone (like Google Authenticator, Authy, or Microsoft Authenticator)</li>
+              <li>Scan the QR code we provide with the app</li>
+              <li>The app will generate a 6-digit code that changes every 30 seconds</li>
+              <li>When logging in, you'll need to enter this code after your password</li>
+            </ol>
+          </div>
+
+          <div class="action-buttons">
+            <button
+              *ngIf="!is2FAEnabled"
+              pButton
+              pRipple
+              label="Enable 2FA"
+              icon="pi pi-lock"
+              (click)="enable2FA()"
+              [disabled]="isLoading"
+              class="p-button-success">
+            </button>
+
+            <button
+              *ngIf="is2FAEnabled"
+              pButton
+              pRipple
+              label="Disable 2FA"
+              icon="pi pi-unlock"
+              (click)="disable2FA()"
+              [disabled]="isLoading"
+              class="p-button-danger">
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 1: Scan QR Code -->
+        <div *ngSwitchCase="1" class="qr-step">
+          <div class="qr-code-container">
+            <h3>Scan this QR Code</h3>
+            <p>Use an authenticator app like Google Authenticator, Authy, or Microsoft Authenticator to scan this QR code.</p>
+
+            <div class="qr-image">
+              <img *ngIf="qrCodeDataUrl" [src]="qrCodeDataUrl" alt="QR Code for 2FA">
+              <div *ngIf="!qrCodeDataUrl" class="loading-indicator">
+                <i class="pi pi-spin pi-spinner"></i> Loading QR code...
+              </div>
+            </div>
+
+            <div class="qr-instructions">
+              <h4>After scanning:</h4>
+              <p>Your authenticator app will show a 6-digit code that changes every 30 seconds. You'll need to enter this code in the next step.</p>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button pButton pRipple label="Back" icon="pi pi-arrow-left" (click)="prevStep()" class="p-button-text"></button>
+            <button pButton pRipple label="Next" icon="pi pi-arrow-right" (click)="nextStep()" [disabled]="!qrCodeDataUrl"></button>
+          </div>
+        </div>
+
+        <!-- Step 2: Verify Code -->
+        <div *ngSwitchCase="2" class="verify-step">
+          <div class="verify-container">
+            <h3>Enter the 6-digit verification code</h3>
+            <p>Enter the code shown in your authenticator app</p>
+
+            <div class="verification-inputs">
+              <input #input1 pInputText pKeyFilter="num" maxlength="1" (keyup)="focus($event, input2)" class="code-input" autocomplete="off">
+              <input #input2 pInputText pKeyFilter="num" maxlength="1" (keyup)="focus($event, input3)" class="code-input" autocomplete="off">
+              <input #input3 pInputText pKeyFilter="num" maxlength="1" (keyup)="focus($event, input4)" class="code-input" autocomplete="off">
+              <input #input4 pInputText pKeyFilter="num" maxlength="1" (keyup)="focus($event, input5)" class="code-input" autocomplete="off">
+              <input #input5 pInputText pKeyFilter="num" maxlength="1" (keyup)="focus($event, input6)" class="code-input" autocomplete="off">
+              <input #input6 pInputText pKeyFilter="num" maxlength="1" class="code-input" autocomplete="off">
+            </div>
+
+            <div class="timer-hint">
+              <i class="pi pi-clock"></i>
+              <span>The code changes every 30 seconds. If it expires, just enter the new code.</span>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button pButton pRipple label="Back" icon="pi pi-arrow-left" (click)="prevStep()" class="p-button-text"></button>
+            <button pButton pRipple label="Verify" icon="pi pi-check" (click)="verifyCode()" [disabled]="isLoading" class="p-button-success"></button>
+          </div>
+        </div>
+
+        <!-- Step 3: Complete -->
+        <div *ngSwitchCase="3" class="complete-step">
+          <div class="completion-message">
+            <i class="pi pi-check-circle completion-icon"></i>
+            <h3>Two-Factor Authentication is now enabled!</h3>
+            <p>You will be logged out in a few seconds. The next time you log in, you'll need to provide your password and a verification code from your authenticator app.</p>
+
+            <div class="important-note">
+              <h4>IMPORTANT:</h4>
+              <p>Make sure you have access to your authenticator app. If you lose access to your authenticator app, you may not be able to log in to your account. Consider saving the recovery codes provided (if available).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </p-card>
+</div>
