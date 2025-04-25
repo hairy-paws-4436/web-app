@@ -32,7 +32,7 @@ import { Toast } from 'primeng/toast';
   ],
   templateUrl: './twofa-page.component.html',
   styleUrl: './twofa-page.component.css',
-  providers: [MessageService] // Añadimos MessageService como proveedor
+  providers: [MessageService]
 })
 export class TwofaPageComponent {
   @Input() visible: boolean = false;

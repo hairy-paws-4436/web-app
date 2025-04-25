@@ -47,6 +47,7 @@ export class RegisterPageComponent implements OnInit {
     firstName: '',
     lastName: '',
     phoneNumber: '',
+    identityDocument: '',
     role: '',
     address: ''
   };

@@ -4,6 +4,7 @@ export interface RegisterRequestInterface{
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  identityDocument: string;
   role: string;
   address: string;
 }

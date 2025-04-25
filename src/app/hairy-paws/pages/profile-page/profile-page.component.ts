@@ -9,6 +9,8 @@ import {ButtonDirective} from 'primeng/button';
 import {ChangePasswordComponent} from '../../components/profile/change-password/change-password.component';
 import {AccountSettingsComponent} from '../../components/profile/account-settings/account-settings.component';
 import {ProfileInfoComponent} from '../../components/profile/profile-info/profile-info.component';
+import {AuthService} from '../../../auth/services/auth.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-profile-page',
@@ -29,13 +31,18 @@ import {ProfileInfoComponent} from '../../components/profile/profile-info/profil
 export class ProfilePageComponent implements OnInit {
   private userService = inject(UserProfileService);
   private messageService = inject(MessageService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   userProfile: UserInterface | null = null;
   isLoading: boolean = true;
   activeTabIndex: number = 0;
+  is2FAEnabled = false;
+  isChecking2FA = false;
 
   ngOnInit(): void {
     this.loadUserProfile();
+    this.check2FAStatus();
   }
 
   loadUserProfile(): void {
@@ -72,6 +79,24 @@ export class ProfilePageComponent implements OnInit {
       summary: 'Success',
       detail: 'Password changed successfully'
     });
+  }
+
+  check2FAStatus() {
+    this.isChecking2FA = true;
+    this.authService.get2FAStatus().subscribe({
+      next: (enabled) => {
+        this.is2FAEnabled = enabled;
+        this.isChecking2FA = false;
+      },
+      error: (error) => {
+        console.error('Error checking 2FA status:', error);
+        this.isChecking2FA = false;
+      }
+    });
+  }
+
+  navigate2FASetup() {
+    this.router.navigate(['/hairy-paws/profile/2fa-setup']);
   }
 
   onAccountDeactivated(): void {

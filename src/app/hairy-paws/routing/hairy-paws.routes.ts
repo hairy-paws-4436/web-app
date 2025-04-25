@@ -23,6 +23,7 @@ import {RoleGuard} from '../../guard/hairy-paws-guards/role-guard';
 import {EventOwnerGuard} from '../../guard/hairy-paws-guards/event-owner-guard';
 import {OngOwnerGuard} from '../../guard/hairy-paws-guards/ong-owner-guard';
 import {UnauthorizedAccessComponent} from '../pages/unauthorized-access/unauthorized-access.component';
+import {TwofaSetupComponent} from '../../auth/components/enable2fa/enable2fa.component';
 
 
 const routes: Routes = [
@@ -38,6 +39,7 @@ const routes: Routes = [
       {path: 'ongs', component: OngsListPageComponent},
       {path: 'events', component: EventsListPagesComponent},
       {path: 'profile', component: ProfilePageComponent},
+      {path: 'profile/2fa-setup', component: TwofaSetupComponent},
       {path: 'unauthorized', component: UnauthorizedAccessComponent},
 
 

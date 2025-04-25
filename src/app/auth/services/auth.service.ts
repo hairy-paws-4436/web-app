@@ -1,6 +1,6 @@
 import {computed, inject, Injectable, signal} from '@angular/core';
 import {environment} from '../../../environments/environment';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {catchError, map, Observable, switchMap, throwError} from 'rxjs';
 import {AuthStatusEnum} from '../enums/status-enum';
 import {LoginResponseInterface} from '../interfaces/response/login-response-interface';
@@ -11,6 +11,7 @@ import {RoleEnum} from '../enums/role-enum';
 import {LoginRequestInterface} from '../interfaces/request/login-request-interface';
 import {RegisterRequestInterface} from '../interfaces/request/register-request-interface';
 import {JwtPayload} from '../interfaces/jwt-payload';
+import {getAuthHeaders} from '../../shared/models/headers';
 
 @Injectable({
   providedIn: 'root'
@@ -122,6 +123,87 @@ export class AuthService {
       })
     );
   }
+
+  // Añade estos métodos a tu AuthService actual
+
+  /**
+   * Enable 2FA for the authenticated user
+   * @returns Observable with QR code image data as base64 string
+   */
+  enable2FA(): Observable<string> {
+    const url = `${this.baseUrl}/auth/2fa/enable`;
+
+    return this.http.post<{ qrCodeDataUrl: string }>(url, {}, {
+      headers: getAuthHeaders()
+    }).pipe(
+      map(response => response.qrCodeDataUrl),
+      catchError(error => {
+        const errorMessage = error.error?.message || 'Failed to enable 2FA';
+        return throwError(() => errorMessage);
+      })
+    );
+  }
+
+  /**
+   * Verify the 2FA token during setup
+   * @param token The 6-digit token
+   * @returns Observable<boolean> indicating success or failure
+   */
+  verify2FASetup(token: string): Observable<boolean> {
+    const url = `${this.baseUrl}/auth/2fa/setup-verify`;
+
+    return this.http.post<{ success: boolean }>(url, { token }, {
+      headers: getAuthHeaders()
+    }).pipe(
+      map(response => response.success),
+      catchError(error => {
+        const errorMessage = error.error?.message || 'Failed to verify 2FA setup';
+        return throwError(() => errorMessage);
+      })
+    );
+  }
+
+  /**
+   * Disable 2FA for the authenticated user
+   * @returns Observable<boolean> indicating success or failure
+   */
+  disable2FA(): Observable<boolean> {
+    const url = `${this.baseUrl}/auth/2fa/disable`;
+
+    return this.http.post<{ success: boolean }>(url, {}, {
+      headers: getAuthHeaders()
+    }).pipe(
+      map(response => response.success),
+      catchError(error => {
+        const errorMessage = error.error?.message || 'Failed to disable 2FA';
+        return throwError(() => errorMessage);
+      })
+    );
+  }
+
+  /**
+   * Get user's 2FA status
+   * @returns Observable<boolean> indicating if 2FA is enabled
+   */
+  get2FAStatus(): Observable<boolean> {
+    const url = `${this.baseUrl}/auth/2fa/status`;
+
+    return this.http.get<{ enabled: boolean }>(url, {
+      headers: getAuthHeaders()
+    }).pipe(
+      map(response => response.enabled),
+      catchError(error => {
+        const errorMessage = error.error?.message || 'Failed to get 2FA status';
+        return throwError(() => errorMessage);
+      })
+    );
+  }
+
+  /**
+   * Helper method to get authorization headers
+   */
+
+
 
   logout() {
     localStorage.removeItem('access_token');
