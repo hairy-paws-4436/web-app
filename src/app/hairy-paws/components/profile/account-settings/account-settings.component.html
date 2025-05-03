@@ -36,27 +36,49 @@
 
   <p-divider></p-divider>
 
-  <div class="security-section">
-    <h4 class="subsection-title">Security Settings</h4>
+  <div class="profile-section security-section">
+    <h2 class="section-title">
+      Security Settings
+    </h2>
 
-    <div class="security-option">
-      <div class="option-info">
-        <h5 class="option-title">Two-Factor Authentication</h5>
-        <p class="option-description">Add an extra layer of security to your account</p>
-      </div>
-      <div class="option-status">
-        <span class="status-badge" [ngClass]="{'verified': userProfile.twoFactorEnabled, 'not-verified': !userProfile.twoFactorEnabled}">
-          {{ userProfile.twoFactorEnabled ? 'Enabled' : 'Disabled' }}
-        </span>
-      </div>
-    </div>
+    <p-card>
+      <div class="security-options">
 
-    <div class="security-note">
-      <i class="pi pi-info-circle"></i>
-      <span>
-        Two-factor authentication settings can be managed on the security page.
-      </span>
-    </div>
+        <div class="security-option">
+          <div class="option-details">
+            <div class="option-title">
+              <h3>Two-Factor Authentication</h3>
+              <div class="option-status" *ngIf="!isChecking2FA">
+                <p-tag
+                  [value]="is2FAEnabled ? 'Enabled' : 'Disabled'"
+                  [severity]="is2FAEnabled ? 'success' : 'danger'"
+                  [rounded]="true">
+                </p-tag>
+              </div>
+              <div class="option-status" *ngIf="isChecking2FA">
+                <i class="pi pi-spin pi-spinner"></i> Checking...
+              </div>
+            </div>
+
+            <div class="option-description">
+              <p>Two-Factor Authentication adds an extra layer of security to your account by requiring a verification code in addition to your password when you log in.</p>
+            </div>
+          </div>
+
+          <div class="option-actions">
+            <button
+              pButton
+              pRipple
+              [label]="is2FAEnabled ? 'Manage 2FA' : 'Enable 2FA'"
+              icon="pi pi-lock"
+              (click)="navigate2FASetup()"
+              [disabled]="isChecking2FA"
+              class="p-button-rounded">
+            </button>
+          </div>
+        </div>
+      </div>
+    </p-card>
   </div>
 
   <p-divider></p-divider>

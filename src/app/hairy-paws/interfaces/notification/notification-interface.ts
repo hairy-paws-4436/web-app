@@ -1,16 +1,3 @@
-export interface NotificationInterface {
-  id: string;
-  userId: string;
-  type: NotificationType;
-  title: string;
-  message: string;
-  read: boolean;
-  createdAt: string;
-  link?: string;
-  referenceId: string;
-  referenceType: 'adoption' | 'donation' | 'visit';
-}
-
 export enum NotificationType {
   INFO = 'info',
   SUCCESS = 'success',
@@ -30,3 +17,36 @@ export enum NotificationType {
   ACCOUNT_VERIFIED = 'account_verified'
 }
 
+export enum NotificationStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
+  CONFIRMED = 'confirmed',
+  CANCELLED = 'cancelled'
+}
+
+export interface NotificationUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber?: string;
+  verified?: boolean;
+  profileImageUrl?: string | null;
+}
+
+export interface NotificationInterface {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  read: boolean;
+  referenceId: string;
+  referenceType?: 'adoption' | 'donation' | 'visit' | 'event' | 'user' | 'pet';
+  link?: string;
+  createdAt: string;
+  updatedAt?: string;
+  userId?: string;
+  user: NotificationUser;
+  status?: NotificationStatus;
+}

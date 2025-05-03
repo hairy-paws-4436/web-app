@@ -58,7 +58,7 @@ export class DonationFormComponent implements OnInit {
   ongs: OngInterface[] = [];
   isLoading: boolean = false;
   isSubmitting: boolean = false;
-
+  selectedFile: File | null = null;
   donationItems: DonationItem[] = [];
 
   donationTypes = [
@@ -180,13 +180,26 @@ export class DonationFormComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    const donationData: DonationInterface = {
-      ...this.donationForm.value,
-      items: this.donationForm.value.type === DonationType.ITEMS ? this.donationItems : undefined
-    };
+    const formData = new FormData();
 
-    this.donationService.createDonation(donationData).subscribe({
-      next: (response) => {
+    Object.keys(this.donationForm.value).forEach(key => {
+      // Skip receipt field as we'll handle it separately
+      if (key !== 'receipt' && this.donationForm.value[key] !== null && this.donationForm.value[key] !== undefined) {
+        formData.append(key, this.donationForm.value[key]);
+      }
+    });
+
+    if (this.donationForm.value.type === DonationType.ITEMS && this.donationItems.length > 0) {
+      formData.append('items', JSON.stringify(this.donationItems));
+    }
+
+    // Add the file if one was selected
+    if (this.selectedFile) {
+      formData.append('receipt', this.selectedFile, this.selectedFile.name);
+    }
+
+    this.donationService.createDonation(formData).subscribe({
+      next: () => {
         this.isSubmitting = false;
         this.messageService.add({
           severity: 'success',
@@ -229,4 +242,11 @@ export class DonationFormComponent implements OnInit {
 
     return 'Invalid value';
   }
+
+  onFileSelect(event: any): void {
+    if (event.files && event.files.length > 0) {
+      this.selectedFile = event.files[0];
+    }
+  }
+
 }

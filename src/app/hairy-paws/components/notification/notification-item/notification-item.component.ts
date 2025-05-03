@@ -1,13 +1,15 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {NotificationInterface, NotificationType} from '../../../interfaces/notification/notification-interface';
-import {NgClass, NgIf} from '@angular/common';
+import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {NotificationInterface, NotificationStatus, NotificationType} from '../../../interfaces/notification/notification-interface';
+import {NgClass, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 import {ButtonDirective} from 'primeng/button';
 import {Ripple} from 'primeng/ripple';
 import {Tooltip} from 'primeng/tooltip';
 import {NotificationActionComponent} from '../notification-action/notification-action.component';
+import {NotificationDetailDialogComponent} from '../notification-detail-dialog/notification-detail-dialog.component';
 
 @Component({
   selector: 'app-notification-item',
+  standalone: true,
   imports: [
     NgClass,
     NgIf,
@@ -15,16 +17,22 @@ import {NotificationActionComponent} from '../notification-action/notification-a
     Ripple,
     Tooltip,
     NotificationActionComponent,
+    NotificationDetailDialogComponent,
+    NgSwitch,
+    NgSwitchCase,
   ],
   templateUrl: './notification-item.component.html',
   styleUrl: './notification-item.component.css'
 })
 export class NotificationItemComponent {
   @Input() notification!: NotificationInterface;
-
   @Output() onClick = new EventEmitter<NotificationInterface>();
   @Output() onDelete = new EventEmitter<NotificationInterface>();
   @Output() onActionCompleted = new EventEmitter<{notification: NotificationInterface, success: boolean, message: string}>();
+
+  @ViewChild(NotificationActionComponent) actionComponent!: NotificationActionComponent;
+
+  showDetailDialog: boolean = false;
 
   getIconClass(): string {
     switch (this.notification.type) {
@@ -124,8 +132,29 @@ export class NotificationItemComponent {
     return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
   }
 
-  handleClick(): void {
+  handleClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (this.isPartOfActionComponent(target)) {
+      event.stopPropagation();
+      return;
+    }
+
     this.onClick.emit(this.notification);
+  }
+
+  private isPartOfActionComponent(element: HTMLElement): boolean {
+    let current = element;
+    while (current && current.tagName !== 'APP-NOTIFICATION-ITEM') {
+      if (current.tagName === 'APP-NOTIFICATION-ACTION' ||
+        current.tagName === 'BUTTON' ||
+        current.classList.contains('action-buttons') ||
+        current.classList.contains('p-button')) {
+        return true;
+      }
+      if (!current.parentElement) break;
+      current = current.parentElement;
+    }
+    return false;
   }
 
   handleDelete(event: Event): void {
@@ -134,6 +163,35 @@ export class NotificationItemComponent {
   }
 
   handleActionCompleted(result: {success: boolean, message: string}): void {
+    if (result.success) {
+
+      if (this.notification.type === NotificationType.ADOPTION_REQUEST) {
+        if (result.message.includes('approved')) {
+          this.notification.status = NotificationStatus.APPROVED;
+          this.notification.type = NotificationType.ADOPTION_APPROVED;
+        } else if (result.message.includes('rejected')) {
+          this.notification.status = NotificationStatus.REJECTED;
+          this.notification.type = NotificationType.ADOPTION_REJECTED;
+        }
+      } else if (this.notification.type === NotificationType.VISIT_REQUEST) {
+        if (result.message.includes('approved')) {
+          this.notification.status = NotificationStatus.APPROVED;
+          this.notification.type = NotificationType.VISIT_APPROVED;
+        } else if (result.message.includes('rejected')) {
+          this.notification.status = NotificationStatus.REJECTED;
+          this.notification.type = NotificationType.VISIT_REJECTED;
+        }
+      } else if (this.notification.type === NotificationType.DONATION_RECEIVED) {
+        if (result.message.includes('confirmed')) {
+          this.notification.status = NotificationStatus.CONFIRMED;
+          this.notification.type = NotificationType.DONATION_CONFIRMED;
+        } else if (result.message.includes('cancelled')) {
+          this.notification.status = NotificationStatus.CANCELLED;
+
+        }
+      }
+    }
+
     this.onActionCompleted.emit({
       notification: this.notification,
       success: result.success,
@@ -142,8 +200,98 @@ export class NotificationItemComponent {
   }
 
   requiresAction(): boolean {
-    return this.notification.type === NotificationType.ADOPTION_REQUEST ||
+    return (
+      this.notification.type === NotificationType.ADOPTION_REQUEST ||
       this.notification.type === NotificationType.VISIT_REQUEST ||
-      this.notification.type === NotificationType.DONATION_RECEIVED;
+      this.notification.type === NotificationType.DONATION_RECEIVED
+    );
+  }
+
+  hasStatus(): boolean {
+    return !!this.notification.status ||
+      this.notification.type === NotificationType.ADOPTION_APPROVED ||
+      this.notification.type === NotificationType.ADOPTION_REJECTED ||
+      this.notification.type === NotificationType.VISIT_APPROVED ||
+      this.notification.type === NotificationType.VISIT_REJECTED ||
+      this.notification.type === NotificationType.DONATION_CONFIRMED;
+  }
+
+  isApproved(): boolean {
+    return this.notification.status === NotificationStatus.APPROVED ||
+      this.notification.status === NotificationStatus.CONFIRMED ||
+      this.notification.type === NotificationType.ADOPTION_APPROVED ||
+      this.notification.type === NotificationType.VISIT_APPROVED ||
+      this.notification.type === NotificationType.DONATION_CONFIRMED;
+  }
+
+  isRejected(): boolean {
+    return this.notification.status === NotificationStatus.REJECTED ||
+      this.notification.status === NotificationStatus.CANCELLED ||
+      this.notification.type === NotificationType.ADOPTION_REJECTED ||
+      this.notification.type === NotificationType.VISIT_REJECTED;
+  }
+
+  getStatusClass(): string {
+    if (this.isApproved()) {
+      return 'status-approved';
+    } else if (this.isRejected()) {
+      return 'status-rejected';
+    }
+    return '';
+  }
+
+  getStatusIconClass(): string {
+    if (this.isApproved()) {
+      return 'pi-check-circle';
+    } else if (this.isRejected()) {
+      return 'pi-times-circle';
+    }
+    return 'pi-info-circle';
+  }
+
+  getStatusMessage(): string {
+    if (this.notification.type === NotificationType.ADOPTION_APPROVED) {
+      return 'Adoption request has been approved';
+    } else if (this.notification.type === NotificationType.ADOPTION_REJECTED) {
+      return 'Adoption request has been rejected';
+    } else if (this.notification.type === NotificationType.VISIT_APPROVED) {
+      return 'Visit request has been approved';
+    } else if (this.notification.type === NotificationType.VISIT_REJECTED) {
+      return 'Visit request has been rejected';
+    } else if (this.notification.type === NotificationType.DONATION_CONFIRMED) {
+      return 'Donation has been confirmed';
+    } else if (this.notification.status === NotificationStatus.APPROVED) {
+      return 'Request has been approved';
+    } else if (this.notification.status === NotificationStatus.REJECTED) {
+      return 'Request has been rejected';
+    } else if (this.notification.status === NotificationStatus.CONFIRMED) {
+      return 'Donation has been confirmed';
+    } else if (this.notification.status === NotificationStatus.CANCELLED) {
+      return 'Donation has been cancelled';
+    }
+    return '';
+  }
+
+  openDetailDialog(event: Event): void {
+    event.stopPropagation();
+    this.showDetailDialog = true;
+  }
+
+  closeDetailDialog(): void {
+    this.showDetailDialog = false;
+  }
+
+  handleApproveClick(event: Event): void {
+    event.stopPropagation();
+    if (this.actionComponent) {
+      this.actionComponent.openApproveDialog();
+    }
+  }
+
+  handleRejectClick(event: Event): void {
+    event.stopPropagation();
+    if (this.actionComponent) {
+      this.actionComponent.openRejectDialog();
+    }
   }
 }

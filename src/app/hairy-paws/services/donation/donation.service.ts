@@ -28,13 +28,21 @@ export class DonationService {
     );
   }
 
-  createDonation(donationData: DonationInterface): Observable<DonationInterface> {
+
+
+  createDonation(formData: FormData): Observable<DonationInterface> {
     const url = `${this.baseUrl}/donations`;
 
-    return this.http.post<DonationInterface>(url, donationData, { headers: returnHeaders() }).pipe(
+    const headers = returnHeaders();
+    delete headers['Content-Type'];
+
+    return this.http.post<DonationInterface>(url, formData, {
+      headers: headers
+    }).pipe(
       catchError(this.handleError)
     );
   }
+
 
   confirmDonation(id: string): Observable<DonationInterface> {
     const url = `${this.baseUrl}/donations/${id}/confirm`;

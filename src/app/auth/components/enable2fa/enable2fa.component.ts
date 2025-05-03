@@ -9,7 +9,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { RippleModule } from 'primeng/ripple';
-import { Router } from '@angular/router';
 import { TabViewModule } from 'primeng/tabview';
 import { StepsModule } from 'primeng/steps';
 import { MenuItem } from 'primeng/api';
@@ -36,7 +35,6 @@ import { MenuItem } from 'primeng/api';
 export class TwofaSetupComponent implements OnInit {
   private authService = inject(AuthService);
   private messageService = inject(MessageService);
-  private router = inject(Router);
 
   @ViewChildren('input1, input2, input3, input4, input5, input6')
   inputFields!: QueryList<ElementRef<HTMLInputElement>>;
@@ -46,6 +44,7 @@ export class TwofaSetupComponent implements OnInit {
   is2FAEnabled = false;
   currentStep = 0;
   steps: MenuItem[] = [];
+  userId: string | null = null;
 
   regexNum: RegExp = /^\d+$/;
 
@@ -58,6 +57,22 @@ export class TwofaSetupComponent implements OnInit {
     ];
 
     this.check2FAStatus();
+    this.getUserId();
+  }
+
+  private getUserId(): void {
+    this.authService.getAuthenticatedUserId().subscribe({
+      next: (userId) => {
+        this.userId = userId;
+      },
+      error: (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to get user ID. 2FA verification might not work properly.'
+        });
+      }
+    });
   }
 
   private check2FAStatus(): void {
@@ -90,6 +105,10 @@ export class TwofaSetupComponent implements OnInit {
           summary: 'Action Required',
           detail: 'Scan the QR code with your authenticator app and enter the verification code'
         });
+
+        if (!this.userId) {
+          this.getUserId();
+        }
       },
       error: (error) => {
         this.messageService.add({
@@ -102,30 +121,7 @@ export class TwofaSetupComponent implements OnInit {
     });
   }
 
-  disable2FA(): void {
-    this.isLoading = true;
-    this.authService.disable2FA().subscribe({
-      next: (success) => {
-        this.isLoading = false;
-        if (success) {
-          this.is2FAEnabled = false;
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: '2FA has been disabled'
-          });
-        }
-      },
-      error: (error) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to disable 2FA: ' + error
-        });
-        this.isLoading = false;
-      }
-    });
-  }
+
 
   verifyCode(): void {
     const code = this.getCodeFromInputs();
@@ -139,8 +135,47 @@ export class TwofaSetupComponent implements OnInit {
       return;
     }
 
+    if (!this.userId) {
+      // If we still don't have the user ID, try to get it once more
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Retrieving User ID',
+        detail: 'Getting your user ID before verifying the code...'
+      });
+
+      this.authService.getAuthenticatedUserId().subscribe({
+        next: (userId) => {
+          this.userId = userId;
+          this.proceedWithVerification(code);
+        },
+        error: (error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to get user ID. Cannot verify 2FA code.'
+          });
+        }
+      });
+      return;
+    }
+
+    this.proceedWithVerification(code);
+  }
+
+  private proceedWithVerification(code: string): void {
+    if (!this.userId) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'User ID not available. Cannot verify 2FA code.'
+      });
+      return;
+    }
+
     this.isLoading = true;
-    this.authService.verify2FASetup(code).subscribe({
+
+
+    this.authService.verifyTwoFactorCode(this.userId, code).subscribe({
       next: (success) => {
         if (success) {
           this.currentStep = 3;
@@ -211,3 +246,4 @@ export class TwofaSetupComponent implements OnInit {
     this.restart();
   }
 }
+

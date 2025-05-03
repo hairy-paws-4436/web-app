@@ -12,7 +12,6 @@
       <p-steps [model]="steps" [activeIndex]="currentStep" [readonly]="true"></p-steps>
 
       <div class="step-content" [ngSwitch]="currentStep">
-        <!-- Step 0: Introduction -->
         <div *ngSwitchCase="0" class="intro-step">
           <div class="twofa-status">
             <h3>Current Status</h3>
@@ -58,14 +57,13 @@
               pRipple
               label="Disable 2FA"
               icon="pi pi-unlock"
-              (click)="disable2FA()"
+
               [disabled]="isLoading"
               class="p-button-danger">
             </button>
           </div>
         </div>
 
-        <!-- Step 1: Scan QR Code -->
         <div *ngSwitchCase="1" class="qr-step">
           <div class="qr-code-container">
             <h3>Scan this QR Code</h3>
@@ -90,7 +88,6 @@
           </div>
         </div>
 
-        <!-- Step 2: Verify Code -->
         <div *ngSwitchCase="2" class="verify-step">
           <div class="verify-container">
             <h3>Enter the 6-digit verification code</h3>
@@ -117,7 +114,6 @@
           </div>
         </div>
 
-        <!-- Step 3: Complete -->
         <div *ngSwitchCase="3" class="complete-step">
           <div class="completion-message">
             <i class="pi pi-check-circle completion-icon"></i>

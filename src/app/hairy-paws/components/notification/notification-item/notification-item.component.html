@@ -2,7 +2,9 @@
      [class.unread]="!notification.read"
      [class.has-link]="notification.link"
      [class.requires-action]="requiresAction()"
-     (click)="handleClick()">
+     [class.approved]="isApproved()"
+     [class.rejected]="isRejected()"
+     (click)="handleClick($event)">
 
   <div class="notification-icon">
     <span class="icon-wrapper" [ngClass]="getIconColorClass()">
@@ -26,14 +28,90 @@
       <i class="pi pi-arrow-right"></i>
     </div>
 
+    <div *ngIf="hasStatus()" class="notification-status" [ngClass]="getStatusClass()">
+      <i class="pi" [ngClass]="getStatusIconClass()"></i>
+      <span>{{ getStatusMessage() }}</span>
+    </div>
+
+    <div class="action-buttons" *ngIf="requiresAction() && !hasStatus()">
+      <ng-container [ngSwitch]="notification.type">
+        <ng-container *ngSwitchCase="'adoption_request'">
+          <button
+            pButton
+            pRipple
+            label="Approve"
+            icon="pi pi-check"
+            class="p-button-success p-button-sm mr-2"
+            (click)="handleApproveClick($event)">
+          </button>
+          <button
+            pButton
+            pRipple
+            label="Reject"
+            icon="pi pi-times"
+            class="p-button-danger p-button-sm"
+            (click)="handleRejectClick($event)">
+          </button>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'visit_request'">
+          <button
+            pButton
+            pRipple
+            label="Approve"
+            icon="pi pi-check"
+            class="p-button-success p-button-sm mr-2"
+            (click)="handleApproveClick($event)">
+          </button>
+          <button
+            pButton
+            pRipple
+            label="Reject"
+            icon="pi pi-times"
+            class="p-button-danger p-button-sm"
+            (click)="handleRejectClick($event)">
+          </button>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'donation_received'">
+          <button
+            pButton
+            pRipple
+            label="Confirm"
+            icon="pi pi-check"
+            class="p-button-success p-button-sm mr-2"
+            (click)="handleApproveClick($event)">
+          </button>
+          <button
+            pButton
+            pRipple
+            label="Cancel"
+            icon="pi pi-times"
+            class="p-button-danger p-button-sm"
+            (click)="handleRejectClick($event)">
+          </button>
+        </ng-container>
+      </ng-container>
+    </div>
+
+
     <app-notification-action
-      *ngIf="requiresAction()"
+      *ngIf="requiresAction() && !hasStatus()"
       [notification]="notification"
       (actionCompleted)="handleActionCompleted($event)">
     </app-notification-action>
   </div>
 
   <div class="notification-actions">
+    <button
+      pButton
+      pRipple
+      icon="pi pi-info-circle"
+      class="p-button-rounded p-button-text p-button-info"
+      (click)="openDetailDialog($event)"
+      pTooltip="View Details"
+      tooltipPosition="left">
+    </button>
     <button
       pButton
       pRipple
@@ -44,4 +122,11 @@
       tooltipPosition="left">
     </button>
   </div>
+
+  <app-notification-detail-dialog
+    *ngIf="notification && notification.id"
+    [notificationId]="notification.id"
+    [(visible)]="showDetailDialog"
+    (onClose)="closeDetailDialog()">
+  </app-notification-detail-dialog>
 </div>

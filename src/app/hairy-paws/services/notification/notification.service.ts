@@ -23,6 +23,13 @@ export class NotificationService {
     );
   }
 
+  getNotificationById(id: string): Observable<NotificationInterface> {
+    const url = `${this.baseUrl}/notifications/${id}`;
+    return this.http.get<NotificationInterface>(url, { headers: returnHeaders() }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   markAsRead(notificationId: string): Observable<any> {
     const url = `${this.baseUrl}/notifications/${notificationId}/read`;
 

@@ -12,7 +12,6 @@ const routes: Routes = [
       {path: 'login', component: LoginPageComponent},
       {path: 'register', component: RegisterPageComponent},
       {path: '2fa', component: TwofaPageComponent},
-      //{path: 'setup-2fa', component: Enable2faComponent},
       {path: '**', redirectTo: 'login'},
     ]
   }

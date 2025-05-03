@@ -1,0 +1,117 @@
+.notification-detail-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.notification-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 15px;
+}
+
+.icon-container {
+  margin-right: 5px;
+}
+
+.icon-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: white;
+}
+
+.header-text h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.icon-info {
+  background-color: #2196F3;
+}
+
+.icon-success {
+  background-color: #4CAF50;
+}
+
+.icon-warning {
+  background-color: #FF9800;
+}
+
+.icon-error {
+  background-color: #F44336;
+}
+
+.icon-adoption {
+  background-color: #E91E63;
+}
+
+.icon-visit {
+  background-color: #673AB7;
+}
+
+.icon-donation {
+  background-color: #00BCD4;
+}
+
+.icon-event {
+  background-color: #009688;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+}
+
+.detail-label {
+  min-width: 120px;
+  font-weight: 600;
+  color: #6c757d;
+}
+
+.detail-value {
+  flex: 1;
+  word-break: break-word;
+}
+
+.detail-id {
+  font-family: monospace;
+  background-color: #f8f9fa;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.status-unread {
+  font-weight: bold;
+  color: #E91E63;
+}
+
+.status-read {
+  color: #4CAF50;
+}

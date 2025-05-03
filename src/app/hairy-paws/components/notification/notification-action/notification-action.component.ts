@@ -2,7 +2,7 @@ import {Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/c
 import {NotificationService} from '../../../services/notification/notification.service';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MessageService, PrimeTemplate} from 'primeng/api';
-import {NotificationInterface, NotificationType} from '../../../interfaces/notification/notification-interface';
+import {NotificationInterface, NotificationStatus, NotificationType} from '../../../interfaces/notification/notification-interface';
 import {NgClass, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 import {ButtonDirective} from 'primeng/button';
 import {Ripple} from 'primeng/ripple';
@@ -14,9 +14,9 @@ import {AuthService} from '../../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-notification-action',
+  standalone: true,
   imports: [
-    NgSwitch,
-    NgSwitchCase,
+
     ButtonDirective,
     Ripple,
     Dialog,
@@ -44,11 +44,11 @@ export class NotificationActionComponent implements OnInit {
   isSubmitting: boolean = false;
   dialogTitle: string = '';
   actionType: string = '';
-  canPerformAction: boolean = false;
+  canPerformAction: boolean = true;
 
   ngOnInit(): void {
     this.initForm();
-    this.checkPermissions();
+    //this.checkPermissions();
   }
 
   private initForm(): void {
@@ -58,20 +58,15 @@ export class NotificationActionComponent implements OnInit {
   }
 
   private checkPermissions(): void {
-
     const currentUserId = this.authService.getCurrentUserId();
     this.canPerformAction = this.notification.userId === currentUserId;
 
-
     if (this.notification.referenceType === 'adoption') {
-
-      this.canPerformAction = this.canPerformAction && this.authService.isOwner() || this.authService.isONG();
+      this.canPerformAction = this.canPerformAction && (this.authService.isOwner() || this.authService.isONG());
     } else if (this.notification.referenceType === 'donation') {
-
       this.canPerformAction = this.canPerformAction && this.authService.isONG();
     } else if (this.notification.referenceType === 'visit') {
-
-      this.canPerformAction = this.canPerformAction && this.authService.isOwner()|| this.authService.isONG();
+      this.canPerformAction = this.canPerformAction && (this.authService.isOwner() || this.authService.isONG());
     }
   }
 
@@ -153,20 +148,35 @@ export class NotificationActionComponent implements OnInit {
     switch (this.notification.referenceType) {
       case 'adoption':
         this.notificationService.approveAdoption(referenceId, { notes: text }).subscribe({
-          next: () => this.handleSuccess('Adoption request approved successfully'),
+          next: () => {
+            this.notification.status = NotificationStatus.APPROVED;
+            this.notification.type = NotificationType.ADOPTION_APPROVED;
+            this.handleSuccess('Adoption request approved successfully');
+          },
           error: (error) => this.handleError(error.message || 'Failed to approve adoption request')
         });
         break;
 
       case 'donation':
         this.notificationService.confirmDonation(referenceId, { notes: text }).subscribe({
-          next: () => this.handleSuccess('Donation confirmed successfully'),
+          next: () => {
+            this.notification.status = NotificationStatus.CONFIRMED;
+            this.notification.type = NotificationType.DONATION_CONFIRMED;
+            this.handleSuccess('Donation confirmed successfully');
+          },
           error: (error) => this.handleError(error.message || 'Failed to confirm donation')
         });
         break;
 
       case 'visit':
-        this.handleError('Visit approval not implemented yet');
+        this.notificationService.approveAdoption(referenceId, { notes: text }).subscribe({
+          next: () => {
+            this.notification.status = NotificationStatus.APPROVED;
+            this.notification.type = NotificationType.VISIT_APPROVED;
+            this.handleSuccess('Visit request approved successfully');
+          },
+          error: (error) => this.handleError(error.message || 'Failed to approve visit request')
+        });
         break;
 
       default:
@@ -181,20 +191,34 @@ export class NotificationActionComponent implements OnInit {
     switch (this.notification.referenceType) {
       case 'adoption':
         this.notificationService.rejectAdoption(referenceId, { reason: text }).subscribe({
-          next: () => this.handleSuccess('Adoption request rejected'),
+          next: () => {
+            this.notification.status = NotificationStatus.REJECTED;
+            this.notification.type = NotificationType.ADOPTION_REJECTED;
+            this.handleSuccess('Adoption request rejected');
+          },
           error: (error) => this.handleError(error.message || 'Failed to reject adoption request')
         });
         break;
 
       case 'donation':
         this.notificationService.cancelDonation(referenceId).subscribe({
-          next: () => this.handleSuccess('Donation cancelled'),
+          next: () => {
+            this.notification.status = NotificationStatus.CANCELLED;
+            this.handleSuccess('Donation cancelled');
+          },
           error: (error) => this.handleError(error.message || 'Failed to cancel donation')
         });
         break;
 
       case 'visit':
-        this.handleError('Visit rejection not implemented yet');
+        this.notificationService.rejectAdoption(referenceId, { reason: text }).subscribe({
+          next: () => {
+            this.notification.status = NotificationStatus.REJECTED;
+            this.notification.type = NotificationType.VISIT_REJECTED;
+            this.handleSuccess('Visit request rejected');
+          },
+          error: (error) => this.handleError(error.message || 'Failed to reject visit request')
+        });
         break;
 
       default:
@@ -361,4 +385,3 @@ export class NotificationActionComponent implements OnInit {
     }
   }
 }
-

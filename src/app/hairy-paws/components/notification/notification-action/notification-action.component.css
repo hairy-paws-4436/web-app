@@ -6,6 +6,8 @@
   display: flex;
   width: 100%;
   align-items: center;
+  gap: 0.5rem;
+  margin-top: 10px;
 }
 
 .button-group {
@@ -31,6 +33,31 @@
   background-color: var(--p-red-600);
 }
 
+/* Textarea personalizado */
+.custom-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.custom-textarea:focus {
+  border-color: #2196F3;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+}
+
+.custom-textarea.ng-invalid.ng-dirty {
+  border-color: #f44336;
+}
+
 /* Dialog Styling */
 :host ::ng-deep .p-dialog .p-dialog-header {
   padding: 1.25rem 1.5rem;
@@ -40,10 +67,21 @@
 
 :host ::ng-deep .p-dialog .p-dialog-content {
   padding: 1.5rem;
+  overflow: visible !important;
+}
+
+:host ::ng-deep .action-dialog .p-dialog-content {
+  overflow: visible;
 }
 
 .field {
   margin-bottom: 1.5rem;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
 .confirm-message {
@@ -54,10 +92,6 @@
   color: var(--p-text-color);
   text-align: center;
   font-weight: 500;
-}
-
-.action-dialog-content {
-  padding: 1rem 0;
 }
 
 .dialog-footer {

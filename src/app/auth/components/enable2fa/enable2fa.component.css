@@ -4,7 +4,6 @@
   padding: 2rem 1rem;
 }
 
-/* Card Header */
 .card-header {
   text-align: center;
   padding: 1rem 0;
@@ -22,7 +21,6 @@
   padding: 1.5rem 0.5rem;
 }
 
-/* Steps */
 ::ng-deep .p-steps {
   margin-bottom: 2rem;
 }
@@ -35,14 +33,12 @@
   background: var(--p-primary-color);
 }
 
-/* Step Content */
 .step-content {
   min-height: 400px;
   display: flex;
   flex-direction: column;
 }
 
-/* Status */
 .twofa-status {
   margin-bottom: 2rem;
 }
@@ -66,7 +62,6 @@
   color: #721c24;
 }
 
-/* Description */
 .twofa-description {
   margin-bottom: 2rem;
 }
@@ -87,7 +82,6 @@
   padding-left: 1.5rem;
 }
 
-/* QR Code */
 .qr-code-container {
   display: flex;
   flex-direction: column;
@@ -113,7 +107,6 @@
   text-align: center;
 }
 
-/* Verification Inputs */
 .verify-container {
   display: flex;
   flex-direction: column;
@@ -153,7 +146,6 @@
   margin-top: 1rem;
 }
 
-/* Completion */
 .completion-message {
   display: flex;
   flex-direction: column;
@@ -189,7 +181,6 @@
   margin: 0;
 }
 
-/* Action Buttons */
 .action-buttons {
   display: flex;
   justify-content: center;
@@ -198,7 +189,6 @@
   padding-top: 1.5rem;
 }
 
-/* Loading Indicator */
 .loading-indicator {
   display: flex;
   align-items: center;
@@ -206,7 +196,6 @@
   color: #666;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .verification-inputs {
     gap: 0.25rem;

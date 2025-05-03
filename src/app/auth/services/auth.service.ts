@@ -11,7 +11,7 @@ import {RoleEnum} from '../enums/role-enum';
 import {LoginRequestInterface} from '../interfaces/request/login-request-interface';
 import {RegisterRequestInterface} from '../interfaces/request/register-request-interface';
 import {JwtPayload} from '../interfaces/jwt-payload';
-import {getAuthHeaders} from '../../shared/models/headers';
+import {getAuthHeaders, returnHeaders} from '../../shared/models/headers';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +24,7 @@ export class AuthService {
   private router = inject(Router);
   public sessionExpired = signal<boolean>(false);
   public _userRole = signal<RoleEnum | null>(null);
-  private _userId = signal<string | null>(null);
+  private _userId = signal<string>('');
   private _ongId = signal<string | null>(null);
 
   constructor() {
@@ -57,7 +57,7 @@ export class AuthService {
     } catch (error) {
       console.error('Error decoding token:', error);
       this._userRole.set(null);
-      this._userId.set(null);
+      this._userId.set('');
       this._ongId.set(null);
     }
   }
@@ -77,7 +77,6 @@ export class AuthService {
         if (!requiresTwoFactor && access_token && user) {
           this.setAuthentication(access_token, user.role);
         }
-
         return {access_token, user, requiresTwoFactor, userId};
       }),
       catchError((err) => {
@@ -108,6 +107,21 @@ export class AuthService {
     );
   }
 
+  getAuthenticatedUserId(): Observable<string> {
+    const url = `${this.baseUrl}/auth/me`;
+
+    return this.http.get<{ userId: string }>(url, {
+      headers: returnHeaders()
+    }).pipe(
+      map(response => response.userId),
+      catchError(error => {
+        const errorMessage = error.error?.message || 'Failed to get user ID';
+        return throwError(() => errorMessage);
+      })
+    );
+  }
+
+
   register(registerRequest: RegisterRequestInterface): Observable<LoginResponseInterface> {
     const url = `${this.baseUrl}/auth/register`;
     const loginRequest: LoginRequestInterface = {
@@ -124,12 +138,6 @@ export class AuthService {
     );
   }
 
-  // Añade estos métodos a tu AuthService actual
-
-  /**
-   * Enable 2FA for the authenticated user
-   * @returns Observable with QR code image data as base64 string
-   */
   enable2FA(): Observable<string> {
     const url = `${this.baseUrl}/auth/2fa/enable`;
 
@@ -144,47 +152,6 @@ export class AuthService {
     );
   }
 
-  /**
-   * Verify the 2FA token during setup
-   * @param token The 6-digit token
-   * @returns Observable<boolean> indicating success or failure
-   */
-  verify2FASetup(token: string): Observable<boolean> {
-    const url = `${this.baseUrl}/auth/2fa/setup-verify`;
-
-    return this.http.post<{ success: boolean }>(url, { token }, {
-      headers: getAuthHeaders()
-    }).pipe(
-      map(response => response.success),
-      catchError(error => {
-        const errorMessage = error.error?.message || 'Failed to verify 2FA setup';
-        return throwError(() => errorMessage);
-      })
-    );
-  }
-
-  /**
-   * Disable 2FA for the authenticated user
-   * @returns Observable<boolean> indicating success or failure
-   */
-  disable2FA(): Observable<boolean> {
-    const url = `${this.baseUrl}/auth/2fa/disable`;
-
-    return this.http.post<{ success: boolean }>(url, {}, {
-      headers: getAuthHeaders()
-    }).pipe(
-      map(response => response.success),
-      catchError(error => {
-        const errorMessage = error.error?.message || 'Failed to disable 2FA';
-        return throwError(() => errorMessage);
-      })
-    );
-  }
-
-  /**
-   * Get user's 2FA status
-   * @returns Observable<boolean> indicating if 2FA is enabled
-   */
   get2FAStatus(): Observable<boolean> {
     const url = `${this.baseUrl}/auth/2fa/status`;
 
@@ -199,18 +166,12 @@ export class AuthService {
     );
   }
 
-  /**
-   * Helper method to get authorization headers
-   */
-
-
-
   logout() {
     localStorage.removeItem('access_token');
     this._authStatus.set(AuthStatusEnum.notAuthenticated);
     this.sessionExpired.set(false);
     this._userRole.set(null);
-    this._userId.set(null);
+    this._userId.set('');
     this._ongId.set(null);
     this.router.navigateByUrl('/auth/login').then();
   }
@@ -258,7 +219,7 @@ export class AuthService {
     return this._userRole() === RoleEnum.ONG;
   }
 
-  getCurrentUserId(): string | null {
+  getCurrentUserId(): string {
     return this._userId();
   }
 
