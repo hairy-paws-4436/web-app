@@ -111,21 +111,6 @@
                   class="w-full">
                 </textarea>
               </div>
-
-              <div class="field col-12">
-                <label for="receipt" class="block font-medium mb-2">Receipt (Optional)</label>
-                <p-fileUpload
-                  id="receipt"
-                  mode="basic"
-                  chooseLabel="Upload Receipt"
-                  [auto]="false"
-                  accept="image/*,application/pdf"
-                  [maxFileSize]="5000000"
-                  (onSelect)="onFileSelect($event)"
-                  class="w-full">
-                </p-fileUpload>
-                <small class="form-helper-text">Upload a receipt or proof of payment (Max 5MB)</small>
-              </div>
             </div>
           </div>
 

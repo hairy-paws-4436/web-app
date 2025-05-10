@@ -69,6 +69,7 @@ export class RegisterPageComponent implements OnInit {
     this.roles = [
       {label: 'Adopter', value: RoleEnum.ADOPTER},
       {label: 'Owner', value: RoleEnum.OWNER},
+      {label: 'ONG', value: RoleEnum.ONG},
     ];
 
   }

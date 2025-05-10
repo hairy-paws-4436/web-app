@@ -7,7 +7,6 @@ export interface DonationInterface {
   transactionId?: string;
   notes?: string;
   items?: DonationItem[];
-  receipt?: any;
   status?: DonationStatus;
   createdAt?: string;
   updatedAt?: string;

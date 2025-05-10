@@ -37,7 +37,6 @@ import {Textarea} from 'primeng/textarea';
     NgIf,
     InputNumber,
     InputText,
-    FileUpload,
     DonationItemsComponent,
     NgForOf,
     Textarea
@@ -183,7 +182,6 @@ export class DonationFormComponent implements OnInit {
     const formData = new FormData();
 
     Object.keys(this.donationForm.value).forEach(key => {
-      // Skip receipt field as we'll handle it separately
       if (key !== 'receipt' && this.donationForm.value[key] !== null && this.donationForm.value[key] !== undefined) {
         formData.append(key, this.donationForm.value[key]);
       }
