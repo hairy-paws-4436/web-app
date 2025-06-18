@@ -1,3 +1,3 @@
 export const environment = {
-  baseUrl: process.env['BASE_URL'],
+  baseUrl: 'https://hairy-paws.canadacentral.cloudapp.azure.com/api',
 }
