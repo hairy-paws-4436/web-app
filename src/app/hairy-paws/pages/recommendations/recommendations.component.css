@@ -1,0 +1,249 @@
+.recommendations-container {
+  min-height: 100vh;
+}
+
+.recommendation-card {
+  height: 100%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.recommendation-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-card.high-match {
+  border: 2px solid var(--p-primary-color);
+  box-shadow: 0 4px 15px rgba(var(--p-primary-color), 0.2);
+}
+
+.card-image-container {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+}
+
+.pet-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.match-score-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 0.5rem;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.match-score-badge.high-score {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.match-score-badge.medium-score {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.match-score-badge.low-score {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.recommendation-level-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 0.3rem 0.6rem;
+  border-radius: 15px;
+  font-weight: bold;
+  font-size: 0.7rem;
+  color: white;
+}
+
+.recommendation-level-badge.high {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.recommendation-level-badge.medium {
+  background: linear-gradient(135deg, #06b6d4, #0891b2);
+}
+
+.recommendation-level-badge.low {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
+.pet-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 0 0.25rem 0;
+  color: var(--p-text-color);
+}
+
+.pet-details {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.pet-description {
+  line-height: 1.4;
+  color: var(--p-text-color);
+}
+
+.compatibility-section, .challenges-section {
+  border-left: 3px solid var(--p-primary-color);
+  padding-left: 0.75rem;
+}
+
+.challenges-section {
+  border-left-color: #f59e0b;
+}
+
+.compatibility-title, .challenges-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+}
+
+.compatibility-tags, .challenge-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+:host ::ng-deep .p-tag {
+  font-size: 0.75rem;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rating-small :host ::ng-deep .p-rating .p-rating-icon {
+  font-size: 0.8rem;
+}
+
+/* Compatibility Dialog Styles */
+.overall-score-section {
+  margin-bottom: 2rem;
+}
+
+.score-circle {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--p-primary-color), var(--p-primary-400));
+  color: white;
+  margin: 0 auto;
+}
+
+.score-number {
+  font-size: 2rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.score-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.detailed-scores {
+  margin-bottom: 1.5rem;
+}
+
+.score-item {
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, var(--p-primary-color), var(--p-primary-400));
+  transition: width 0.3s ease;
+}
+
+.analysis-section {
+  margin-bottom: 1.5rem;
+}
+
+.analysis-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.analysis-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.analysis-list li:before {
+  content: "•";
+  color: var(--p-primary-color);
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+.analysis-list li:last-child {
+  border-bottom: none;
+}
+
+.prediction-content {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .recommendations-grid .grid > div {
+    margin-bottom: 1rem;
+  }
+
+  .card-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .card-actions button {
+    width: 100%;
+  }
+
+  .page-header .flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .compatibility-dialog-content .score-circle {
+    width: 100px;
+    height: 100px;
+  }
+
+  .compatibility-dialog-content .score-number {
+    font-size: 1.5rem;
+  }
+}

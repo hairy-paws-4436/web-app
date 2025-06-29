@@ -1,0 +1,370 @@
+<div class="matching-preferences-container">
+  <p-toast></p-toast>
+
+  <div class="container mx-auto px-6">
+    <div class="page-header mb-6">
+      <h1 class="text-4xl font-bold text-primary mb-2">
+        <i class="pi pi-heart mr-3"></i>
+        Find Your Perfect Match
+      </h1>
+      <p class="text-lg text-600">Tell us about your lifestyle and preferences to find the perfect pet companion</p>
+    </div>
+
+    <p-card styleClass="shadow-3">
+      <ng-template pTemplate="header">
+        <div class="card-header p-4">
+          <p-steps [model]="steps" [activeIndex]="activeIndex" [readonly]="true"></p-steps>
+        </div>
+      </ng-template>
+
+      <div class="step-content min-h-30rem">
+        <!-- Step 1: Basic Preferences -->
+        <div *ngIf="activeIndex === 0" class="step-container">
+          <h3 class="text-2xl font-semibold mb-4 text-primary">What type of pet are you looking for?</h3>
+
+          <div class="grid">
+            <div class="col-12 md:col-6">
+              <label class="block font-medium mb-2">Preferred Animal Types *</label>
+              <p-multiSelect
+                [options]="animalTypeOptions"
+                [(ngModel)]="preferences.preferredAnimalTypes"
+                placeholder="Select animal types"
+                styleClass="w-full">
+              </p-multiSelect>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <label class="block font-medium mb-2">Preferred Genders</label>
+              <p-multiSelect
+                [options]="genderOptions"
+                [(ngModel)]="preferences.preferredGenders"
+                placeholder="Select preferred genders"
+                styleClass="w-full">
+              </p-multiSelect>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <label class="block font-medium mb-2">Age Range</label>
+              <div class="flex align-items-center gap-3">
+                <p-inputNumber
+                  [(ngModel)]="preferences.minAge"
+                  [min]="0"
+                  [max]="20"
+                  suffix=" years"
+                  placeholder="Min age">
+                </p-inputNumber>
+                <span>to</span>
+                <p-inputNumber
+                  [(ngModel)]="preferences.maxAge"
+                  [min]="0"
+                  [max]="20"
+                  suffix=" years"
+                  placeholder="Max age">
+                </p-inputNumber>
+              </div>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <label class="block font-medium mb-2">Size Range (kg)</label>
+              <div class="flex align-items-center gap-3">
+                <p-inputNumber
+                  [(ngModel)]="preferences.minSize"
+                  [min]="0"
+                  [max]="100"
+                  suffix=" kg"
+                  placeholder="Min weight">
+                </p-inputNumber>
+                <span>to</span>
+                <p-inputNumber
+                  [(ngModel)]="preferences.maxSize"
+                  [min]="0"
+                  [max]="100"
+                  suffix=" kg"
+                  placeholder="Max weight">
+                </p-inputNumber>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Experience & Living Situation -->
+        <div *ngIf="activeIndex === 1" class="step-container">
+          <h3 class="text-2xl font-semibold mb-4 text-primary">Tell us about your experience and living situation</h3>
+
+          <div class="grid">
+            <div class="col-12 md:col-6">
+              <label class="block font-medium mb-2">Experience Level *</label>
+              <p-dropdown
+                [options]="experienceLevelOptions"
+                [(ngModel)]="preferences.experienceLevel"
+                placeholder="Select your experience level"
+                styleClass="w-full">
+              </p-dropdown>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <label class="block font-medium mb-2">Previous Pet Types</label>
+              <p-multiSelect
+                [options]="animalTypeOptions"
+                [(ngModel)]="preferences.previousPetTypes"
+                placeholder="What pets have you had before?"
+                styleClass="w-full">
+              </p-multiSelect>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <label class="block font-medium mb-2">Housing Type *</label>
+              <p-dropdown
+                [options]="housingTypeOptions"
+                [(ngModel)]="preferences.housingType"
+                placeholder="Select your housing type"
+                styleClass="w-full">
+              </p-dropdown>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <label class="block font-medium mb-2">Family Composition *</label>
+              <p-dropdown
+                [options]="familyCompositionOptions"
+                [(ngModel)]="preferences.familyComposition"
+                placeholder="Select your family composition"
+                styleClass="w-full">
+              </p-dropdown>
+            </div>
+
+            <div class="col-12">
+              <div class="flex align-items-center gap-3">
+                <p-checkbox
+                  [(ngModel)]="preferences.hasOtherPets"
+                  binary="true"
+                  inputId="hasOtherPets">
+                </p-checkbox>
+                <label for="hasOtherPets" class="font-medium">I have other pets</label>
+              </div>
+
+              <div *ngIf="preferences.hasOtherPets" class="mt-3">
+                <textarea
+                  pInputText
+                  [(ngModel)]="preferences.otherPetsDescription"
+                  placeholder="Tell us about your other pets..."
+                  rows="3"
+                  maxlength="500"
+                  class="w-full">
+                </textarea>
+                <small class="text-600">Maximum 500 characters</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Lifestyle & Activity -->
+        <div *ngIf="activeIndex === 2" class="step-container">
+          <h3 class="text-2xl font-semibold mb-4 text-primary">Your lifestyle and activity preferences</h3>
+
+          <div class="grid">
+            <div class="col-12 md:col-6">
+              <label class="block font-medium mb-2">Time Availability *</label>
+              <p-dropdown
+                [options]="timeAvailabilityOptions"
+                [(ngModel)]="preferences.timeAvailability"
+                placeholder="How much time can you dedicate?"
+                styleClass="w-full">
+              </p-dropdown>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <label class="block font-medium mb-2">Preferred Activity Level *</label>
+              <p-dropdown
+                [options]="activityLevelOptions"
+                [(ngModel)]="preferences.preferredActivityLevel"
+                placeholder="Select activity level"
+                styleClass="w-full">
+              </p-dropdown>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <label class="block font-medium mb-2">Work Schedule</label>
+              <p-dropdown
+                [options]="workScheduleOptions"
+                [(ngModel)]="preferences.workSchedule"
+                placeholder="Select your work schedule"
+                styleClass="w-full">
+              </p-dropdown>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <label class="block font-medium mb-2">Monthly Budget (Soles)</label>
+              <p-inputNumber
+                [(ngModel)]="preferences.monthlyBudget"
+                [min]="50"
+                [max]="2000"
+                mode="currency"
+                currency="PEN"
+                locale="es-PE"
+                placeholder="Estimated monthly budget"
+                styleClass="w-full">
+              </p-inputNumber>
+              <small class="text-600">Range: S/ 50 - S/ 2,000</small>
+            </div>
+
+            <div class="col-12">
+              <h4 class="font-semibold mb-3">Preferences</h4>
+              <div class="grid">
+                <div class="col-12 md:col-4">
+                  <div class="flex align-items-center gap-2">
+                    <p-checkbox
+                      [(ngModel)]="preferences.prefersTrained"
+                      binary="true"
+                      inputId="prefersTrained">
+                    </p-checkbox>
+                    <label for="prefersTrained">Prefers trained pets</label>
+                  </div>
+                </div>
+                <div class="col-12 md:col-4">
+                  <div class="flex align-items-center gap-2">
+                    <p-checkbox
+                      [(ngModel)]="preferences.acceptsSpecialNeeds"
+                      binary="true"
+                      inputId="acceptsSpecialNeeds">
+                    </p-checkbox>
+                    <label for="acceptsSpecialNeeds">Accepts special needs</label>
+                  </div>
+                </div>
+                <div class="col-12 md:col-4">
+                  <div class="flex align-items-center gap-2">
+                    <p-checkbox
+                      [(ngModel)]="preferences.prefersVaccinated"
+                      binary="true"
+                      inputId="prefersVaccinated">
+                    </p-checkbox>
+                    <label for="prefersVaccinated">Prefers vaccinated</label>
+                  </div>
+                </div>
+                <div class="col-12 md:col-4">
+                  <div class="flex align-items-center gap-2">
+                    <p-checkbox
+                      [(ngModel)]="preferences.prefersSterilized"
+                      binary="true"
+                      inputId="prefersSterilized">
+                    </p-checkbox>
+                    <label for="prefersSterilized">Prefers sterilized</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Location & Final Details -->
+        <div *ngIf="activeIndex === 3" class="step-container">
+          <h3 class="text-2xl font-semibold mb-4 text-primary">Location and final details</h3>
+
+          <div class="grid">
+            <div class="col-12 md:col-6">
+              <label class="block font-medium mb-2">Maximum Distance (km)</label>
+              <p-inputNumber
+                [(ngModel)]="preferences.maxDistanceKm"
+                [min]="5"
+                [max]="500"
+                suffix=" km"
+                placeholder="How far are you willing to travel?"
+                styleClass="w-full">
+              </p-inputNumber>
+              <small class="text-600">Range: 5 - 500 km</small>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <div class="grid">
+                <div class="col-6">
+                  <label class="block font-medium mb-2">Latitude</label>
+                  <p-inputNumber
+                    [(ngModel)]="preferences.latitude"
+                    [minFractionDigits]="6"
+                    [maxFractionDigits]="8"
+                    placeholder="Your latitude"
+                    styleClass="w-full">
+                  </p-inputNumber>
+                </div>
+                <div class="col-6">
+                  <label class="block font-medium mb-2">Longitude</label>
+                  <p-inputNumber
+                    [(ngModel)]="preferences.longitude"
+                    [minFractionDigits]="6"
+                    [maxFractionDigits]="8"
+                    placeholder="Your longitude"
+                    styleClass="w-full">
+                  </p-inputNumber>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="block font-medium mb-2">Why do you want to adopt? *</label>
+              <textarea
+                pInputText
+                [(ngModel)]="preferences.adoptionReason"
+                placeholder="Tell us about your motivation for adopting..."
+                rows="3"
+                maxlength="1000"
+                class="w-full">
+              </textarea>
+              <small class="text-600">Maximum 1000 characters</small>
+            </div>
+
+            <div class="col-12">
+              <label class="block font-medium mb-2">Describe your lifestyle</label>
+              <textarea
+                pInputText
+                [(ngModel)]="preferences.lifestyleDescription"
+                placeholder="Tell us about your daily routine, hobbies, activity level..."
+                rows="4"
+                maxlength="1000"
+                class="w-full">
+              </textarea>
+              <small class="text-600">Maximum 1000 characters</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template pTemplate="footer">
+        <div class="flex justify-content-between align-items-center">
+          <button
+            pButton
+            pRipple
+            label="Previous"
+            icon="pi pi-angle-left"
+            class="p-button-outlined"
+            (click)="previousStep()"
+            [disabled]="activeIndex === 0">
+          </button>
+
+          <div class="flex gap-2">
+            <button
+              *ngIf="activeIndex < 3"
+              pButton
+              pRipple
+              label="Next"
+              icon="pi pi-angle-right"
+              iconPos="right"
+              (click)="nextStep()"
+              [disabled]="!isStepValid()">
+            </button>
+
+            <button
+              *ngIf="activeIndex === 3"
+              pButton
+              pRipple
+              label="Save Preferences"
+              icon="pi pi-check"
+              class="p-button-success"
+              (click)="savePreferences()"
+              [disabled]="isLoading || !isStepValid()"
+              [loading]="isLoading">
+            </button>
+          </div>
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+</div>

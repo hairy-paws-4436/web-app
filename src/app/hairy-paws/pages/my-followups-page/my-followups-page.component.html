@@ -1,0 +1,201 @@
+<div class="my-followups-container">
+  <p-toast></p-toast>
+
+  <div class="container mx-auto px-6">
+    <!-- Header -->
+    <div class="page-header mb-6">
+      <div class="flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <h1 class="text-4xl font-bold text-primary mb-2">
+            <i class="pi pi-heart-fill mr-3"></i>
+            My Follow-ups
+          </h1>
+          <p class="text-lg text-600">Track your pet adoption journey and complete surveys</p>
+        </div>
+        <div class="header-actions">
+          <button
+            pButton
+            pRipple
+            label="Refresh"
+            icon="pi pi-refresh"
+            class="p-button-outlined"
+            (click)="loadFollowups()"
+            [loading]="isLoading">
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-section mb-6">
+      <div class="grid">
+        <div class="col-12 md:col-3">
+          <p-card styleClass="summary-card total-card">
+            <div class="summary-content text-center">
+              <i class="pi pi-list summary-icon"></i>
+              <h3 class="summary-number">{{ getTotalFollowups() }}</h3>
+              <p class="summary-label">Total Follow-ups</p>
+            </div>
+          </p-card>
+        </div>
+        <div class="col-12 md:col-3">
+          <p-card styleClass="summary-card pending-card">
+            <div class="summary-content text-center">
+              <i class="pi pi-clock summary-icon"></i>
+              <h3 class="summary-number">{{ getPendingCount() }}</h3>
+              <p class="summary-label">Pending</p>
+            </div>
+          </p-card>
+        </div>
+        <div class="col-12 md:col-3">
+          <p-card styleClass="summary-card completed-card">
+            <div class="summary-content text-center">
+              <i class="pi pi-check-circle summary-icon"></i>
+              <h3 class="summary-number">{{ getCompletedCount() }}</h3>
+              <p class="summary-label">Completed</p>
+            </div>
+          </p-card>
+        </div>
+        <div class="col-12 md:col-3">
+          <p-card styleClass="summary-card overdue-card">
+            <div class="summary-content text-center">
+              <i class="pi pi-exclamation-triangle summary-icon"></i>
+              <h3 class="summary-number">{{ getOverdueCount() }}</h3>
+              <p class="summary-label">Overdue</p>
+            </div>
+          </p-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="grid">
+        <div *ngFor="let i of [1,2,3,4]" class="col-12 md:col-6">
+          <p-card>
+            <p-skeleton height="2rem" class="mb-2"></p-skeleton>
+            <p-skeleton height="1rem" width="70%" class="mb-2"></p-skeleton>
+            <p-skeleton height="1rem" width="50%"></p-skeleton>
+          </p-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Follow-ups List -->
+    <div *ngIf="!isLoading && followups.length > 0" class="followups-section">
+      <div class="section-header mb-4">
+        <h2 class="text-2xl font-semibold">Your Follow-up Surveys</h2>
+        <p class="text-600">Complete surveys to help us ensure your pet's wellbeing</p>
+      </div>
+
+      <!-- Timeline View -->
+      <div class="timeline-container">
+        <p-timeline [value]="sortedFollowups" align="alternate" styleClass="customized-timeline">
+          <ng-template pTemplate="marker" let-followup>
+            <div class="timeline-marker" [ngClass]="getMarkerClass(followup.status)">
+              <i [class]="getStatusIcon(followup.status)"></i>
+            </div>
+          </ng-template>
+
+          <ng-template pTemplate="content" let-followup let-i="index">
+            <p-card [header]="getFollowupTitle(followup.type)" styleClass="followup-timeline-card">
+              <div class="followup-content">
+                <div class="followup-header mb-3">
+                  <div class="flex justify-content-between align-items-center">
+                    <p-tag
+                      [value]="followup.status"
+                      [severity]="getStatusSeverity(followup.status)"
+                      styleClass="status-tag">
+                    </p-tag>
+                    <span class="followup-date text-600">{{ formatDate(followup.dueDate) }}</span>
+                  </div>
+                </div>
+
+                <div class="followup-details mb-3">
+                  <p class="followup-description">{{ getFollowupDescription(followup.type) }}</p>
+
+                  <div *ngIf="followup.status === 'overdue'" class="overdue-warning mt-2 p-2 bg-red-50 border-round border-red-200">
+                    <div class="flex align-items-center gap-2">
+                      <i class="pi pi-exclamation-triangle text-red-600"></i>
+                      <span class="text-red-800 text-sm">This survey is overdue. Please complete it as soon as possible.</span>
+                    </div>
+                  </div>
+
+                  <div *ngIf="followup.status === 'completed'" class="completed-info mt-2 p-2 bg-green-50 border-round border-green-200">
+                    <div class="flex align-items-center gap-2">
+                      <i class="pi pi-check-circle text-green-600"></i>
+                      <span class="text-green-800 text-sm">Completed on {{ formatDate(followup.completedAt) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="followup-actions">
+                  <button
+                    *ngIf="followup.status === 'pending' || followup.status === 'overdue'"
+                    pButton
+                    pRipple
+                    label="Complete Survey"
+                    icon="pi pi-arrow-right"
+                    class="action-button"
+                    [routerLink]="['/hairy-paws/post-adoption/followup', followup.id]">
+                  </button>
+
+                  <button
+                    *ngIf="followup.status === 'completed'"
+                    pButton
+                    pRipple
+                    label="View Response"
+                    icon="pi pi-eye"
+                    class="action-button p-button-outlined"
+                    [routerLink]="['/hairy-paws/post-adoption/followup', followup.id]">
+                  </button>
+
+                  <button
+                    *ngIf="followup.status === 'pending'"
+                    pButton
+                    pRipple
+                    label="Remind Later"
+                    icon="pi pi-clock"
+                    class="action-button p-button-text"
+                    (click)="remindLater(followup)">
+                  </button>
+                </div>
+              </div>
+            </p-card>
+          </ng-template>
+        </p-timeline>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && followups.length === 0" class="empty-state">
+      <p-card styleClass="text-center">
+        <div class="py-6">
+          <i class="pi pi-heart text-gray-400 text-6xl mb-4"></i>
+          <h3 class="text-gray-600 mb-3">No Follow-ups Yet</h3>
+          <p class="text-gray-500 mb-4">
+            Follow-up surveys will appear here after you complete an adoption.
+            These surveys help us ensure your pet's wellbeing and your satisfaction.
+          </p>
+          <div class="flex justify-content-center gap-2">
+            <button
+              pButton
+              pRipple
+              label="Browse Pets"
+              icon="pi pi-search"
+              routerLink="/hairy-paws/pets">
+            </button>
+            <button
+              pButton
+              pRipple
+              label="View Adoptions"
+              icon="pi pi-heart"
+              class="p-button-outlined"
+              routerLink="/hairy-paws/my-adoptions">
+            </button>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>

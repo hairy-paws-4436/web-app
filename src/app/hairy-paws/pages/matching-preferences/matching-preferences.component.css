@@ -1,0 +1,53 @@
+.matching-preferences-container {
+  min-height: 100vh;
+}
+
+.page-header {
+  text-align: center;
+
+}
+
+.step-container {
+  padding: 2rem 1rem;
+  min-height: 400px;
+}
+
+.card-header {
+  background: linear-gradient(135deg, var(--p-primary-color) 0%, var(--p-primary-400) 100%);
+  color: white;
+  border-radius: 6px 6px 0 0;
+}
+
+:host ::ng-deep .p-steps .p-steps-item .p-menuitem-link {
+  background: transparent;
+  color: white;
+}
+
+:host ::ng-deep .p-steps .p-steps-item.p-highlight .p-steps-number {
+  background: white;
+  color: var(--p-primary-color);
+}
+
+:host ::ng-deep .p-multiselect,
+:host ::ng-deep .p-dropdown {
+  width: 100%;
+}
+
+.step-content {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .step-container {
+    padding: 1rem 0.5rem;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+  }
+}

@@ -1,0 +1,323 @@
+<div class="followup-dashboard-container">
+  <p-toast></p-toast>
+
+  <div class="container mx-auto px-6">
+    <!-- Header -->
+    <div class="page-header mb-6">
+      <div class="flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <h1 class="text-4xl font-bold text-primary mb-2">
+            <i class="pi pi-chart-bar mr-3"></i>
+            Follow-up Dashboard
+          </h1>
+          <p class="text-lg text-600">Monitor post-adoption follow-ups and intervention needs</p>
+        </div>
+        <div class="header-actions flex gap-2">
+          <button
+            pButton
+            pRipple
+            label="Send Reminders"
+            icon="pi pi-send"
+            class="p-button-outlined"
+            (click)="sendReminders()"
+            [loading]="isSendingReminders">
+          </button>
+          <button
+            pButton
+            pRipple
+            label="Refresh Data"
+            icon="pi pi-refresh"
+            (click)="loadDashboardData()"
+            [loading]="isLoading">
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="grid">
+        <div *ngFor="let i of [1,2,3,4]" class="col-12 md:col-3">
+          <p-card>
+            <p-skeleton height="3rem" class="mb-2"></p-skeleton>
+            <p-skeleton height="1rem" width="70%"></p-skeleton>
+          </p-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div *ngIf="!isLoading && dashboardData" class="dashboard-content">
+      <!-- Key Metrics -->
+      <div class="metrics-section mb-6">
+        <div class="grid">
+          <!-- Total Follow-ups -->
+          <div class="col-12 md:col-3">
+            <p-card styleClass="metric-card total-card">
+              <div class="metric-content text-center">
+                <i class="pi pi-list metric-icon"></i>
+                <h3 class="metric-number">{{ dashboardData.totalFollowups }}</h3>
+                <p class="metric-label">Total Follow-ups</p>
+              </div>
+            </p-card>
+          </div>
+
+          <!-- Completion Rate -->
+          <div class="col-12 md:col-3">
+            <p-card styleClass="metric-card completion-card">
+              <div class="metric-content text-center">
+                <i class="pi pi-percentage metric-icon"></i>
+                <h3 class="metric-number">{{ getCompletionRate() }}%</h3>
+                <p class="metric-label">Completion Rate</p>
+                <p-progressBar
+                  [value]="getCompletionRate()"
+                  [showValue]="false"
+                  styleClass="completion-progress">
+                </p-progressBar>
+              </div>
+            </p-card>
+          </div>
+
+          <!-- Average Satisfaction -->
+          <div class="col-12 md:col-3">
+            <p-card styleClass="metric-card satisfaction-card">
+              <div class="metric-content text-center">
+                <i class="pi pi-star-fill metric-icon"></i>
+                <h3 class="metric-number">{{ dashboardData.averageSatisfactionScore }}/10</h3>
+                <p class="metric-label">Avg. Satisfaction</p>
+              </div>
+            </p-card>
+          </div>
+
+          <!-- At Risk Adoptions -->
+          <div class="col-12 md:col-3">
+            <p-card styleClass="metric-card risk-card">
+              <div class="metric-content text-center">
+                <i class="pi pi-exclamation-triangle metric-icon"></i>
+                <h3 class="metric-number">{{ dashboardData.atRiskAdoptions }}</h3>
+                <p class="metric-label">At Risk</p>
+              </div>
+            </p-card>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Tabs -->
+      <p-tabView>
+        <!-- Overview Tab -->
+        <p-tabPanel header="Overview" leftIcon="pi pi-chart-pie">
+          <div class="overview-section">
+            <div class="grid">
+              <!-- Follow-up Status Chart -->
+              <div class="col-12 lg:col-6">
+                <p-card header="Follow-up Status Distribution">
+                  <p-chart
+                    type="doughnut"
+                    [data]="statusChartData"
+                    [options]="chartOptions"
+                    height="300px">
+                  </p-chart>
+                </p-card>
+              </div>
+
+              <!-- Monthly Completion Trend -->
+              <div class="col-12 lg:col-6">
+                <p-card header="Monthly Completion Trend">
+                  <p-chart
+                    type="line"
+                    [data]="trendChartData"
+                    [options]="lineChartOptions"
+                    height="300px">
+                  </p-chart>
+                </p-card>
+              </div>
+
+              <!-- Recent Activity -->
+              <div class="col-12">
+                <p-card header="Recent Activity">
+                  <div class="activity-list">
+                    <div
+                      *ngFor="let activity of dashboardData.recentActivity.slice(0, 10)"
+                      class="activity-item">
+                      <div class="activity-icon" [ngClass]="getActivityIconClass(activity.type)">
+                        <i [class]="getActivityIcon(activity.type)"></i>
+                      </div>
+                      <div class="activity-info">
+                        <h6 class="activity-title">{{ getActivityTitle(activity.type) }}</h6>
+                        <p class="activity-details">
+                          {{ activity.petName }} - {{ activity.adopterName }}
+                        </p>
+                        <span class="activity-time">{{ formatRelativeTime(activity.timestamp) }}</span>
+                      </div>
+                    </div>
+
+                    <div *ngIf="dashboardData.recentActivity.length === 0" class="empty-activity text-center py-4">
+                      <i class="pi pi-clock text-gray-400 text-2xl mb-2"></i>
+                      <p class="text-gray-500">No recent activity</p>
+                    </div>
+                  </div>
+                </p-card>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- Analytics Tab -->
+        <p-tabPanel header="Analytics" leftIcon="pi pi-chart-line">
+          <div class="analytics-section" *ngIf="analyticsData">
+            <div class="grid">
+              <!-- Satisfaction Trends -->
+              <div class="col-12 lg:col-6">
+                <p-card header="Satisfaction Score Trends">
+                  <p-chart
+                    type="line"
+                    [data]="satisfactionTrendData"
+                    [options]="lineChartOptions"
+                    height="250px">
+                  </p-chart>
+                </p-card>
+              </div>
+
+              <!-- Common Issues -->
+              <div class="col-12 lg:col-6">
+                <p-card header="Most Common Issues">
+                  <div class="issues-list">
+                    <div
+                      *ngFor="let issue of analyticsData.commonIssues.behavioral.slice(0, 5)"
+                      class="issue-item">
+                      <div class="flex justify-content-between align-items-center">
+                        <span class="issue-name">{{ issue.issue }}</span>
+                        <div class="issue-stats">
+                          <span class="issue-count">{{ issue.frequency }}</span>
+                          <p-progressBar
+                            [value]="(issue.frequency / getMaxIssueFrequency()) * 100"
+                            [showValue]="false"
+                            styleClass="issue-progress">
+                          </p-progressBar>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </p-card>
+              </div>
+
+              <!-- Intervention Success Rate -->
+              <div class="col-12 lg:col-6">
+                <p-card header="Intervention Success Rate">
+                  <div class="intervention-stats">
+                    <div class="stat-item">
+                      <span class="stat-label">Total Interventions</span>
+                      <span class="stat-value">{{ analyticsData.interventionSuccess.total }}</span>
+                    </div>
+                    <div class="stat-item">
+                      <span class="stat-label">Successful</span>
+                      <span class="stat-value text-green-600">{{ analyticsData.interventionSuccess.successful }}</span>
+                    </div>
+                    <div class="stat-item">
+                      <span class="stat-label">Success Rate</span>
+                      <span class="stat-value">{{ analyticsData.interventionSuccess.rate }}%</span>
+                    </div>
+                  </div>
+                  <p-progressBar
+                    [value]="analyticsData.interventionSuccess.rate"
+                    styleClass="intervention-progress mt-3">
+                  </p-progressBar>
+                </p-card>
+              </div>
+
+              <!-- Completion Rates by Type -->
+              <div class="col-12 lg:col-6">
+                <p-card header="Completion Rates by Follow-up Type">
+                  <div class="completion-types">
+                    <div
+                      *ngFor="let item of getCompletionByType()"
+                      class="completion-type-item">
+                      <div class="flex justify-content-between align-items-center mb-2">
+                        <span class="type-label">{{ item.label }}</span>
+                        <span class="type-rate">{{ item.rate }}%</span>
+                      </div>
+                      <p-progressBar
+                        [value]="item.rate"
+                        [showValue]="false"
+                        styleClass="type-progress">
+                      </p-progressBar>
+                    </div>
+                  </div>
+                </p-card>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- At-Risk Tab -->
+        <p-tabPanel header="At-Risk Adoptions" leftIcon="pi pi-exclamation-triangle">
+          <div class="at-risk-section">
+            <div class="section-header mb-4">
+              <h3 class="text-xl font-semibold text-orange-600">
+                <i class="pi pi-exclamation-triangle mr-2"></i>
+                Adoptions Requiring Attention
+              </h3>
+              <p class="text-600">Follow-ups with potential issues that may need intervention</p>
+            </div>
+
+            <div *ngIf="atRiskFollowups.length > 0" class="at-risk-list">
+              <div class="grid">
+                <div
+                  *ngFor="let followup of atRiskFollowups"
+                  class="col-12 md:col-6 lg:col-4">
+                  <p-card styleClass="at-risk-card">
+                    <div class="at-risk-content">
+                      <div class="at-risk-header mb-3">
+                        <h5 class="pet-name mb-1">{{ getPetName(followup) }}</h5>
+                        <p class="adopter-info text-600">{{ getAdopterName(followup) }}</p>
+                        <p-tag
+                          [value]="getRiskLevel(followup)"
+                          [severity]="getRiskSeverity(followup)"
+                          styleClass="risk-tag">
+                        </p-tag>
+                      </div>
+
+                      <div class="risk-details mb-3">
+                        <div class="risk-indicators">
+                          <div *ngFor="let indicator of getRiskIndicators(followup)" class="risk-indicator">
+                            <i class="pi pi-exclamation-circle text-orange-500 mr-2"></i>
+                            <span class="text-sm">{{ indicator }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="at-risk-actions">
+                        <button
+                          pButton
+                          pRipple
+                          label="Initiate Intervention"
+                          icon="pi pi-phone"
+                          class="intervention-button w-full mb-2"
+                          (click)="initiateIntervention(followup)">
+                        </button>
+                        <button
+                          pButton
+                          pRipple
+                          label="View Details"
+                          icon="pi pi-eye"
+                          class="view-button w-full p-button-outlined"
+                          [routerLink]="['/hairy-paws/post-adoption/followup', followup.id]">
+                        </button>
+                      </div>
+                    </div>
+                  </p-card>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="atRiskFollowups.length === 0" class="no-risk-state text-center py-6">
+              <i class="pi pi-check-circle text-green-500 text-6xl mb-4"></i>
+              <h3 class="text-green-600 mb-2">No At-Risk Adoptions</h3>
+              <p class="text-600">All current adoptions appear to be going well!</p>
+            </div>
+          </div>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+  </div>
+</div>

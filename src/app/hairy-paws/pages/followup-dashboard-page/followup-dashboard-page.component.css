@@ -1,0 +1,277 @@
+.followup-dashboard-container {
+  min-height: 100vh;
+}
+
+/* Metric Cards */
+.metric-card {
+  height: 100%;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.metric-content {
+  padding: 1.5rem 1rem;
+}
+
+.metric-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.metric-number {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.metric-label {
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.total-card {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+}
+
+.completion-card {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.satisfaction-card {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.risk-card {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+/* Activity List */
+.activity-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.activity-icon.completed {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.activity-icon.reminder {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.activity-icon.intervention {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.activity-icon.overdue {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
+.activity-info {
+  flex: 1;
+}
+
+.activity-title {
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  color: var(--p-text-color);
+}
+
+.activity-details {
+  margin: 0 0 0.25rem 0;
+  color: var(--p-text-color);
+  font-size: 0.9rem;
+}
+
+.activity-time {
+  font-size: 0.8rem;
+  color: var(--p-text-color);
+}
+
+/* Issues List */
+.issue-item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.issue-item:last-child {
+  border-bottom: none;
+}
+
+.issue-name {
+  font-weight: 500;
+  color: var(--p-text-color);
+}
+
+.issue-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 100px;
+}
+
+.issue-count {
+  font-weight: 600;
+  color: var(--p-primary-color);
+  min-width: 30px;
+  text-align: right;
+}
+
+.issue-progress {
+  width: 60px;
+}
+
+/* Intervention Stats */
+.intervention-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  font-weight: 500;
+  color: var(--p-text-color);
+}
+
+.stat-value {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--p-text-color);
+}
+
+/* Completion Types */
+.completion-type-item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.completion-type-item:last-child {
+  border-bottom: none;
+}
+
+.type-label {
+  font-weight: 500;
+}
+
+.type-rate {
+  font-weight: 600;
+  color: var(--p-primary-color);
+}
+
+/* At-Risk Cards */
+.at-risk-card {
+  border-left: 4px solid #ef4444;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+}
+
+.at-risk-content {
+  padding: 0.5rem 0;
+}
+
+.pet-name {
+  font-weight: 600;
+  color: var(--p-text-color);
+}
+
+.adopter-info {
+  font-size: 0.9rem;
+}
+
+.risk-tag {
+  margin-top: 0.5rem;
+}
+
+.risk-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.risk-indicator {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--p-text-color);
+}
+
+.intervention-button {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+/* Progress bars */
+:host ::ng-deep .completion-progress .p-progressbar-value {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+:host ::ng-deep .intervention-progress .p-progressbar-value {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .activity-item {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .stat-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .issue-stats {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}

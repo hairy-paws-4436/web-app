@@ -1,0 +1,334 @@
+<div class="followup-container">
+  <p-toast></p-toast>
+
+  <div class="container mx-auto px-6">
+    <!-- Header -->
+    <div class="page-header mb-6">
+      <div class="flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <h1 class="text-4xl font-bold text-primary mb-2">
+            <i class="pi pi-heart-fill mr-3"></i>
+            Follow-up Survey
+          </h1>
+          <p class="text-lg text-600" *ngIf="followup">
+            {{ getFollowupTypeLabel(followup.type) }} - How is {{ getPetName() }} doing?
+          </p>
+        </div>
+        <div class="followup-info" *ngIf="followup">
+          <p-tag
+            [value]="followup.status"
+            [severity]="getStatusSeverity(followup.status)"
+            styleClass="text-sm">
+          </p-tag>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-8">
+      <p-progressSpinner></p-progressSpinner>
+      <p class="mt-3 text-600">Loading follow-up information...</p>
+    </div>
+
+    <!-- Follow-up Form -->
+    <div *ngIf="!isLoading && followup && followup.status === 'pending'" class="followup-form">
+      <p-card styleClass="shadow-3">
+        <ng-template pTemplate="header">
+          <div class="card-header p-4">
+            <p-steps [model]="steps" [activeIndex]="activeIndex" [readonly]="true"></p-steps>
+          </div>
+        </ng-template>
+
+        <div class="step-content min-h-30rem">
+          <!-- Step 1: Basic Adaptation -->
+          <div *ngIf="activeIndex === 0" class="step-container">
+            <h3 class="text-2xl font-semibold mb-4 text-primary">How is the adaptation going?</h3>
+
+            <div class="grid">
+              <div class="col-12">
+                <label class="block font-medium mb-2">Overall Adaptation Level *</label>
+                <div class="flex flex-wrap gap-4">
+                  <div *ngFor="let level of adaptationLevels" class="flex align-items-center">
+                    <p-radioButton
+                      [inputId]="level.value"
+                      name="adaptationLevel"
+                      [value]="level.value"
+                      [(ngModel)]="questionnaire.adaptationLevel">
+                    </p-radioButton>
+                    <label [for]="level.value" class="ml-2 cursor-pointer">{{ level.label }}</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <h4 class="font-semibold mb-3">Basic Needs Assessment</h4>
+                <div class="grid">
+                  <div class="col-12 md:col-6">
+                    <div class="flex align-items-center gap-2 mb-3">
+                      <p-checkbox
+                        [(ngModel)]="questionnaire.eatingWell"
+                        binary="true"
+                        inputId="eatingWell">
+                      </p-checkbox>
+                      <label for="eatingWell" class="font-medium">Eating well</label>
+                    </div>
+                    <div class="flex align-items-center gap-2 mb-3">
+                      <p-checkbox
+                        [(ngModel)]="questionnaire.sleepingWell"
+                        binary="true"
+                        inputId="sleepingWell">
+                      </p-checkbox>
+                      <label for="sleepingWell" class="font-medium">Sleeping well</label>
+                    </div>
+                  </div>
+                  <div class="col-12 md:col-6">
+                    <div class="flex align-items-center gap-2 mb-3">
+                      <p-checkbox
+                        [(ngModel)]="questionnaire.usingBathroomProperly"
+                        binary="true"
+                        inputId="usingBathroomProperly">
+                      </p-checkbox>
+                      <label for="usingBathroomProperly" class="font-medium">Using bathroom properly</label>
+                    </div>
+                    <div class="flex align-items-center gap-2 mb-3">
+                      <p-checkbox
+                        [(ngModel)]="questionnaire.showingAffection"
+                        binary="true"
+                        inputId="showingAffection">
+                      </p-checkbox>
+                      <label for="showingAffection" class="font-medium">Showing affection</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Behavioral & Health Issues -->
+          <div *ngIf="activeIndex === 1" class="step-container">
+            <h3 class="text-2xl font-semibold mb-4 text-primary">Any concerns to report?</h3>
+
+            <div class="grid">
+              <div class="col-12">
+                <label class="block font-medium mb-2">Behavioral Issues (select all that apply)</label>
+                <p-multiSelect
+                  [options]="behavioralIssueOptions"
+                  [(ngModel)]="questionnaire.behavioralIssues"
+                  placeholder="Select any behavioral issues observed"
+                  styleClass="w-full"
+                  [showToggleAll]="false">
+                </p-multiSelect>
+              </div>
+
+              <div class="col-12">
+                <label class="block font-medium mb-2">Health Concerns (select all that apply)</label>
+                <p-multiSelect
+                  [options]="healthConcernOptions"
+                  [(ngModel)]="questionnaire.healthConcerns"
+                  placeholder="Select any health concerns"
+                  styleClass="w-full"
+                  [showToggleAll]="false">
+                </p-multiSelect>
+              </div>
+
+              <div class="col-12">
+                <h4 class="font-semibold mb-3">Veterinary Care</h4>
+                <div class="flex align-items-center gap-3 mb-3">
+                  <p-checkbox
+                    [(ngModel)]="questionnaire.vetVisitScheduled"
+                    binary="true"
+                    inputId="vetVisitScheduled">
+                  </p-checkbox>
+                  <label for="vetVisitScheduled" class="font-medium">Veterinary visit scheduled or completed</label>
+                </div>
+
+                <div *ngIf="questionnaire.vetVisitScheduled" class="mt-3">
+                  <label class="block font-medium mb-2">Vet visit date</label>
+                  <p-calendar
+                    [(ngModel)]="questionnaire.vetVisitDate"
+                    placeholder="Select date"
+                    [showIcon]="true"
+                    styleClass="w-full md:w-auto">
+                  </p-calendar>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Satisfaction & Feedback -->
+          <div *ngIf="activeIndex === 2" class="step-container">
+            <h3 class="text-2xl font-semibold mb-4 text-primary">Your experience and feedback</h3>
+
+            <div class="grid">
+              <div class="col-12 md:col-6">
+                <label class="block font-medium mb-2">Satisfaction Score (1-10) *</label>
+                <div class="satisfaction-rating mb-3">
+                  <p-rating
+                    [(ngModel)]="questionnaire.satisfactionScore"
+
+                    [stars]="10"
+                    styleClass="satisfaction-stars">
+                  </p-rating>
+                  <div class="rating-labels flex justify-content-between text-sm text-600 mt-2">
+                    <span>Not satisfied</span>
+                    <span>Very satisfied</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 md:col-6">
+                <label class="block font-medium mb-2">Would you recommend our organization?</label>
+                <div class="flex gap-4">
+                  <div class="flex align-items-center">
+                    <p-radioButton
+                      inputId="recommendYes"
+                      name="wouldRecommend"
+                      [value]="true"
+                      [(ngModel)]="questionnaire.wouldRecommend">
+                    </p-radioButton>
+                    <label for="recommendYes" class="ml-2 cursor-pointer">Yes</label>
+                  </div>
+                  <div class="flex align-items-center">
+                    <p-radioButton
+                      inputId="recommendNo"
+                      name="wouldRecommend"
+                      [value]="false"
+                      [(ngModel)]="questionnaire.wouldRecommend">
+                    </p-radioButton>
+                    <label for="recommendNo" class="ml-2 cursor-pointer">No</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label class="block font-medium mb-2">Additional Comments</label>
+                <textarea
+                  pInputText
+                  [(ngModel)]="questionnaire.additionalComments"
+                  placeholder="Share any additional thoughts, experiences, or feedback..."
+                  rows="4"
+                  class="w-full">
+                    </textarea>
+              </div>
+
+              <div class="col-12">
+                <h4 class="font-semibold mb-3">Support Needs</h4>
+                <div class="flex align-items-center gap-3 mb-3">
+                  <p-checkbox
+                    [(ngModel)]="questionnaire.needsSupport"
+                    binary="true"
+                    inputId="needsSupport">
+                  </p-checkbox>
+                  <label for="needsSupport" class="font-medium">I need additional support</label>
+                </div>
+
+                <div *ngIf="questionnaire.needsSupport" class="mt-3">
+                  <label class="block font-medium mb-2">What type of support do you need?</label>
+                  <p-multiSelect
+                    [options]="supportTypeOptions"
+                    [(ngModel)]="questionnaire.supportType"
+                    placeholder="Select types of support needed"
+                    styleClass="w-full"
+                    [showToggleAll]="false">
+                  </p-multiSelect>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-template pTemplate="footer">
+          <div class="flex justify-content-between align-items-center">
+            <button
+              pButton
+              pRipple
+              label="Previous"
+              icon="pi pi-angle-left"
+              class="p-button-outlined"
+              (click)="previousStep()"
+              [disabled]="activeIndex === 0">
+            </button>
+
+            <div class="flex gap-2">
+              <button
+                *ngIf="activeIndex < 2"
+                pButton
+                pRipple
+                label="Next"
+                icon="pi pi-angle-right"
+                iconPos="right"
+                (click)="nextStep()"
+                [disabled]="!isStepValid()">
+              </button>
+
+              <button
+                *ngIf="activeIndex === 2"
+                pButton
+                pRipple
+                label="Submit Survey"
+                icon="pi pi-check"
+                class="p-button-success"
+                (click)="submitFollowup()"
+                [disabled]="isSubmitting || !isStepValid()"
+                [loading]="isSubmitting">
+              </button>
+
+              <button
+                pButton
+                pRipple
+                label="Skip for Now"
+                icon="pi pi-times"
+                class="p-button-outlined p-button-warning"
+                (click)="skipFollowup()"
+                [disabled]="isSubmitting">
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </p-card>
+    </div>
+
+    <!-- Already Completed -->
+    <div *ngIf="!isLoading && followup && followup.status === 'completed'" class="completed-state">
+      <p-card styleClass="text-center border-green-200 bg-green-50">
+        <div class="py-6">
+          <i class="pi pi-check-circle text-green-600 text-6xl mb-4"></i>
+          <h3 class="text-green-800 mb-3">Survey Already Completed</h3>
+          <p class="text-green-700 mb-4">
+            Thank you! You completed this follow-up survey on {{ formatDate(followup.completedAt) }}.
+          </p>
+          <div class="flex justify-content-center gap-2">
+            <button
+              pButton
+              pRipple
+              label="View My Follow-ups"
+              icon="pi pi-list"
+              routerLink="/hairy-paws/post-adoption/my-followups">
+            </button>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Invalid/Not Found -->
+    <div *ngIf="!isLoading && !followup" class="error-state">
+      <p-card styleClass="text-center border-red-200 bg-red-50">
+        <div class="py-6">
+          <i class="pi pi-exclamation-triangle text-red-600 text-6xl mb-4"></i>
+          <h3 class="text-red-800 mb-3">Follow-up Not Found</h3>
+          <p class="text-red-700 mb-4">
+            The follow-up survey you're looking for doesn't exist or you don't have permission to access it.
+          </p>
+          <button
+            pButton
+            pRipple
+            label="Go Back"
+            icon="pi pi-arrow-left"
+            class="p-button-outlined"
+            (click)="goBack()">
+          </button>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>

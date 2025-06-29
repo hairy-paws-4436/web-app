@@ -1,0 +1,321 @@
+<div class="leaderboard-container">
+  <p-toast></p-toast>
+
+  <div class="container mx-auto px-6">
+    <!-- Header -->
+    <div class="page-header mb-6">
+      <div class="flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <h1 class="text-4xl font-bold text-primary mb-2">
+            <i class="pi pi-trophy mr-3"></i>
+            Community Leaderboard
+          </h1>
+          <p class="text-lg text-600">See how ONGs are performing in the community</p>
+        </div>
+        <div class="header-actions flex gap-2">
+          <p-dropdown
+            [options]="timeframeOptions"
+            [(ngModel)]="selectedTimeframe"
+            (onChange)="onTimeframeChange()"
+            placeholder="Select timeframe"
+            styleClass="mr-2">
+          </p-dropdown>
+          <button
+            pButton
+            pRipple
+            label="Refresh Rankings"
+            icon="pi pi-refresh"
+            class="p-button-outlined"
+            (click)="loadLeaderboard()"
+            [loading]="isLoading">
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top 3 Podium -->
+    <div *ngIf="!isLoading && leaderboard.length >= 3" class="podium-section mb-6">
+      <div class="podium-container">
+        <!-- Second Place -->
+        <div class="podium-position second-place">
+          <div class="podium-card">
+            <div class="crown-container">
+              <i class="pi pi-crown crown silver"></i>
+            </div>
+            <div class="ong-avatar-large">
+              <img
+                *ngIf="leaderboard[1].ongLogo"
+                [src]="leaderboard[1].ongLogo"
+                [alt]="leaderboard[1].ongName">
+              <div *ngIf="!leaderboard[1].ongLogo" class="avatar-placeholder">
+                {{ getOngInitials(leaderboard[1].ongName) }}
+              </div>
+            </div>
+            <h3 class="ong-name">{{ leaderboard[1].ongName }}</h3>
+            <div class="podium-stats">
+              <div class="stat-item">
+                <span class="stat-value">{{ leaderboard[1].points }}</span>
+                <span class="stat-label">Points</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ leaderboard[1].adoptions }}</span>
+                <span class="stat-label">Adoptions</span>
+              </div>
+            </div>
+          </div>
+          <div class="podium-base second">
+            <span class="podium-number">2</span>
+          </div>
+        </div>
+
+        <!-- First Place -->
+        <div class="podium-position first-place">
+          <div class="podium-card winner">
+            <div class="crown-container">
+              <i class="pi pi-crown crown gold"></i>
+            </div>
+            <div class="ong-avatar-large">
+              <img
+                *ngIf="leaderboard[0].ongLogo"
+                [src]="leaderboard[0].ongLogo"
+                [alt]="leaderboard[0].ongName">
+              <div *ngIf="!leaderboard[0].ongLogo" class="avatar-placeholder">
+                {{ getOngInitials(leaderboard[0].ongName) }}
+              </div>
+            </div>
+            <h3 class="ong-name">{{ leaderboard[0].ongName }}</h3>
+            <div class="podium-stats">
+              <div class="stat-item">
+                <span class="stat-value">{{ leaderboard[0].points }}</span>
+                <span class="stat-label">Points</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ leaderboard[0].adoptions }}</span>
+                <span class="stat-label">Adoptions</span>
+              </div>
+            </div>
+          </div>
+          <div class="podium-base first">
+            <span class="podium-number">1</span>
+          </div>
+        </div>
+
+        <!-- Third Place -->
+        <div class="podium-position third-place">
+          <div class="podium-card">
+            <div class="crown-container">
+              <i class="pi pi-crown crown bronze"></i>
+            </div>
+            <div class="ong-avatar-large">
+              <img
+                *ngIf="leaderboard[2].ongLogo"
+                [src]="leaderboard[2].ongLogo"
+                [alt]="leaderboard[2].ongName">
+              <div *ngIf="!leaderboard[2].ongLogo" class="avatar-placeholder">
+                {{ getOngInitials(leaderboard[2].ongName) }}
+              </div>
+            </div>
+            <h3 class="ong-name">{{ leaderboard[2].ongName }}</h3>
+            <div class="podium-stats">
+              <div class="stat-item">
+                <span class="stat-value">{{ leaderboard[2].points }}</span>
+                <span class="stat-label">Points</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ leaderboard[2].adoptions }}</span>
+                <span class="stat-label">Adoptions</span>
+              </div>
+            </div>
+          </div>
+          <div class="podium-base third">
+            <span class="podium-number">3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="grid">
+        <div *ngFor="let i of [1,2,3,4,5,6]" class="col-12 md:col-6 lg:col-4">
+          <p-card>
+            <p-skeleton height="4rem" class="mb-2"></p-skeleton>
+            <p-skeleton height="1rem" width="70%" class="mb-2"></p-skeleton>
+            <p-skeleton height="1rem" width="50%"></p-skeleton>
+          </p-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Leaderboard -->
+    <div *ngIf="!isLoading && leaderboard.length > 0" class="leaderboard-section">
+      <p-tabView>
+        <!-- All ONGs Tab -->
+        <p-tabPanel header="All ONGs" leftIcon="pi pi-list">
+          <div class="leaderboard-list">
+            <div
+              *ngFor="let entry of paginatedLeaderboard; let i = index"
+              class="leaderboard-entry"
+              [class.current-user]="entry.isCurrentUser"
+              [class.top-three]="entry.rank <= 3">
+
+              <div class="rank-section">
+                <div class="rank-number" [ngClass]="getRankClass(entry.rank)">
+                  #{{ entry.rank }}
+                </div>
+                <i *ngIf="entry.rank <= 3" class="pi pi-crown rank-crown" [ngClass]="getCrownClass(entry.rank - 1)"></i>
+              </div>
+
+              <div class="ong-info-section">
+                <div class="ong-avatar">
+                  <img
+                    *ngIf="entry.ongLogo"
+                    [src]="entry.ongLogo"
+                    [alt]="entry.ongName">
+                  <div *ngIf="!entry.ongLogo" class="avatar-placeholder">
+                    {{ getOngInitials(entry.ongName) }}
+                  </div>
+                </div>
+                <div class="ong-details">
+                  <h4 class="ong-name">{{ entry.ongName }}</h4>
+                  <div class="ong-meta">
+                    <span class="level-badge">Level {{ entry.level }}</span>
+                    <span class="separator">•</span>
+                    <span class="monthly-adoptions">{{ entry.adoptions }} adoptions</span>
+                    <span class="separator">•</span>
+                    <span class="badge-count">{{ entry.badges.length || 0 }} badges</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="points-section">
+                <div class="points-display">
+                  <span class="points-number">{{ formatPoints(entry.points) }}</span>
+                  <span class="points-label">points</span>
+                </div>
+                <div class="level-progress" *ngIf="entry.rank > 3">
+                  <div class="progress-info">
+                    <span class="progress-text">Progress to Level {{ entry.level + 1 }}</span>
+                    <div class="progress-bar-custom">
+                      <div class="progress-fill" [style.width.%]="calculateLevelProgress(entry.points, entry.level)"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="actions-section">
+                <button
+                  pButton
+                  pRipple
+                  label="View Profile"
+                  icon="pi pi-user"
+                  class="p-button-outlined p-button-sm"
+                  [routerLink]="['/hairy-paws/ong-details', entry.ongId]">
+                </button>
+              </div>
+            </div>
+
+            <!-- Load More Button -->
+            <div *ngIf="hasMoreEntries()" class="load-more-section text-center mt-4">
+              <button
+                pButton
+                pRipple
+                label="Load More"
+                icon="pi pi-angle-down"
+                class="p-button-outlined"
+                (click)="loadMore()">
+              </button>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- Top Performers Tab -->
+        <p-tabPanel header="Top Performers" leftIcon="pi pi-star">
+          <div class="top-performers-section">
+            <div class="section-header mb-4">
+              <h3 class="text-xl font-semibold">Outstanding Contributors</h3>
+              <p class="text-600">ONGs making exceptional impact in the community</p>
+            </div>
+
+            <div class="grid">
+              <div *ngFor="let performer of topPerformers" class="col-12 md:col-6 lg:col-4">
+                <p-card styleClass="performer-card">
+                  <div class="performer-content">
+                    <div class="performer-header">
+                      <div class="performer-avatar">
+                        <img
+                          *ngIf="performer.ongLogo"
+                          [src]="performer.ongLogo"
+                          [alt]="performer.ongName">
+                        <div *ngIf="!performer.ongLogo" class="avatar-placeholder">
+                          {{ getOngInitials(performer.ongName) }}
+                        </div>
+                      </div>
+                      <div class="performer-rank">
+                        <p-tag [value]="'#' + performer.rank" severity="success"></p-tag>
+                      </div>
+                    </div>
+
+                    <h4 class="performer-name">{{ performer.ongName }}</h4>
+
+                    <div class="performer-stats">
+                      <div class="stat-grid">
+                        <div class="stat-cell">
+                          <span class="stat-number">{{ performer.points }}</span>
+                          <span class="stat-label">Total Points</span>
+                        </div>
+                        <div class="stat-cell">
+                          <span class="stat-number">{{ performer.level }}</span>
+                          <span class="stat-label">Level</span>
+                        </div>
+                        <div class="stat-cell">
+                          <span class="stat-number">{{ performer.adoptions }}</span>
+                          <span class="stat-label">Adoptions</span>
+                        </div>
+                        <div class="stat-cell">
+                          <span class="stat-number">{{ performer.badges.length || 0 }}</span>
+                          <span class="stat-label">Badges</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="performer-actions mt-3">
+                      <button
+                        pButton
+                        pRipple
+                        label="View Details"
+                        icon="pi pi-eye"
+                        class="w-full p-button-outlined"
+                        [routerLink]="['/hairy-paws/ong-details', performer.ongId]">
+                      </button>
+                    </div>
+                  </div>
+                </p-card>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && leaderboard.length === 0" class="empty-state">
+      <p-card styleClass="text-center">
+        <div class="py-6">
+          <i class="pi pi-trophy text-gray-400 text-6xl mb-4"></i>
+          <h3 class="text-gray-600 mb-3">No Rankings Available</h3>
+          <p class="text-gray-500 mb-4">
+            The leaderboard will populate as ONGs complete activities and earn points.
+          </p>
+          <button
+            pButton
+            pRipple
+            label="Refresh"
+            icon="pi pi-refresh"
+            (click)="loadLeaderboard()">
+          </button>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>

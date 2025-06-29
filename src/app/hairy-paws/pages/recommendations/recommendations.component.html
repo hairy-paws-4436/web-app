@@ -1,0 +1,361 @@
+<div class="recommendations-container">
+  <p-toast></p-toast>
+
+  <div class="container mx-auto px-6">
+    <!-- Header -->
+    <div class="page-header mb-6">
+      <div class="flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <h1 class="text-4xl font-bold text-primary mb-2">
+            <i class="pi pi-sparkles mr-3"></i>
+            Your Perfect Matches
+          </h1>
+          <p class="text-lg text-600">Discover pets that match your lifestyle and preferences</p>
+        </div>
+        <div class="flex gap-2">
+          <button
+            pButton
+            pRipple
+            label="Update Preferences"
+            icon="pi pi-cog"
+            class="p-button-outlined"
+            routerLink="/hairy-paws/smart-matching/preferences">
+          </button>
+          <button
+            pButton
+            pRipple
+            label="Refresh Matches"
+            icon="pi pi-refresh"
+            (click)="loadRecommendations()"
+            [loading]="isLoading">
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Preferences Warning -->
+    <div *ngIf="!hasPreferences && !isLoading" class="no-preferences-warning mb-6">
+      <p-card styleClass="border-orange-200 bg-orange-50">
+        <div class="text-center">
+          <i class="pi pi-exclamation-triangle text-orange-500 text-4xl mb-3"></i>
+          <h3 class="text-orange-800 mb-2">Set Up Your Preferences First</h3>
+          <p class="text-orange-700 mb-4">To get personalized pet recommendations, please complete your matching preferences.</p>
+          <button
+            pButton
+            pRipple
+            label="Set Up Preferences"
+            icon="pi pi-arrow-right"
+            class="p-button-warning"
+            routerLink="/hairy-paws/smart-matching/preferences">
+          </button>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="grid">
+        <div *ngFor="let item of [1,2,3,4,5,6]" class="col-12 md:col-6 lg:col-4">
+          <p-card>
+            <p-skeleton height="200px" class="mb-3"></p-skeleton>
+            <p-skeleton height="1.5rem" class="mb-2"></p-skeleton>
+            <p-skeleton height="1rem" width="70%" class="mb-3"></p-skeleton>
+            <p-skeleton height="2rem" width="50%"></p-skeleton>
+          </p-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommendations Grid -->
+    <div *ngIf="!isLoading && hasPreferences && recommendations.length > 0" class="recommendations-grid">
+      <div class="grid">
+        <div *ngFor="let recommendation of recommendations" class="col-12 md:col-6 lg:col-4">
+          <div class="recommendation-card" [class.high-match]="getRecommendationLevel(recommendation.score) === 'high'">
+            <p-card styleClass="h-full">
+              <ng-template pTemplate="header">
+                <div class="card-image-container">
+                  <p-carousel
+                    *ngIf="recommendation.animal.images.length > 0"
+                    [value]="recommendation.animal.images"
+                    [numVisible]="1"
+                    [numScroll]="1"
+                    [circular]="true"
+                    [autoplayInterval]="0"
+                    [showIndicators]="recommendation.animal.images.length > 1"
+                    [showNavigators]="recommendation.animal.images.length > 1">
+                    <ng-template let-image pTemplate="item">
+                      <img [src]="image" [alt]="recommendation.animal.name" class="pet-image">
+                    </ng-template>
+                  </p-carousel>
+                  <img
+                    *ngIf="recommendation.animal.images.length === 0"
+                    src="https://via.placeholder.com/300x200?text=No+Image"
+                    [alt]="recommendation.animal.name"
+                    class="pet-image">
+
+                  <!-- Match Score Badge - CORREGIDO -->
+                  <div class="match-score-badge" [ngClass]="getMatchScoreClass(recommendation.compatibility.overall)">
+                    <i class="pi pi-heart"></i>
+                    {{ recommendation.compatibility.overall }}% Match
+                  </div>
+
+                  <!-- Recommendation Level Badge - CORREGIDO -->
+                  <div class="recommendation-level-badge" [ngClass]="getRecommendationLevel(recommendation.score)">
+                    {{ getRecommendationLevelLabel(getRecommendationLevel(recommendation.score)) }}
+                  </div>
+                </div>
+              </ng-template>
+
+              <div class="pet-info">
+                <div class="flex justify-content-between align-items-start mb-3">
+                  <div>
+                    <h3 class="pet-name">{{ recommendation.animal.name }}</h3>
+                    <p class="pet-details text-600">
+                      {{ recommendation.animal.breed }} • {{ recommendation.animal.age }} years • {{ recommendation.animal.gender }}
+                    </p>
+                  </div>
+                  <!-- Rating corregido -->
+                  <p-rating
+                    [ngModel]="getStarRating(recommendation)"
+                    [readonly]="true"
+                    styleClass="rating-small">
+                  </p-rating>
+                </div>
+
+                <p class="pet-description text-sm mb-3">{{ recommendation.animal.description | slice:0:120 }}...</p>
+
+                <!-- Compatibility Reasons - CORREGIDO -->
+                <div class="compatibility-section mb-3">
+                  <h5 class="compatibility-title">
+                    <i class="pi pi-check-circle text-green-600 mr-2"></i>
+                    Great Match Because:
+                  </h5>
+                  <div class="compatibility-tags">
+                    <p-tag
+                      *ngFor="let reason of recommendation.matchReasons.slice(0, 3)"
+                      [value]="reason"
+                      severity="success"
+                      styleClass="mr-1 mb-1">
+                    </p-tag>
+                  </div>
+                </div>
+
+                <!-- Potential Challenges - CORREGIDO -->
+                <div *ngIf="recommendation.concerns.length > 0" class="challenges-section mb-3">
+                  <h5 class="challenges-title">
+                    <i class="pi pi-info-circle text-orange-600 mr-2"></i>
+                    Consider:
+                  </h5>
+                  <div class="challenge-tags">
+                    <p-tag
+                      *ngFor="let concern of recommendation.concerns.slice(0, 2)"
+                      [value]="concern"
+                      severity="warn"
+                      styleClass="mr-1 mb-1">
+                    </p-tag>
+                  </div>
+                </div>
+
+                <!-- Mostrar información adicional -->
+                <div class="pet-extra-info mb-3">
+                  <div class="flex gap-2 flex-wrap">
+                    <p-tag *ngIf="recommendation.animal.vaccinated" value="Vaccinated" severity="success" styleClass="text-xs"></p-tag>
+                    <p-tag *ngIf="recommendation.animal.sterilized" value="Sterilized" severity="info" styleClass="text-xs"></p-tag>
+                    <p-tag [value]="recommendation.animal.weight + ' kg'" severity="secondary" styleClass="text-xs"></p-tag>
+                  </div>
+                </div>
+              </div>
+
+              <ng-template pTemplate="footer">
+                <div class="card-actions text-center">
+                  <button
+                    pButton
+                    pRipple
+                    label="Compatibility"
+                    icon="pi pi-chart-line"
+                    class="p-button-sm"
+                    (click)="showCompatibilityAnalysis(recommendation)">
+                  </button>
+                </div>
+              </ng-template>
+            </p-card>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- No Recommendations -->
+    <div *ngIf="!isLoading && hasPreferences && recommendations.length === 0" class="no-recommendations">
+      <p-card styleClass="text-center">
+        <div class="py-6">
+          <i class="pi pi-search text-gray-400 text-6xl mb-4"></i>
+          <h3 class="text-gray-600 mb-3">No Matches Found</h3>
+          <p class="text-gray-500 mb-4">
+            We couldn't find any pets that match your current preferences.
+            Try adjusting your criteria to see more options.
+          </p>
+          <div class="flex justify-content-center gap-2">
+            <button
+              pButton
+              pRipple
+              label="Adjust Preferences"
+              icon="pi pi-sliders-h"
+              class="p-button-outlined"
+              routerLink="/hairy-paws/smart-matching/preferences">
+            </button>
+            <button
+              pButton
+              pRipple
+              label="Browse All Pets"
+              icon="pi pi-list"
+              routerLink="/hairy-paws/pets">
+            </button>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Compatibility Analysis Dialog -->
+  <p-dialog
+    [(visible)]="showCompatibilityDialog"
+    header="Compatibility Analysis"
+    [modal]="true"
+    [style]="{width: '50vw'}"
+    [breakpoints]="{'960px': '75vw', '640px': '90vw'}">
+
+    <div *ngIf="compatibilityAnalysis" class="compatibility-dialog-content">
+      <!-- Overall Score -->
+      <div class="overall-score-section text-center mb-4">
+        <div class="score-circle">
+          <span class="score-number">{{ compatibilityAnalysis.overall_score }}%</span>
+          <span class="score-label">Overall Match</span>
+        </div>
+      </div>
+
+      <p-divider></p-divider>
+
+      <!-- Detailed Scores -->
+      <div class="detailed-scores mb-4">
+        <h4 class="mb-3">Compatibility Breakdown</h4>
+        <div class="score-item">
+          <div class="flex justify-content-between align-items-center mb-2">
+            <span>Lifestyle Compatibility</span>
+            <span class="font-semibold">{{ compatibilityAnalysis.lifestyle_compatibility }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="compatibilityAnalysis.lifestyle_compatibility"></div>
+          </div>
+        </div>
+
+        <div class="score-item">
+          <div class="flex justify-content-between align-items-center mb-2">
+            <span>Experience Match</span>
+            <span class="font-semibold">{{ compatibilityAnalysis.experience_match }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="compatibilityAnalysis.experience_match"></div>
+          </div>
+        </div>
+
+        <div class="score-item">
+          <div class="flex justify-content-between align-items-center mb-2">
+            <span>Space Suitability</span>
+            <span class="font-semibold">{{ compatibilityAnalysis.space_suitability }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="compatibilityAnalysis.space_suitability"></div>
+          </div>
+        </div>
+
+        <div class="score-item">
+          <div class="flex justify-content-between align-items-center mb-2">
+            <span>Care Requirements</span>
+            <span class="font-semibold">{{ compatibilityAnalysis.care_requirements }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="compatibilityAnalysis.care_requirements"></div>
+          </div>
+        </div>
+      </div>
+
+      <p-divider></p-divider>
+
+      <!-- Analysis Details -->
+      <div class="analysis-details">
+        <div class="analysis-section mb-4">
+          <h5 class="text-green-600 mb-2">
+            <i class="pi pi-check-circle mr-2"></i>Strengths
+          </h5>
+          <ul class="analysis-list">
+            <li *ngFor="let strength of compatibilityAnalysis.detailed_analysis.strengths">
+              {{ strength }}
+            </li>
+          </ul>
+        </div>
+
+        <div class="analysis-section mb-4" *ngIf="compatibilityAnalysis.detailed_analysis.concerns.length > 0">
+          <h5 class="text-orange-600 mb-2">
+            <i class="pi pi-exclamation-triangle mr-2"></i>Areas to Consider
+          </h5>
+          <ul class="analysis-list">
+            <li *ngFor="let concern of compatibilityAnalysis.detailed_analysis.concerns">
+              {{ concern }}
+            </li>
+          </ul>
+        </div>
+
+        <div class="analysis-section mb-4">
+          <h5 class="text-blue-600 mb-2">
+            <i class="pi pi-lightbulb mr-2"></i>Recommendations
+          </h5>
+          <ul class="analysis-list">
+            <li *ngFor="let recommendation of compatibilityAnalysis.detailed_analysis.recommendations">
+              {{ recommendation }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Prediction -->
+        <div class="prediction-section">
+          <h5 class="mb-3">Success Prediction</h5>
+          <div class="prediction-content bg-gray-50 p-3 border-round">
+            <div class="flex align-items-center gap-3 mb-2">
+              <span class="font-semibold">Success Probability:</span>
+              <p-tag
+                [value]="compatibilityAnalysis.prediction.success_probability + '%'"
+                [severity]="getSuccessProbabilitySeverity(compatibilityAnalysis.prediction.success_probability)">
+              </p-tag>
+            </div>
+            <div class="flex align-items-center gap-3 mb-2">
+              <span class="font-semibold">Adaptation Timeline:</span>
+              <span>{{ compatibilityAnalysis.prediction.adaptation_timeline }}</span>
+            </div>
+            <div class="support-needs" *ngIf="compatibilityAnalysis.prediction.support_needs.length > 0">
+              <span class="font-semibold">Support Needs:</span>
+              <div class="mt-2">
+                <p-tag
+                  *ngFor="let need of compatibilityAnalysis.prediction.support_needs"
+                  [value]="need"
+                  severity="info"
+                  styleClass="mr-1 mb-1">
+                </p-tag>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end">
+        <button
+          pButton
+          pRipple
+          label="Close"
+          class="p-button-outlined"
+          (click)="showCompatibilityDialog = false">
+        </button>
+      </div>
+    </ng-template>
+  </p-dialog>
+</div>

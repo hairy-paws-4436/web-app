@@ -1,0 +1,341 @@
+<div class="badges-container">
+  <p-toast></p-toast>
+
+  <div class="container mx-auto px-6">
+    <!-- Header -->
+    <div class="page-header mb-6">
+      <div class="flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <h1 class="text-4xl font-bold text-primary mb-2">
+            <i class="pi pi-shield mr-3"></i>
+            Badges & Achievements
+          </h1>
+          <p class="text-lg text-600">Collect badges by completing activities and reaching milestones</p>
+        </div>
+        <div class="header-actions">
+          <button
+            pButton
+            pRipple
+            label="Refresh Progress"
+            icon="pi pi-refresh"
+            class="p-button-outlined"
+            (click)="loadBadges()"
+            [loading]="isLoading">
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div *ngIf="ongStats" class="stats-overview mb-6">
+      <div class="grid">
+        <div class="col-12 md:col-4">
+          <p-card styleClass="stat-card earned-card">
+            <div class="stat-content text-center">
+              <i class="pi pi-check-circle stat-icon"></i>
+              <h3 class="stat-number">{{ getEarnedCount() }}</h3>
+              <p class="stat-label">Badges Earned</p>
+            </div>
+          </p-card>
+        </div>
+        <div class="col-12 md:col-4">
+          <p-card styleClass="stat-card progress-card">
+            <div class="stat-content text-center">
+              <i class="pi pi-clock stat-icon"></i>
+              <h3 class="stat-number">{{ getInProgressCount() }}</h3>
+              <p class="stat-label">In Progress</p>
+            </div>
+          </p-card>
+        </div>
+        <div class="col-12 md:col-4">
+          <p-card styleClass="stat-card available-card">
+            <div class="stat-content text-center">
+              <i class="pi pi-trophy stat-icon"></i>
+              <h3 class="stat-number">{{ availableBadges.length }}</h3>
+              <p class="stat-label">Total Available</p>
+            </div>
+          </p-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="grid">
+        <div *ngFor="let i of [1,2,3,4,5,6]" class="col-12 md:col-6 lg:col-4">
+          <p-card>
+            <p-skeleton height="8rem" class="mb-2"></p-skeleton>
+            <p-skeleton height="1rem" width="70%" class="mb-2"></p-skeleton>
+            <p-skeleton height="0.8rem" width="50%"></p-skeleton>
+          </p-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Badges Content -->
+    <div *ngIf="!isLoading" class="badges-content">
+      <p-tabView>
+        <!-- My Badges Tab -->
+        <p-tabPanel header="My Badges" leftIcon="pi pi-shield">
+          <div class="my-badges-section">
+            <!-- Filter Options -->
+            <div class="filter-section mb-4">
+              <div class="flex align-items-center gap-3">
+                <label class="font-medium">Filter by:</label>
+                <p-dropdown
+                  [options]="rarityFilterOptions"
+                  [(ngModel)]="selectedRarityFilter"
+                  placeholder="All Rarities"
+                  (onChange)="applyFilters()"
+                  styleClass="filter-dropdown">
+                </p-dropdown>
+                <p-dropdown
+                  [options]="categoryFilterOptions"
+                  [(ngModel)]="selectedCategoryFilter"
+                  placeholder="All Categories"
+                  (onChange)="applyFilters()"
+                  styleClass="filter-dropdown">
+                </p-dropdown>
+              </div>
+            </div>
+
+            <!-- Featured Badges -->
+            <div *ngIf="featuredBadges.length > 0" class="featured-section mb-6">
+              <h3 class="section-title mb-4">
+                <i class="pi pi-star mr-2"></i>
+                Featured Badges
+              </h3>
+              <div class="grid">
+                <div *ngFor="let badge of featuredBadges" class="col-12 md:col-6 lg:col-4">
+                  <div class="badge-card featured-badge" (click)="showBadgeDetails(badge)">
+                    <div class="badge-content">
+                      <div class="badge-icon-container" [ngClass]="getBadgeRarityClass(badge.rarity)">
+                        <i [class]="badge.icon" class="badge-icon"></i>
+                        <div class="featured-glow"></div>
+                      </div>
+                      <h4 class="badge-name">{{ badge.name }}</h4>
+                      <p class="badge-description">{{ badge.description }}</p>
+                      <div class="badge-meta">
+                        <p-tag [value]="badge.rarity" [severity]="getRaritySeverity(badge.rarity)"></p-tag>
+                        <span class="badge-points">{{ badge.points }} pts</span>
+                      </div>
+                      <div *ngIf="badge.earnedAt" class="earned-date">
+                        <i class="pi pi-calendar mr-1"></i>
+                        Earned {{ formatDate(badge.earnedAt) }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- All Badges Grid -->
+            <div class="all-badges-section">
+              <h3 class="section-title mb-4">
+                <i class="pi pi-th-large mr-2"></i>
+                All Badges ({{ filteredBadges.length }})
+              </h3>
+
+              <div *ngIf="filteredBadges.length > 0" class="badges-grid">
+                <div
+                  *ngFor="let badge of filteredBadges"
+                  class="badge-card"
+                  [class.earned]="badge.earnedAt"
+                  [class.in-progress]="!badge.earnedAt && badge.progress"
+                  [pTooltip]="getBadgeTooltip(badge)"
+                  tooltipPosition="top"
+                  (click)="showBadgeDetails(badge)">
+
+                  <div class="badge-content">
+                    <div class="badge-icon-container" [ngClass]="getBadgeRarityClass(badge.rarity)">
+                      <i [class]="badge.icon" class="badge-icon"></i>
+                      <div *ngIf="badge.earnedAt" class="earned-checkmark">
+                        <i class="pi pi-check"></i>
+                      </div>
+                    </div>
+
+                    <h5 class="badge-name">{{ badge.name }}</h5>
+
+                    <div class="badge-info">
+                      <p-tag
+                        [value]="badge.rarity"
+                        [severity]="getRaritySeverity(badge.rarity)"
+                        styleClass="rarity-tag">
+                      </p-tag>
+                      <span class="badge-points">{{ badge.points }} pts</span>
+                    </div>
+
+                    <!-- Progress Bar for In-Progress Badges -->
+                    <div *ngIf="!badge.earnedAt && badge.progress" class="badge-progress">
+                      <div class="progress-info mb-2">
+                        <span class="progress-text">{{ badge.progress.current }}/{{ badge.progress.target }}</span>
+                        <span class="progress-percentage">{{ getProgressPercentage(badge.progress) }}%</span>
+                      </div>
+                      <p-progressBar
+                        [value]="getProgressPercentage(badge.progress)"
+                        [showValue]="false"
+                        styleClass="badge-progress-bar">
+                      </p-progressBar>
+                    </div>
+
+                    <!-- Earned Date -->
+                    <div *ngIf="badge.earnedAt" class="earned-info">
+                      <i class="pi pi-check-circle text-green-600 mr-1"></i>
+                      <span class="earned-text">{{ formatDate(badge.earnedAt) }}</span>
+                    </div>
+
+                    <!-- Locked State -->
+                    <div *ngIf="!badge.earnedAt && !badge.progress" class="locked-state">
+                      <i class="pi pi-lock text-gray-400"></i>
+                      <span class="locked-text">Not started</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- No Results -->
+              <div *ngIf="filteredBadges.length === 0" class="no-results text-center py-6">
+                <i class="pi pi-search text-gray-400 text-4xl mb-3"></i>
+                <h4 class="text-gray-600 mb-2">No badges match your filters</h4>
+                <p class="text-gray-500">Try adjusting your filter criteria</p>
+                <button
+                  pButton
+                  pRipple
+                  label="Clear Filters"
+                  class="p-button-outlined mt-3"
+                  (click)="clearFilters()">
+                </button>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- Achievements Tab -->
+        <p-tabPanel header="Recent Achievements" leftIcon="pi pi-star">
+          <div class="achievements-section">
+            <!-- Updated to use ongStats.recentAchievements instead of ongStats.achievements -->
+            <div *ngIf="ongStats && ongStats.recentAchievements.length > 0" class="achievements-timeline">
+              <h3 class="section-title mb-4">
+                <i class="pi pi-trophy mr-2"></i>
+                Recent Accomplishments
+              </h3>
+
+              <div class="achievements-list">
+                <div
+                  *ngFor="let achievement of ongStats.recentAchievements.slice(0, 10)"
+                  class="achievement-item">
+                  <div class="achievement-icon">
+                    <i [class]="achievement.icon"></i>
+                  </div>
+                  <div class="achievement-content">
+                    <h5 class="achievement-title">{{ achievement.title }}</h5>
+                    <p class="achievement-description">{{ achievement.description }}</p>
+                    <div class="achievement-meta">
+                      <p-tag [value]="achievement.points + ' points'" severity="success"></p-tag>
+                      <span class="achievement-date">{{ formatDate(achievement.unlockedAt) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Updated condition to check recentAchievements -->
+            <div *ngIf="!ongStats || ongStats.recentAchievements.length === 0" class="no-achievements text-center py-6">
+              <i class="pi pi-star text-gray-400 text-6xl mb-4"></i>
+              <h3 class="text-gray-600 mb-2">No Achievements Yet</h3>
+              <p class="text-gray-500 mb-4">Start completing activities to unlock your first achievements!</p>
+              <button
+                pButton
+                pRipple
+                label="View Available Badges"
+                icon="pi pi-arrow-right"
+                (click)="switchToMyBadges()">
+              </button>
+            </div>
+          </div>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+  </div>
+
+  <!-- Badge Details Dialog -->
+  <p-dialog
+    [(visible)]="showBadgeDialog"
+    [header]="selectedBadge?.name || 'Badge Details'"
+    [modal]="true"
+    [style]="{width: '500px'}"
+    [breakpoints]="{'960px': '75vw', '640px': '90vw'}">
+
+    <div *ngIf="selectedBadge" class="badge-dialog-content">
+      <div class="dialog-badge-display text-center mb-4">
+        <div class="dialog-badge-icon" [ngClass]="getBadgeRarityClass(selectedBadge.rarity)">
+          <i [class]="selectedBadge.icon"></i>
+          <div *ngIf="selectedBadge.earnedAt" class="dialog-earned-checkmark">
+            <i class="pi pi-check"></i>
+          </div>
+        </div>
+        <h3 class="dialog-badge-name">{{ selectedBadge.name }}</h3>
+        <div class="dialog-badge-meta">
+          <p-tag
+            [value]="selectedBadge.rarity"
+            [severity]="getRaritySeverity(selectedBadge.rarity)"
+            styleClass="mr-2">
+          </p-tag>
+          <p-tag [value]="selectedBadge.points + ' points'" severity="info"></p-tag>
+        </div>
+      </div>
+
+      <div class="badge-description-full mb-4">
+        <h5>Description</h5>
+        <p>{{ selectedBadge.description }}</p>
+      </div>
+
+      <div *ngIf="selectedBadge.progress && !selectedBadge.earnedAt" class="badge-progress-detail mb-4">
+        <h5>Progress</h5>
+        <div class="progress-detail">
+          <div class="flex justify-content-between align-items-center mb-2">
+            <span>{{ selectedBadge.progress.current }} / {{ selectedBadge.progress.target }}</span>
+            <span class="font-semibold">{{ getProgressPercentage(selectedBadge.progress) }}%</span>
+          </div>
+          <p-progressBar
+            [value]="getProgressPercentage(selectedBadge.progress)"
+            styleClass="detailed-progress">
+          </p-progressBar>
+        </div>
+      </div>
+
+      <div *ngIf="selectedBadge.earnedAt" class="badge-earned-detail">
+        <h5>Earned</h5>
+        <div class="earned-detail-content">
+          <i class="pi pi-calendar mr-2"></i>
+          <span>{{ formatDetailedDate(selectedBadge.earnedAt) }}</span>
+        </div>
+      </div>
+
+      <div class="badge-category-info">
+        <h5>Category</h5>
+        <p-tag [value]="selectedBadge.category" severity="secondary"></p-tag>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end gap-2">
+        <button
+          pButton
+          pRipple
+          label="Close"
+          class="p-button-outlined"
+          (click)="showBadgeDialog = false">
+        </button>
+        <button
+          *ngIf="selectedBadge?.earnedAt"
+          pButton
+          pRipple
+          label="Set as Featured"
+          icon="pi pi-star"
+          (click)="setAsFeatured(selectedBadge!)">
+        </button>
+      </div>
+    </ng-template>
+  </p-dialog>
+</div>

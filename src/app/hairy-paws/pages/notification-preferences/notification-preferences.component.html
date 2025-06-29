@@ -1,0 +1,550 @@
+<div class="notification-preferences-container">
+  <p-toast></p-toast>
+
+  <div class="container mx-auto px-6">
+    <!-- Header -->
+    <div class="page-header mb-6">
+      <h1 class="text-4xl font-bold text-primary mb-2">
+        <i class="pi pi-bell mr-3"></i>
+        Notification Preferences
+      </h1>
+      <p class="text-lg text-600">Customize how and when you receive notifications</p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-8">
+      <p-progressSpinner></p-progressSpinner>
+      <p class="mt-3 text-600">Loading your preferences...</p>
+    </div>
+
+    <!-- Main Content -->
+    <div *ngIf="!isLoading" class="preferences-content">
+      <!-- Quick Templates -->
+      <p-card class="mb-4" header="Quick Setup">
+        <p class="mb-4 text-600">Choose a preset template or customize your preferences below:</p>
+        <div class="flex flex-wrap gap-2">
+          <button
+            *ngFor="let template of availableTemplates"
+            pButton
+            pRipple
+            [label]="template.name"
+            class="p-button-outlined p-button-sm"
+            (click)="applyTemplate(template.id || '')"
+            [disabled]="isSaving"
+            [pTooltip]="template.description"
+            tooltipPosition="top">
+          </button>
+        </div>
+      </p-card>
+
+      <!-- Global Settings -->
+      <p-card class="mb-4" header="Global Settings">
+        <div class="grid">
+          <div class="col-12 md:col-6">
+            <div class="flex justify-content-between align-items-center">
+              <div class="preference-info">
+                <h5 class="mb-1">Enable All Notifications</h5>
+                <p class="text-sm text-600 mb-0">Master toggle for all notifications</p>
+              </div>
+              <p-toggleButton
+                [(ngModel)]="preferences.globalNotificationsEnabled"
+                onLabel="On"
+                offLabel="Off">
+              </p-toggleButton>
+            </div>
+          </div>
+          <div class="col-12 md:col-6">
+            <label class="block font-medium mb-2">Preferred Channels</label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                *ngFor="let channel of channelOptions"
+                pButton
+                pRipple
+                [label]="channel.label"
+                [icon]="channel.icon"
+                class="p-button-sm"
+                [class]="isChannelEnabled(channel.value) ? 'p-button' : 'p-button-outlined'"
+                (click)="toggleChannel(channel.value)">
+              </button>
+            </div>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Preference Tabs -->
+      <p-tabView>
+        <!-- Adoption Notifications -->
+        <p-tabPanel header="Adoptions" leftIcon="pi pi-heart">
+          <div class="notification-section">
+            <div class="section-header mb-4">
+              <h3 class="text-xl font-semibold">Adoption Related Notifications</h3>
+              <p class="text-600">Manage notifications for adoption requests and status updates</p>
+            </div>
+
+            <div class="grid">
+              <div class="col-12 md:col-6">
+                <p-panel header="Adoption Requests" [toggleable]="true">
+                  <div class="preference-item">
+                    <div class="flex justify-content-between align-items-center mb-3">
+                      <div class="preference-info">
+                        <h5 class="mb-1">New Adoption Requests</h5>
+                        <p class="text-sm text-600 mb-0">When someone wants to adopt your pets</p>
+                      </div>
+                      <p-checkbox
+                        [(ngModel)]="preferences.adoptionRequestsEnabled"
+                        binary="true">
+                      </p-checkbox>
+                    </div>
+                    <div *ngIf="preferences.adoptionRequestsEnabled">
+                      <label class="block font-medium mb-2">Frequency</label>
+                      <p-dropdown
+                        [options]="frequencyOptions"
+                        [(ngModel)]="preferences.adoptionRequestsFrequency"
+                        placeholder="Select frequency"
+                        styleClass="w-full">
+                      </p-dropdown>
+                    </div>
+                  </div>
+                </p-panel>
+              </div>
+
+              <div class="col-12 md:col-6">
+                <p-panel header="Adoption Status" [toggleable]="true">
+                  <div class="preference-item">
+                    <div class="flex justify-content-between align-items-center mb-3">
+                      <div class="preference-info">
+                        <h5 class="mb-1">Status Updates</h5>
+                        <p class="text-sm text-600 mb-0">Updates on adoption process status</p>
+                      </div>
+                      <p-checkbox
+                        [(ngModel)]="preferences.adoptionStatusEnabled"
+                        binary="true">
+                      </p-checkbox>
+                    </div>
+                    <div *ngIf="preferences.adoptionStatusEnabled">
+                      <label class="block font-medium mb-2">Frequency</label>
+                      <p-dropdown
+                        [options]="frequencyOptions"
+                        [(ngModel)]="preferences.adoptionStatusFrequency"
+                        placeholder="Select frequency"
+                        styleClass="w-full">
+                      </p-dropdown>
+                    </div>
+                  </div>
+                </p-panel>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- Matching & Discovery -->
+        <p-tabPanel header="Matches & Discovery" leftIcon="pi pi-search">
+          <div class="notification-section">
+            <div class="section-header mb-4">
+              <h3 class="text-xl font-semibold">Smart Matching & New Animals</h3>
+              <p class="text-600">Get notified about potential matches and new pets</p>
+            </div>
+
+            <div class="grid">
+              <div class="col-12 md:col-6">
+                <p-panel header="New Matches" [toggleable]="true">
+                  <div class="preference-item">
+                    <div class="flex justify-content-between align-items-center mb-3">
+                      <div class="preference-info">
+                        <h5 class="mb-1">Smart Matches</h5>
+                        <p class="text-sm text-600 mb-0">Pets that match your preferences</p>
+                      </div>
+                      <p-checkbox
+                        [(ngModel)]="preferences.newMatchesEnabled"
+                        binary="true">
+                      </p-checkbox>
+                    </div>
+                    <div *ngIf="preferences.newMatchesEnabled">
+                      <label class="block font-medium mb-2">Frequency</label>
+                      <p-dropdown
+                        [options]="frequencyOptions"
+                        [(ngModel)]="preferences.newMatchesFrequency"
+                        placeholder="Select frequency"
+                        styleClass="w-full">
+                      </p-dropdown>
+                    </div>
+                  </div>
+                </p-panel>
+              </div>
+
+              <div class="col-12 md:col-6">
+                <p-panel header="New Animals" [toggleable]="true">
+                  <div class="preference-item">
+                    <div class="flex justify-content-between align-items-center mb-3">
+                      <div class="preference-info">
+                        <h5 class="mb-1">New Animals Added</h5>
+                        <p class="text-sm text-600 mb-0">When new pets are added to the platform</p>
+                      </div>
+                      <p-checkbox
+                        [(ngModel)]="preferences.newAnimalsEnabled"
+                        binary="true">
+                      </p-checkbox>
+                    </div>
+                    <div *ngIf="preferences.newAnimalsEnabled">
+                      <label class="block font-medium mb-2">Frequency</label>
+                      <p-dropdown
+                        [options]="frequencyOptions"
+                        [(ngModel)]="preferences.newAnimalsFrequency"
+                        placeholder="Select frequency"
+                        styleClass="w-full">
+                      </p-dropdown>
+                    </div>
+                  </div>
+                </p-panel>
+              </div>
+
+              <!-- Filtering Preferences -->
+              <div class="col-12">
+                <p-panel header="Notification Filters" [toggleable]="true">
+                  <div class="grid">
+                    <div class="col-12 md:col-4">
+                      <label class="block font-medium mb-2">Preferred Animal Types</label>
+                      <p-multiSelect
+                        [options]="animalTypeOptions"
+                        [(ngModel)]="preferences.preferredAnimalTypesForNotifications"
+                        placeholder="Select animal types"
+                        styleClass="w-full">
+                      </p-multiSelect>
+                    </div>
+                    <div class="col-12 md:col-4">
+                      <label class="block font-medium mb-2">Max Distance (km)</label>
+                      <p-inputNumber
+                        [(ngModel)]="preferences.maxDistanceNotificationsKm"
+                        [min]="1"
+                        [max]="500"
+                        suffix=" km"
+                        styleClass="w-full">
+                      </p-inputNumber>
+                    </div>
+                    <div class="col-12 md:col-4">
+                      <div class="flex justify-content-between align-items-center mt-4">
+                        <div class="preference-info">
+                          <h5 class="mb-1">High Compatibility Only</h5>
+                          <p class="text-sm text-600 mb-0">Only show highly compatible matches</p>
+                        </div>
+                        <p-checkbox
+                          [(ngModel)]="preferences.onlyHighCompatibility"
+                          binary="true">
+                        </p-checkbox>
+                      </div>
+                    </div>
+                  </div>
+                </p-panel>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- Events & Donations -->
+        <p-tabPanel header="Events & Donations" leftIcon="pi pi-calendar">
+          <div class="notification-section">
+            <div class="section-header mb-4">
+              <h3 class="text-xl font-semibold">Events & Donation Notifications</h3>
+              <p class="text-600">Stay updated on events and donation confirmations</p>
+            </div>
+
+            <div class="grid">
+              <div class="col-12 md:col-6">
+                <p-panel header="Events" [toggleable]="true">
+                  <div class="preference-item mb-4">
+                    <div class="flex justify-content-between align-items-center mb-3">
+                      <div class="preference-info">
+                        <h5 class="mb-1">Event Reminders</h5>
+                        <p class="text-sm text-600 mb-0">Reminders for upcoming events</p>
+                      </div>
+                      <p-checkbox
+                        [(ngModel)]="preferences.eventRemindersEnabled"
+                        binary="true">
+                      </p-checkbox>
+                    </div>
+                    <div *ngIf="preferences.eventRemindersEnabled">
+                      <label class="block font-medium mb-2">Frequency</label>
+                      <p-dropdown
+                        [options]="frequencyOptions"
+                        [(ngModel)]="preferences.eventRemindersFrequency"
+                        placeholder="Select frequency"
+                        styleClass="w-full">
+                      </p-dropdown>
+                    </div>
+                  </div>
+
+                  <p-divider></p-divider>
+
+                  <div class="preference-item">
+                    <div class="flex justify-content-between align-items-center mb-3">
+                      <div class="preference-info">
+                        <h5 class="mb-1">New Events</h5>
+                        <p class="text-sm text-600 mb-0">When new events are created</p>
+                      </div>
+                      <p-checkbox
+                        [(ngModel)]="preferences.newEventsEnabled"
+                        binary="true">
+                      </p-checkbox>
+                    </div>
+                    <div *ngIf="preferences.newEventsEnabled">
+                      <label class="block font-medium mb-2">Frequency</label>
+                      <p-dropdown
+                        [options]="frequencyOptions"
+                        [(ngModel)]="preferences.newEventsFrequency"
+                        placeholder="Select frequency"
+                        styleClass="w-full">
+                      </p-dropdown>
+                    </div>
+                  </div>
+                </p-panel>
+              </div>
+
+              <div class="col-12 md:col-6">
+                <p-panel header="Donations" [toggleable]="true">
+                  <div class="preference-item">
+                    <div class="flex justify-content-between align-items-center mb-3">
+                      <div class="preference-info">
+                        <h5 class="mb-1">Donation Confirmations</h5>
+                        <p class="text-sm text-600 mb-0">When donations are confirmed</p>
+                      </div>
+                      <p-checkbox
+                        [(ngModel)]="preferences.donationConfirmationsEnabled"
+                        binary="true">
+                      </p-checkbox>
+                    </div>
+                    <div *ngIf="preferences.donationConfirmationsEnabled">
+                      <label class="block font-medium mb-2">Frequency</label>
+                      <p-dropdown
+                        [options]="frequencyOptions"
+                        [(ngModel)]="preferences.donationConfirmationsFrequency"
+                        placeholder="Select frequency"
+                        styleClass="w-full">
+                      </p-dropdown>
+                    </div>
+                  </div>
+                </p-panel>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- Follow-ups & Account -->
+        <p-tabPanel header="Follow-ups & Account" leftIcon="pi pi-user">
+          <div class="notification-section">
+            <div class="section-header mb-4">
+              <h3 class="text-xl font-semibold">Follow-ups & Account Updates</h3>
+              <p class="text-600">Manage follow-up reminders and account notifications</p>
+            </div>
+
+            <div class="grid">
+              <div class="col-12 md:col-6">
+                <p-panel header="Follow-ups" [toggleable]="true">
+                  <div class="preference-item">
+                    <div class="flex justify-content-between align-items-center mb-3">
+                      <div class="preference-info">
+                        <h5 class="mb-1">Follow-up Reminders</h5>
+                        <p class="text-sm text-600 mb-0">Post-adoption follow-up surveys</p>
+                      </div>
+                      <p-checkbox
+                        [(ngModel)]="preferences.followupRemindersEnabled"
+                        binary="true">
+                      </p-checkbox>
+                    </div>
+                    <div *ngIf="preferences.followupRemindersEnabled">
+                      <label class="block font-medium mb-2">Frequency</label>
+                      <p-dropdown
+                        [options]="frequencyOptions"
+                        [(ngModel)]="preferences.followupRemindersFrequency"
+                        placeholder="Select frequency"
+                        styleClass="w-full">
+                      </p-dropdown>
+                    </div>
+                  </div>
+                </p-panel>
+              </div>
+
+              <div class="col-12 md:col-6">
+                <p-panel header="Account Updates" [toggleable]="true">
+                  <div class="preference-item">
+                    <div class="flex justify-content-between align-items-center mb-3">
+                      <div class="preference-info">
+                        <h5 class="mb-1">Account Updates</h5>
+                        <p class="text-sm text-600 mb-0">Important account and security updates</p>
+                      </div>
+                      <p-checkbox
+                        [(ngModel)]="preferences.accountUpdatesEnabled"
+                        binary="true">
+                      </p-checkbox>
+                    </div>
+                    <div *ngIf="preferences.accountUpdatesEnabled">
+                      <label class="block font-medium mb-2">Frequency</label>
+                      <p-dropdown
+                        [options]="frequencyOptions"
+                        [(ngModel)]="preferences.accountUpdatesFrequency"
+                        placeholder="Select frequency"
+                        styleClass="w-full">
+                      </p-dropdown>
+                    </div>
+                  </div>
+                </p-panel>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- Marketing & Timing -->
+        <p-tabPanel header="Marketing & Timing" leftIcon="pi pi-clock">
+          <div class="notification-section">
+            <div class="section-header mb-4">
+              <h3 class="text-xl font-semibold">Marketing & Timing Preferences</h3>
+              <p class="text-600">Control marketing emails and notification timing</p>
+            </div>
+
+            <div class="grid">
+              <!-- Marketing Preferences -->
+              <div class="col-12 md:col-6">
+                <p-panel header="Marketing Communications" [toggleable]="true">
+                  <div class="preference-item mb-3">
+                    <div class="flex justify-content-between align-items-center">
+                      <div class="preference-info">
+                        <h5 class="mb-1">Promotional Emails</h5>
+                        <p class="text-sm text-600 mb-0">Special offers and promotions</p>
+                      </div>
+                      <p-checkbox
+                        [(ngModel)]="preferences.promotionalEnabled"
+                        binary="true">
+                      </p-checkbox>
+                    </div>
+                  </div>
+
+                  <p-divider></p-divider>
+
+                  <div class="preference-item">
+                    <div class="flex justify-content-between align-items-center">
+                      <div class="preference-info">
+                        <h5 class="mb-1">Newsletter</h5>
+                        <p class="text-sm text-600 mb-0">Monthly newsletter with tips and updates</p>
+                      </div>
+                      <p-checkbox
+                        [(ngModel)]="preferences.newsletterEnabled"
+                        binary="true">
+                      </p-checkbox>
+                    </div>
+                  </div>
+                </p-panel>
+              </div>
+
+              <!-- Quiet Hours -->
+              <div class="col-12 md:col-6">
+                <p-panel header="Quiet Hours" [toggleable]="true">
+                  <div class="quiet-hours-section">
+                    <div class="flex justify-content-between align-items-center mb-3">
+                      <div class="preference-info">
+                        <h5 class="mb-1">Enable Quiet Hours</h5>
+                        <p class="text-sm text-600 mb-0">Pause non-urgent notifications during specified hours</p>
+                      </div>
+                      <p-toggleButton
+                        [(ngModel)]="preferences.quietHoursEnabled"
+                        onLabel="On"
+                        offLabel="Off">
+                      </p-toggleButton>
+                    </div>
+
+                    <div *ngIf="preferences.quietHoursEnabled" class="quiet-hours-config">
+                      <p-divider></p-divider>
+
+                      <div class="grid">
+                        <div class="col-6">
+                          <label class="block font-medium mb-2">Start Time</label>
+                          <input
+                            type="time"
+                            [value]="formatTime(preferences.quietHoursStart)"
+                            (change)="updateQuietHoursStart($any($event.target).value)"
+                            class="w-full p-inputtext">
+                        </div>
+                        <div class="col-6">
+                          <label class="block font-medium mb-2">End Time</label>
+                          <input
+                            type="time"
+                            [value]="formatTime(preferences.quietHoursEnd)"
+                            (change)="updateQuietHoursEnd($any($event.target).value)"
+                            class="w-full p-inputtext">
+                        </div>
+                      </div>
+
+                      <div class="quiet-hours-info mt-3 p-3 bg-blue-50 border-round">
+                        <div class="flex align-items-center gap-2">
+                          <i class="pi pi-info-circle text-blue-600"></i>
+                          <span class="text-blue-800 text-sm">Emergency notifications will still be delivered during quiet hours</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </p-panel>
+              </div>
+
+              <!-- Language & Timezone -->
+              <div class="col-12">
+                <p-panel header="Language & Timezone" [toggleable]="true">
+                  <div class="grid">
+                    <div class="col-12 md:col-6">
+                      <label class="block font-medium mb-2">Notification Language</label>
+                      <p-dropdown
+                        [options]="languageOptions"
+                        [(ngModel)]="preferences.language"
+                        placeholder="Select language"
+                        styleClass="w-full">
+                      </p-dropdown>
+                    </div>
+                    <div class="col-12 md:col-6">
+                      <label class="block font-medium mb-2">Timezone</label>
+                      <p-dropdown
+                        [options]="timezoneOptions"
+                        [(ngModel)]="preferences.timezone"
+                        placeholder="Select timezone"
+                        styleClass="w-full"
+                        [filter]="true">
+                      </p-dropdown>
+                    </div>
+                  </div>
+                </p-panel>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+      </p-tabView>
+
+      <!-- Save Button -->
+      <div class="save-section mt-6">
+        <p-card>
+          <div class="flex justify-content-between align-items-center">
+            <div>
+              <h4 class="mb-1">Save Your Preferences</h4>
+              <p class="text-600 mb-0">Your changes will take effect immediately</p>
+            </div>
+            <div class="flex gap-2">
+              <button
+                pButton
+                pRipple
+                label="Reset to Default"
+                icon="pi pi-refresh"
+                class="p-button-outlined"
+                (click)="resetToDefault()"
+                [disabled]="isSaving">
+              </button>
+              <button
+                pButton
+                pRipple
+                label="Save Preferences"
+                icon="pi pi-check"
+                class="p-button-success"
+                (click)="savePreferences()"
+                [loading]="isSaving">
+              </button>
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </div>
+  </div>
+</div>

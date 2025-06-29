@@ -1,0 +1,466 @@
+<div class="gamification-dashboard">
+  <p-toast></p-toast>
+
+  <div class="container mx-auto px-6">
+    <!-- Header -->
+    <div class="page-header mb-6">
+      <div class="flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <h1 class="text-4xl font-bold text-primary mb-2">
+            <i class="pi pi-trophy mr-3"></i>
+            Gamification Dashboard
+          </h1>
+          <p class="text-lg text-600">Track your ONG's achievements and community impact</p>
+        </div>
+        <div class="header-actions flex gap-2">
+          <button
+            pButton
+            pRipple
+            label="Set Monthly Goal"
+            icon="pi pi-target"
+            class="p-button-outlined"
+            (click)="showGoalDialog = true">
+          </button>
+          <button
+            pButton
+            pRipple
+            label="View Leaderboard"
+            icon="pi pi-chart-bar"
+            routerLink="/hairy-paws/gamification/leaderboard">
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="grid">
+        <div class="col-12 md:col-3" *ngFor="let i of [1,2,3,4]">
+          <p-card>
+            <p-skeleton height="3rem" class="mb-2"></p-skeleton>
+            <p-skeleton height="1rem" width="70%"></p-skeleton>
+          </p-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div *ngIf="!isLoading && ongStats" class="dashboard-content">
+      <!-- Stats Overview -->
+      <div class="stats-overview mb-6">
+        <div class="grid">
+          <!-- Level & Points -->
+          <div class="col-12 md:col-3">
+            <p-card styleClass="stat-card level-card">
+              <div class="stat-content text-center">
+                <div class="level-circle">
+                  <span class="level-number">{{ ongStats.gamification.currentLevel }}</span>
+                  <span class="level-label">Level</span>
+                </div>
+                <h4 class="stat-title">Current Level</h4>
+                <div class="progress-info">
+                  <p class="mb-2">{{ ongStats.gamification.totalPoints }} / {{ getNextLevelPoints() }} points</p>
+                  <p-progressBar
+                    [value]="getLevelProgress()"
+                    [showValue]="false"
+                    styleClass="level-progress">
+                  </p-progressBar>
+                </div>
+              </div>
+            </p-card>
+          </div>
+
+          <!-- Rank -->
+          <div class="col-12 md:col-3">
+            <p-card styleClass="stat-card rank-card">
+              <div class="stat-content text-center">
+                <div class="rank-display">
+                  <i class="pi pi-trophy rank-icon"></i>
+                  <span class="rank-number">#{{ ongStats.gamification.globalRank }}</span>
+                </div>
+                <h4 class="stat-title">Community Rank</h4>
+                <p class="stat-subtitle">Out of {{ getTotalOngs() }} ONGs</p>
+              </div>
+            </p-card>
+          </div>
+
+          <!-- Monthly Goal -->
+          <div class="col-12 md:col-3">
+            <p-card styleClass="stat-card goal-card">
+              <div class="stat-content text-center">
+                <div class="goal-progress">
+                  <div class="goal-circle">
+                    <span class="goal-percentage">{{ getMonthlyGoalProgress() }}%</span>
+                  </div>
+                  <p-progressBar
+                    [value]="getMonthlyGoalProgress()"
+                    [showValue]="false"
+                    styleClass="goal-progress-bar">
+                  </p-progressBar>
+                </div>
+                <h4 class="stat-title">Monthly Goal</h4>
+                <p class="stat-subtitle">{{ ongStats.gamification.monthlyAdoptionsCurrent }} / {{ getMonthlyTarget() }} adoptions</p>
+              </div>
+            </p-card>
+          </div>
+
+          <!-- Total Points -->
+          <div class="col-12 md:col-3">
+            <p-card styleClass="stat-card points-card">
+              <div class="stat-content text-center">
+                <div class="points-display">
+                  <i class="pi pi-star-fill points-icon"></i>
+                  <span class="points-number">{{ ongStats.gamification.totalPoints }}</span>
+                </div>
+                <h4 class="stat-title">Total Points</h4>
+                <p class="stat-subtitle">+{{ ongStats.gamification.monthlyPoints }} this month</p>
+              </div>
+            </p-card>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Tabs -->
+      <p-tabView>
+        <!-- Achievements & Badges -->
+        <p-tabPanel header="Achievements" leftIcon="pi pi-star">
+          <div class="achievements-section">
+            <div class="grid">
+              <!-- Recent Achievements -->
+              <div class="col-12 lg:col-6">
+                <p-card header="Recent Achievements" styleClass="h-full">
+                  <div class="achievements-list">
+                    <div
+                      *ngFor="let achievement of ongStats.recentAchievements.slice(0, 5)"
+                      class="achievement-item">
+                      <div class="achievement-icon">
+                        <i [class]="achievement.icon" class="achievement-icon-img"></i>
+                      </div>
+                      <div class="achievement-info">
+                        <h5 class="achievement-title">{{ achievement.title }}</h5>
+                        <p class="achievement-description">{{ achievement.description }}</p>
+                        <div class="achievement-meta">
+                          <p-tag [value]="achievement.points + ' points'" severity="success"></p-tag>
+                          <span class="achievement-date">{{ formatDate(achievement.unlockedAt) }}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div *ngIf="ongStats.recentAchievements.length === 0" class="empty-state text-center py-4">
+                      <i class="pi pi-star text-gray-400 text-4xl mb-3"></i>
+                      <p class="text-gray-500">No achievements yet. Keep working to unlock your first achievement!</p>
+                    </div>
+                  </div>
+                </p-card>
+              </div>
+
+              <!-- Next Badges -->
+              <div class="col-12 lg:col-6">
+                <p-card header="Next Badges to Earn" styleClass="h-full">
+                  <div class="badges-grid">
+                    <div
+                      *ngFor="let badge of ongStats.nextBadges"
+                      class="badge-item in-progress"
+                      [pTooltip]="'Progress: ' + badge.current + '/' + badge.target"
+                      tooltipPosition="top">
+                      <div class="badge-icon common">
+                        <i class="pi pi-trophy"></i>
+                      </div>
+                      <h6 class="badge-name">{{ badge.badge }}</h6>
+                      <div class="badge-progress">
+                        <p-progressBar
+                          [value]="(+badge.current / badge.target) * 100"
+                          [showValue]="false"
+                          styleClass="badge-progress-bar">
+                        </p-progressBar>
+                        <span class="progress-text">{{ badge.current }}/{{ badge.target }}</span>
+                      </div>
+                    </div>
+
+                    <div *ngIf="ongStats.nextBadges.length === 0" class="empty-state text-center py-4">
+                      <i class="pi pi-shield text-gray-400 text-4xl mb-3"></i>
+                      <p class="text-gray-500">No badges available. Check back later!</p>
+                    </div>
+                  </div>
+                </p-card>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- Statistics -->
+        <p-tabPanel header="Statistics" leftIcon="pi pi-chart-line">
+          <div class="statistics-section">
+            <div class="grid">
+              <!-- Monthly Stats -->
+              <div class="col-12 lg:col-6">
+                <p-card header="Current Performance">
+                  <div class="monthly-stats">
+                    <div class="stat-row">
+                      <div class="stat-icon adoptions">
+                        <i class="pi pi-heart"></i>
+                      </div>
+                      <div class="stat-details">
+                        <span class="stat-label">Total Adoptions</span>
+                        <span class="stat-value">{{ ongStats.gamification.totalAdoptionsFacilitated }}</span>
+                      </div>
+                    </div>
+
+                    <div class="stat-row">
+                      <div class="stat-icon events">
+                        <i class="pi pi-calendar"></i>
+                      </div>
+                      <div class="stat-details">
+                        <span class="stat-label">Events Organized</span>
+                        <span class="stat-value">{{ ongStats.gamification.eventsOrganized }}</span>
+                      </div>
+                    </div>
+
+                    <div class="stat-row">
+                      <div class="stat-icon donations">
+                        <i class="pi pi-dollar"></i>
+                      </div>
+                      <div class="stat-details">
+                        <span class="stat-label">Donations Received</span>
+                        <span class="stat-value">S/ {{ ongStats.gamification.donationsReceived }}</span>
+                      </div>
+                    </div>
+
+                    <div class="stat-row">
+                      <div class="stat-icon">
+                        <i class="pi pi-chart-line"></i>
+                      </div>
+                      <div class="stat-details">
+                        <span class="stat-label">Success Rate</span>
+                        <span class="stat-value">{{ ongStats.gamification.adoptionSuccessRate }}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </p-card>
+              </div>
+
+              <!-- Activity Overview -->
+              <div class="col-12 lg:col-6">
+                <p-card header="Activity Overview">
+                  <div class="yearly-stats">
+                    <div class="yearly-stat-item">
+                      <div class="yearly-stat-number">{{ ongStats.gamification.animalsPublished }}</div>
+                      <div class="yearly-stat-label">Animals Published</div>
+                    </div>
+
+                    <div class="yearly-stat-item">
+                      <div class="yearly-stat-number">{{ ongStats.gamification.currentStreakDays }}</div>
+                      <div class="yearly-stat-label">Current Streak (days)</div>
+                    </div>
+
+                    <div class="yearly-stat-item">
+                      <div class="yearly-stat-number">{{ ongStats.gamification.longestStreakDays }}</div>
+                      <div class="yearly-stat-label">Longest Streak</div>
+                    </div>
+
+                    <div class="yearly-stat-item">
+                      <div class="yearly-stat-number">{{ ongStats.gamification.profileCompletionPercentage }}%</div>
+                      <div class="yearly-stat-label">Profile Complete</div>
+                    </div>
+                  </div>
+                </p-card>
+              </div>
+
+              <!-- Progress Chart -->
+              <div class="col-12">
+                <p-card header="Monthly Progress">
+                  <p-chart
+                    type="line"
+                    [data]="chartData"
+                    [options]="chartOptions"
+                    height="300px">
+                  </p-chart>
+                </p-card>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- Leaderboard Preview -->
+        <p-tabPanel header="Community" leftIcon="pi pi-users">
+          <div class="community-section">
+            <div class="grid">
+              <!-- Top Performers -->
+              <div class="col-12 lg:col-8">
+                <p-card header="Community Leaderboard">
+                  <div class="leaderboard-preview">
+                    <div
+                      *ngFor="let entry of leaderboard.slice(0, 10); let i = index"
+                      class="leaderboard-entry"
+                      [class.current-user]="entry.ongId === ongStats.gamification.ongId">
+                      <div class="rank-position">
+                        <span class="rank-number">#{{ entry.rank }}</span>
+                        <i *ngIf="i < 3" class="pi pi-crown rank-crown" [ngClass]="getCrownClass(i)"></i>
+                      </div>
+                      <div class="ong-info">
+                        <img
+                          *ngIf="entry.ongLogo"
+                          [src]="entry.ongLogo"
+                          [alt]="entry.ongName"
+                          class="ong-logo">
+                        <div class="ong-avatar" *ngIf="!entry.ongLogo">
+                          {{ getOngInitials(entry.ongName) }}
+                        </div>
+                        <div class="ong-details">
+                          <h6 class="ong-name">{{ entry.ongName }}</h6>
+                          <div class="ong-stats">
+                            <span>Level {{ entry.level }}</span>
+                            <span>•</span>
+                            <span>{{ entry.adoptions }} adoptions</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ong-points">
+                        <span class="points-value">{{ entry.points }}</span>
+                        <span class="points-label">points</span>
+                      </div>
+                    </div>
+
+                    <div *ngIf="leaderboard.length === 0" class="empty-state text-center py-4">
+                      <p-progressSpinner [style]="{'width': '30px', 'height': '30px'}"></p-progressSpinner>
+                      <p class="mt-3 text-gray-500">Loading leaderboard...</p>
+                    </div>
+                  </div>
+
+                  <ng-template pTemplate="footer">
+                    <div class="text-center">
+                      <button
+                        pButton
+                        pRipple
+                        label="View Full Leaderboard"
+                        icon="pi pi-external-link"
+                        class="p-button-outlined"
+                        routerLink="/hairy-paws/gamification/leaderboard">
+                      </button>
+                    </div>
+                  </ng-template>
+                </p-card>
+              </div>
+
+              <!-- Quick Actions -->
+              <div class="col-12 lg:col-4">
+                <p-card header="Quick Actions">
+                  <div class="quick-actions">
+                    <button
+                      pButton
+                      pRipple
+                      label="Set Monthly Goal"
+                      icon="pi pi-target"
+                      class="action-button w-full mb-3"
+                      (click)="showGoalDialog = true">
+                    </button>
+
+                    <button
+                      pButton
+                      pRipple
+                      label="View All Badges"
+                      icon="pi pi-shield"
+                      class="action-button w-full mb-3 p-button-outlined"
+                      routerLink="/hairy-paws/gamification/badges">
+                    </button>
+
+                    <button
+                      pButton
+                      pRipple
+                      label="Community Challenges"
+                      icon="pi pi-trophy"
+                      class="action-button w-full mb-3 p-button-outlined"
+                      routerLink="/hairy-paws/gamification/challenges">
+                    </button>
+
+                    <button
+                      pButton
+                      pRipple
+                      label="Share Achievement"
+                      icon="pi pi-share-alt"
+                      class="action-button w-full p-button-outlined"
+                      (click)="shareAchievement()">
+                    </button>
+                  </div>
+                </p-card>
+
+                <!-- Level Progress -->
+                <p-card header="Level Progress" styleClass="mt-4">
+                  <div class="level-progress-detail">
+                    <div class="text-center mb-3">
+                      <h4 class="mb-1">Level {{ ongStats.gamification.currentLevel }}</h4>
+                      <p class="text-600">{{ getPointsToNextLevel() }} points to next level</p>
+                    </div>
+
+                    <p-progressBar
+                      [value]="getLevelProgress()"
+                      [showValue]="true"
+                      styleClass="level-progress-detailed">
+                    </p-progressBar>
+
+                    <div class="flex justify-content-between mt-2 text-sm text-600">
+                      <span>{{ ongStats.gamification.totalPoints }} points</span>
+                      <span>{{ getNextLevelPoints() }} points</span>
+                    </div>
+                  </div>
+                </p-card>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+  </div>
+
+  <!-- Monthly Goal Dialog -->
+  <p-dialog
+    [(visible)]="showGoalDialog"
+    header="Set Monthly Goal"
+    [modal]="true"
+    [style]="{width: '400px'}">
+
+    <div class="goal-dialog-content">
+      <p class="mb-4">Set your adoption goal for this month to earn bonus points!</p>
+
+      <div class="field mb-4">
+        <label class="block font-medium mb-2">Target Adoptions</label>
+        <p-inputNumber
+          [(ngModel)]="newMonthlyGoal"
+          [min]="1"
+          [max]="100"
+          placeholder="Enter target number"
+          styleClass="w-full">
+        </p-inputNumber>
+      </div>
+
+      <div class="goal-info bg-blue-50 p-3 border-round mb-4">
+        <div class="flex align-items-center gap-2">
+          <i class="pi pi-info-circle text-blue-600"></i>
+          <span class="text-blue-800 text-sm">
+                Completing your monthly goal earns {{ calculateGoalBonus(newMonthlyGoal) }} bonus points!
+              </span>
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end gap-2">
+        <button
+          pButton
+          pRipple
+          label="Cancel"
+          class="p-button-outlined"
+          (click)="showGoalDialog = false">
+        </button>
+        <button
+          pButton
+          pRipple
+          label="Set Goal"
+          [disabled]="!newMonthlyGoal || isSettingGoal"
+          [loading]="isSettingGoal"
+          (click)="setMonthlyGoal()">
+        </button>
+      </div>
+    </ng-template>
+  </p-dialog>
+</div>
