@@ -1,0 +1,293 @@
+<!-- components/pet/pet-profile-display/pet-profile-display.component.html -->
+<p-dialog
+  [(visible)]="visible"
+  [header]="'Detailed Profile - ' + (pet?.name || 'Pet')"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{width: '90%', maxWidth: '900px'}"
+  [closeOnEscape]="true"
+  (onHide)="closeDialog()">
+
+  <div *ngIf="pet && profile" class="profile-display-content">
+
+    <!-- Características de Comportamiento -->
+    <p-card header="Behavioral Characteristics" class="mb-4">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Energy Level:</span>
+            <p-tag [value]="getEnergyLevelLabel(profile.energyLevel)" severity="info"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-6">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Social Level:</span>
+            <p-tag [value]="getSocialLevelLabel(profile.socialLevel)" severity="info"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-4">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Good with Kids:</span>
+            <p-tag [value]="getBooleanTag(profile.goodWithKids).label"
+                   [severity]="getBooleanTag(profile.goodWithKids).severity"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-4">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Good with Other Pets:</span>
+            <p-tag [value]="getBooleanTag(profile.goodWithOtherPets).label"
+                   [severity]="getBooleanTag(profile.goodWithOtherPets).severity"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-4">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Good with Strangers:</span>
+            <p-tag [value]="getBooleanTag(profile.goodWithStrangers).label"
+                   [severity]="getBooleanTag(profile.goodWithStrangers).severity"></p-tag>
+          </div>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Entrenamiento -->
+    <p-card header="Training" class="mb-4">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Training Level:</span>
+            <p-tag [value]="getTrainingLevelLabel(profile.trainingLevel)" severity="info"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">House Trained:</span>
+            <p-tag [value]="getBooleanTag(profile.houseTrained).label"
+                   [severity]="getBooleanTag(profile.houseTrained).severity"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Leash Trained:</span>
+            <p-tag [value]="getBooleanTag(profile.leashTrained).label"
+                   [severity]="getBooleanTag(profile.leashTrained).severity"></p-tag>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="profile.knownCommands && profile.knownCommands.length > 0">
+          <div class="mb-3">
+            <span class="font-medium">Known Commands:</span>
+            <div class="flex gap-2 flex-wrap mt-2">
+              <p-tag *ngFor="let command of profile.knownCommands"
+                     [value]="command" severity="success"></p-tag>
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Cuidados -->
+    <p-card header="Care Requirements" class="mb-4">
+      <div class="grid">
+        <div class="col-12 md:col-4">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Care Level:</span>
+            <p-tag [value]="getCareLevelLabel(profile.careLevel)" severity="info"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-4">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Exercise Needs:</span>
+            <p-tag [value]="profile.exerciseNeeds | titlecase" severity="info"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-4">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Grooming Needs:</span>
+            <p-tag [value]="profile.groomingNeeds | titlecase" severity="info"></p-tag>
+          </div>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Salud y Dieta -->
+    <p-card header="Health & Diet" class="mb-4">
+      <div class="grid">
+        <div class="col-12">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Special Diet Required:</span>
+            <p-tag [value]="getBooleanTag(profile.specialDiet).label"
+                   [severity]="getBooleanTag(profile.specialDiet).severity"></p-tag>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="profile.specialDiet && profile.dietDescription">
+          <div class="mb-3">
+            <span class="font-medium">Diet Description:</span>
+            <p class="mt-2 text-color-secondary">{{ profile.dietDescription }}</p>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="profile.chronicConditions && profile.chronicConditions.length > 0">
+          <div class="mb-3">
+            <span class="font-medium">Chronic Conditions:</span>
+            <div class="flex gap-2 flex-wrap mt-2">
+              <p-tag *ngFor="let condition of profile.chronicConditions"
+                     [value]="condition" severity="warn"></p-tag>
+            </div>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="profile.medications && profile.medications.length > 0">
+          <div class="mb-3">
+            <span class="font-medium">Medications:</span>
+            <div class="flex gap-2 flex-wrap mt-2">
+              <p-tag *ngFor="let medication of profile.medications"
+                     [value]="medication" severity="warn"></p-tag>
+            </div>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="profile.allergies && profile.allergies.length > 0">
+          <div class="mb-3">
+            <span class="font-medium">Allergies:</span>
+            <div class="flex gap-2 flex-wrap mt-2">
+              <p-tag *ngFor="let allergy of profile.allergies"
+                     [value]="allergy" severity="danger"></p-tag>
+            </div>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="profile.veterinaryNeeds">
+          <div class="mb-3">
+            <span class="font-medium">Veterinary Needs:</span>
+            <p class="mt-2 text-color-secondary">{{ profile.veterinaryNeeds }}</p>
+          </div>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Comportamiento Específico -->
+    <p-card header="Specific Behaviors" class="mb-4">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Destructive Behavior:</span>
+            <p-tag [value]="getBooleanTag(profile.destructiveBehavior).label"
+                   [severity]="getBehaviorSeverity(profile.destructiveBehavior)"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-6">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Separation Anxiety:</span>
+            <p-tag [value]="getBooleanTag(profile.separationAnxiety).label"
+                   [severity]="getBehaviorSeverity(profile.separationAnxiety)"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-6">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Noise Sensitivity:</span>
+            <p-tag [value]="getBooleanTag(profile.noiseSensitivity).label"
+                   [severity]="getNoiseSensitivitySeverity(profile.noiseSensitivity)"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-6">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Escape Tendency:</span>
+            <p-tag [value]="getBooleanTag(profile.escapeTendency).label"
+                   [severity]="getBehaviorSeverity(profile.escapeTendency)"></p-tag>
+          </div>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Preferencias de Hogar -->
+    <p-card header="Home Preferences" class="mb-4">
+      <div class="grid">
+        <div class="col-12 md:col-6" *ngIf="profile.idealHomeType">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Ideal Home Type:</span>
+            <p-tag [value]="getHomeTypeLabel(profile.idealHomeType)" severity="info"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-6">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Space Requirements:</span>
+            <p-tag [value]="profile.spaceRequirements | titlecase" severity="info"></p-tag>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="profile.climatePreferences && profile.climatePreferences.length > 0">
+          <div class="mb-3">
+            <span class="font-medium">Climate Preferences:</span>
+            <div class="flex gap-2 flex-wrap mt-2">
+              <p-tag *ngFor="let climate of profile.climatePreferences"
+                     [value]="climate | titlecase" severity="info"></p-tag>
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Historia y Notas -->
+    <p-card header="History & Notes" class="mb-4" *ngIf="profile.rescueStory || profile.previousHomeExperience || profile.behavioralNotes">
+      <div class="grid">
+        <div class="col-12" *ngIf="profile.rescueStory">
+          <div class="mb-3">
+            <span class="font-medium">Rescue Story:</span>
+            <p class="mt-2 text-color-secondary line-height-3">{{ profile.rescueStory }}</p>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="profile.previousHomeExperience">
+          <div class="mb-3">
+            <span class="font-medium">Previous Home Experience:</span>
+            <p class="mt-2 text-color-secondary line-height-3">{{ profile.previousHomeExperience }}</p>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="profile.behavioralNotes">
+          <div class="mb-3">
+            <span class="font-medium">Behavioral Notes:</span>
+            <p class="mt-2 text-color-secondary line-height-3">{{ profile.behavioralNotes }}</p>
+          </div>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Compatibilidad -->
+    <p-card header="Compatibility" class="mb-4">
+      <div class="grid">
+        <div class="col-12 md:col-4">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Beginner Friendly:</span>
+            <p-tag [value]="getBooleanTag(profile.beginnerFriendly).label"
+                   [severity]="getBooleanTag(profile.beginnerFriendly).severity"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-4">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Apartment Suitable:</span>
+            <p-tag [value]="getBooleanTag(profile.apartmentSuitable).label"
+                   [severity]="getBooleanTag(profile.apartmentSuitable).severity"></p-tag>
+          </div>
+        </div>
+        <div class="col-12 md:col-4">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-medium">Family Friendly:</span>
+            <p-tag [value]="getBooleanTag(profile.familyFriendly).label"
+                   [severity]="getBooleanTag(profile.familyFriendly).severity"></p-tag>
+          </div>
+        </div>
+      </div>
+    </p-card>
+
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end gap-2">
+      <p-button
+        label="Close"
+        icon="pi pi-times"
+        styleClass="p-button-text"
+        (click)="closeDialog()">
+      </p-button>
+      <p-button
+        label="Edit Profile"
+        icon="pi pi-pencil"
+        (click)="onEditProfile()">
+      </p-button>
+    </div>
+  </ng-template>
+</p-dialog>

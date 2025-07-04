@@ -25,6 +25,8 @@ export class MyPetCardComponent {
 
   @Output() editPet = new EventEmitter<PetInterface>();
   @Output() deletePet = new EventEmitter<PetInterface>();
+  @Output() createProfile = new EventEmitter<PetInterface>();
+  @Output() viewProfile = new EventEmitter<PetInterface>();
 
   onEdit(): void {
     this.editPet.emit(this.pet);
@@ -32,6 +34,14 @@ export class MyPetCardComponent {
 
   onDelete(): void {
     this.deletePet.emit(this.pet);
+  }
+
+  onCreateProfile(): void {
+    this.createProfile.emit(this.pet);
+  }
+
+  onViewProfile(): void {
+    this.viewProfile.emit(this.pet);
   }
 
   getGender(): string {

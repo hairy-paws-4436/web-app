@@ -2,9 +2,9 @@ import {inject, Injectable} from '@angular/core';
 import {environment} from '../../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {PetInterface} from '../../interfaces/pet/pet-interface';
-import {catchError, Observable, throwError} from 'rxjs';
+import {PetProfileInterface} from '../../interfaces/pet/pet-profile-interface';
+import {catchError, map, Observable, of, throwError} from 'rxjs';
 import {returnHeaders} from '../../../shared/models/headers';
-
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +12,7 @@ import {returnHeaders} from '../../../shared/models/headers';
 export class PetService {
   private readonly baseUrl: string = environment.baseUrl;
   private http = inject(HttpClient);
+
   constructor() { }
 
   getPetsByTypeAndBreed(type: string, breed: string) {
@@ -61,11 +62,6 @@ export class PetService {
     );
   }
 
-  private handleError(error: any) {
-    console.error('An error occurred in PetService', error);
-    return Promise.reject(error.message || error);
-  }
-
   getPetById(id: string): Observable<PetInterface> {
     const url = `${this.baseUrl}/animals/${id}`;
     return this.http.get<PetInterface>(url).pipe(
@@ -73,5 +69,51 @@ export class PetService {
     );
   }
 
+  // NUEVOS MÉTODOS: Gestión de perfiles detallados
+  createPetProfile(animalId: string, profileData: PetProfileInterface): Observable<PetProfileInterface> {
+    const url = `${this.baseUrl}/matching/animals/${animalId}/profile`;
 
+    return this.http.post<{profile: PetProfileInterface}>(url, profileData, {headers: returnHeaders()}).pipe(
+      map(response => response.profile),
+      catchError(this.handleError)
+    );
+  }
+
+  getPetProfile(animalId: string): Observable<PetProfileInterface> {
+    const url = `${this.baseUrl}/matching/animals/${animalId}/profile`;
+
+    return this.http.get<{profile: PetProfileInterface, hasProfile: boolean}>(url, {headers: returnHeaders()}).pipe(
+      map(response => {
+        if (!response.hasProfile) {
+          throw new Error('Pet profile not found');
+        }
+        return response.profile;
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  updatePetProfile(animalId: string, profileData: Partial<PetProfileInterface>): Observable<PetProfileInterface> {
+    const url = `${this.baseUrl}/matching/animals/${animalId}/profile`;
+
+    return this.http.put<{profile: PetProfileInterface}>(url, profileData, {headers: returnHeaders()}).pipe(
+      map(response => response.profile),
+      catchError(this.handleError)
+    );
+  }
+
+  // MÉTODO ADICIONAL: Verificar si existe perfil
+  checkPetProfileExists(animalId: string): Observable<boolean> {
+    const url = `${this.baseUrl}/matching/animals/${animalId}/profile`;
+
+    return this.http.get<{hasProfile: boolean}>(url, {headers: returnHeaders()}).pipe(
+      map(response => response.hasProfile),
+      catchError(() => of(false))
+    );
+  }
+
+  private handleError(error: any) {
+    console.error('An error occurred in PetService', error);
+    return throwError(() => new Error(error.message || error));
+  }
 }

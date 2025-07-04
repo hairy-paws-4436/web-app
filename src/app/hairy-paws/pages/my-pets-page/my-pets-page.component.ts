@@ -6,12 +6,14 @@ import {Toast} from "primeng/toast";
 import {PetService} from '../../services/pet/pet.service';
 import {ConfirmationService, MessageService} from 'primeng/api';
 import {PetInterface} from '../../interfaces/pet/pet-interface';
+import {PetProfileInterface} from '../../interfaces/pet/pet-profile-interface';
 import {ConfirmDialog} from 'primeng/confirmdialog';
 import {ButtonDirective} from 'primeng/button';
 import {MyPetCardComponent} from '../../components/pet/my-pet-card/my-pet-card.component';
 import {EditPetDialogComponent} from '../../components/pet/edit-pet-dialog/edit-pet-dialog.component';
+import {PetProfileFormComponent} from '../../components/pet/pet-profile-form/pet-profile-form.component';
+import {PetProfileDisplayComponent} from '../../components/pet/pet-profile-display/pet-profile-display.component';
 import {RouterLink} from '@angular/router';
-
 
 @Component({
   selector: 'app-my-pets-page',
@@ -24,6 +26,8 @@ import {RouterLink} from '@angular/router';
     ButtonDirective,
     MyPetCardComponent,
     EditPetDialogComponent,
+    PetProfileFormComponent,
+    PetProfileDisplayComponent,
     RouterLink,
   ],
   templateUrl: './my-pets-page.component.html',
@@ -37,7 +41,10 @@ export class MyPetsPageComponent implements OnInit {
   myPets: PetInterface[] = [];
   isLoading: boolean = true;
   displayEditDialog: boolean = false;
+  displayProfileDialog: boolean = false;
+  displayViewProfileDialog: boolean = false;
   selectedPet: PetInterface | null = null;
+  selectedProfile: PetProfileInterface | null = null;
 
   ngOnInit(): void {
     this.loadMyPets();
@@ -67,6 +74,39 @@ export class MyPetsPageComponent implements OnInit {
     this.displayEditDialog = true;
   }
 
+  openProfileDialog(pet: PetInterface): void {
+    this.selectedPet = pet;
+    this.displayProfileDialog = true;
+  }
+
+  openViewProfileDialog(pet: PetInterface): void {
+    this.selectedPet = pet;
+    this.loadPetProfile(pet.id);
+  }
+
+  openProfileDialogFromView(): void {
+    this.displayViewProfileDialog = false;
+    this.displayProfileDialog = true;
+  }
+
+  private loadPetProfile(petId: string): void {
+    this.myPetsService.getPetProfile(petId).subscribe({
+      next: (profile) => {
+        this.selectedProfile = profile;
+        this.displayViewProfileDialog = true;
+      },
+      error: (error) => {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'No Profile Found',
+          detail: 'This pet doesn\'t have a detailed profile yet. Create one now!'
+        });
+        // Abrir el formulario de creación si no existe perfil
+        this.displayProfileDialog = true;
+      }
+    });
+  }
+
   handlePetUpdate(updatedPet: PetInterface): void {
     const index = this.myPets.findIndex(p => p.id === updatedPet.id);
     if (index !== -1) {
@@ -79,6 +119,17 @@ export class MyPetsPageComponent implements OnInit {
       severity: 'success',
       summary: 'Pet Updated',
       detail: `${updatedPet.name}'s information has been updated successfully`
+    });
+  }
+
+  handleProfileCreated(profile: PetProfileInterface): void {
+    this.displayProfileDialog = false;
+    this.selectedProfile = profile;
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Profile Created',
+      detail: `Detailed profile for ${this.selectedPet?.name} has been created successfully`
     });
   }
 

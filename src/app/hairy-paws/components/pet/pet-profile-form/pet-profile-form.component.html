@@ -1,0 +1,448 @@
+<!-- components/pet/pet-profile-form/pet-profile-form.component.html -->
+<p-dialog
+  [(visible)]="visible"
+  [header]="'Detailed Profile - ' + (pet?.name || 'Pet')"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{width: '90%', maxWidth: '800px'}"
+  [closeOnEscape]="true"
+  (onHide)="closeForm()">
+
+  <p-toast></p-toast>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" *ngIf="pet">
+    <div class="profile-form-content">
+
+      <!-- Características de Comportamiento -->
+      <p-card header="Behavioral Characteristics" class="mb-4">
+        <div class="grid">
+          <div class="col-12 md:col-6 field">
+            <label for="energyLevel" class="block font-medium mb-2">Energy Level *</label>
+            <p-dropdown
+              id="energyLevel"
+              formControlName="energyLevel"
+              [options]="energyLevelOptions"
+              placeholder="Select energy level"
+              optionLabel="label"
+              optionValue="value"
+              class="w-full">
+            </p-dropdown>
+            <small *ngIf="isInvalid('energyLevel')" class="p-error">{{ getErrorMessage('energyLevel') }}</small>
+          </div>
+
+          <div class="col-12 md:col-6 field">
+            <label for="socialLevel" class="block font-medium mb-2">Social Level *</label>
+            <p-dropdown
+              id="socialLevel"
+              formControlName="socialLevel"
+              [options]="socialLevelOptions"
+              placeholder="Select social level"
+              optionLabel="label"
+              optionValue="value"
+              class="w-full">
+            </p-dropdown>
+            <small *ngIf="isInvalid('socialLevel')" class="p-error">{{ getErrorMessage('socialLevel') }}</small>
+          </div>
+
+          <div class="col-12 md:col-4 field">
+            <div class="flex align-items-center">
+              <p-checkbox
+                id="goodWithKids"
+                formControlName="goodWithKids"
+                [binary]="true">
+              </p-checkbox>
+              <label for="goodWithKids" class="ml-2">Good with kids (optional)</label>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-4 field">
+            <div class="flex align-items-center">
+              <p-checkbox
+                id="goodWithOtherPets"
+                formControlName="goodWithOtherPets"
+                [binary]="true">
+              </p-checkbox>
+              <label for="goodWithOtherPets" class="ml-2">Good with other pets (optional)</label>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-4 field">
+            <div class="flex align-items-center">
+              <p-checkbox
+                id="goodWithStrangers"
+                formControlName="goodWithStrangers"
+                [binary]="true">
+              </p-checkbox>
+              <label for="goodWithStrangers" class="ml-2">Good with strangers (optional)</label>
+            </div>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Entrenamiento -->
+      <p-card header="Training" class="mb-4">
+        <div class="grid">
+          <div class="col-12 md:col-6 field">
+            <label for="trainingLevel" class="block font-medium mb-2">Training Level *</label>
+            <p-dropdown
+              id="trainingLevel"
+              formControlName="trainingLevel"
+              [options]="trainingLevelOptions"
+              placeholder="Select training level"
+              optionLabel="label"
+              optionValue="value"
+              class="w-full">
+            </p-dropdown>
+            <small *ngIf="isInvalid('trainingLevel')" class="p-error">{{ getErrorMessage('trainingLevel') }}</small>
+          </div>
+
+          <div class="col-12 md:col-3 field">
+            <div class="flex align-items-center">
+              <p-checkbox
+                id="houseTrained"
+                formControlName="houseTrained"
+                [binary]="true">
+              </p-checkbox>
+              <label for="houseTrained" class="ml-2">House trained *</label>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-3 field">
+            <div class="flex align-items-center">
+              <p-checkbox
+                id="leashTrained"
+                formControlName="leashTrained"
+                [binary]="true">
+              </p-checkbox>
+              <label for="leashTrained" class="ml-2">Leash trained (optional)</label>
+            </div>
+          </div>
+
+          <div class="col-12 field">
+            <label for="knownCommands" class="block font-medium mb-2">Known Commands</label>
+            <input
+              id="knownCommands"
+              type="text"
+              pInputText
+              placeholder="Enter commands separated by commas (e.g., sit, stay, come)"
+              [value]="getArrayAsString('knownCommands')"
+              (input)="updateArrayField('knownCommands', $event)"
+              class="w-full">
+            <small class="text-color-secondary">Separate multiple commands with commas</small>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Cuidados -->
+      <p-card header="Care Requirements" class="mb-4">
+        <div class="grid">
+          <div class="col-12 md:col-4 field">
+            <label for="careLevel" class="block font-medium mb-2">Care Level *</label>
+            <p-dropdown
+              id="careLevel"
+              formControlName="careLevel"
+              [options]="careLevelOptions"
+              placeholder="Select care level"
+              optionLabel="label"
+              optionValue="value"
+              class="w-full">
+            </p-dropdown>
+          </div>
+
+          <div class="col-12 md:col-4 field">
+            <label for="exerciseNeeds" class="block font-medium mb-2">Exercise Needs *</label>
+            <p-dropdown
+              id="exerciseNeeds"
+              formControlName="exerciseNeeds"
+              [options]="exerciseNeedsOptions"
+              placeholder="Select exercise needs"
+              optionLabel="label"
+              optionValue="value"
+              class="w-full">
+            </p-dropdown>
+          </div>
+
+          <div class="col-12 md:col-4 field">
+            <label for="groomingNeeds" class="block font-medium mb-2">Grooming Needs *</label>
+            <p-dropdown
+              id="groomingNeeds"
+              formControlName="groomingNeeds"
+              [options]="groomingNeedsOptions"
+              placeholder="Select grooming needs"
+              optionLabel="label"
+              optionValue="value"
+              class="w-full">
+            </p-dropdown>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Salud y Dieta -->
+      <p-card header="Health & Diet" class="mb-4">
+        <div class="grid">
+          <div class="col-12 field">
+            <div class="flex align-items-center mb-2">
+              <p-checkbox
+                id="specialDiet"
+                formControlName="specialDiet"
+                [binary]="true">
+              </p-checkbox>
+              <label for="specialDiet" class="ml-2">Requires special diet *</label>
+            </div>
+          </div>
+
+          <div class="col-12 field" *ngIf="profileForm.get('specialDiet')?.value">
+            <label for="dietDescription" class="block font-medium mb-2">Diet Description</label>
+            <textarea
+              id="dietDescription"
+              formControlName="dietDescription"
+              [rows]="2"
+              placeholder="Describe the special diet requirements"
+              class="w-full">
+            </textarea>
+          </div>
+
+          <div class="col-12 field">
+            <label for="chronicConditions" class="block font-medium mb-2">Chronic Conditions</label>
+            <input
+              id="chronicConditions"
+              type="text"
+              pInputText
+              placeholder="Enter conditions separated by commas"
+              [value]="getArrayAsString('chronicConditions')"
+              (input)="updateArrayField('chronicConditions', $event)"
+              class="w-full">
+            <small class="text-color-secondary">Separate multiple conditions with commas</small>
+          </div>
+
+          <div class="col-12 field">
+            <label for="medications" class="block font-medium mb-2">Medications</label>
+            <input
+              id="medications"
+              type="text"
+              pInputText
+              placeholder="Enter medications separated by commas"
+              [value]="getArrayAsString('medications')"
+              (input)="updateArrayField('medications', $event)"
+              class="w-full">
+            <small class="text-color-secondary">Separate multiple medications with commas</small>
+          </div>
+
+          <div class="col-12 field">
+            <label for="allergies" class="block font-medium mb-2">Allergies</label>
+            <input
+              id="allergies"
+              type="text"
+              pInputText
+              placeholder="Enter allergies separated by commas"
+              [value]="getArrayAsString('allergies')"
+              (input)="updateArrayField('allergies', $event)"
+              class="w-full">
+            <small class="text-color-secondary">Separate multiple allergies with commas</small>
+          </div>
+
+          <div class="col-12 field">
+            <label for="veterinaryNeeds" class="block font-medium mb-2">Veterinary Needs</label>
+            <textarea
+              id="veterinaryNeeds"
+              formControlName="veterinaryNeeds"
+              [rows]="2"
+              placeholder="Describe special veterinary requirements"
+              class="w-full">
+            </textarea>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Comportamiento Específico -->
+      <p-card header="Specific Behaviors" class="mb-4">
+        <div class="grid">
+          <div class="col-12 md:col-6 field">
+            <div class="flex align-items-center">
+              <p-checkbox
+                id="destructiveBehavior"
+                formControlName="destructiveBehavior"
+                [binary]="true">
+              </p-checkbox>
+              <label for="destructiveBehavior" class="ml-2">Destructive behavior *</label>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-6 field">
+            <div class="flex align-items-center">
+              <p-checkbox
+                id="separationAnxiety"
+                formControlName="separationAnxiety"
+                [binary]="true">
+              </p-checkbox>
+              <label for="separationAnxiety" class="ml-2">Separation anxiety *</label>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-6 field">
+            <div class="flex align-items-center">
+              <p-checkbox
+                id="noiseSensitivity"
+                formControlName="noiseSensitivity"
+                [binary]="true">
+              </p-checkbox>
+              <label for="noiseSensitivity" class="ml-2">Noise sensitivity *</label>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-6 field">
+            <div class="flex align-items-center">
+              <p-checkbox
+                id="escapeTendency"
+                formControlName="escapeTendency"
+                [binary]="true">
+              </p-checkbox>
+              <label for="escapeTendency" class="ml-2">Escape tendency *</label>
+            </div>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Preferencias de Hogar -->
+      <p-card header="Home Preferences" class="mb-4">
+        <div class="grid">
+          <div class="col-12 md:col-6 field">
+            <label for="idealHomeType" class="block font-medium mb-2">Ideal Home Type</label>
+            <p-dropdown
+              id="idealHomeType"
+              formControlName="idealHomeType"
+              [options]="homeTypeOptions"
+              placeholder="Select ideal home type (optional)"
+              optionLabel="label"
+              optionValue="value"
+              [showClear]="true"
+              class="w-full">
+            </p-dropdown>
+          </div>
+
+          <div class="col-12 md:col-6 field">
+            <label for="spaceRequirements" class="block font-medium mb-2">Space Requirements *</label>
+            <p-dropdown
+              id="spaceRequirements"
+              formControlName="spaceRequirements"
+              [options]="spaceRequirementsOptions"
+              placeholder="Select space requirements"
+              optionLabel="label"
+              optionValue="value"
+              class="w-full">
+            </p-dropdown>
+          </div>
+
+          <div class="col-12 field">
+            <label for="climatePreferences" class="block font-medium mb-2">Climate Preferences</label>
+            <p-multiSelect
+              id="climatePreferences"
+              formControlName="climatePreferences"
+              [options]="climateOptions"
+              placeholder="Select climate preferences"
+              optionLabel="label"
+              optionValue="value"
+              class="w-full">
+            </p-multiSelect>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Historia y Notas -->
+      <p-card header="History & Notes" class="mb-4">
+        <div class="grid">
+          <div class="col-12 field">
+            <label for="rescueStory" class="block font-medium mb-2">Rescue Story</label>
+            <textarea
+              id="rescueStory"
+              formControlName="rescueStory"
+              [rows]="3"
+              placeholder="Tell the rescue story..."
+              class="w-full">
+            </textarea>
+          </div>
+
+          <div class="col-12 field">
+            <label for="previousHomeExperience" class="block font-medium mb-2">Previous Home Experience</label>
+            <textarea
+              id="previousHomeExperience"
+              formControlName="previousHomeExperience"
+              [rows]="3"
+              placeholder="Describe previous home experience..."
+              class="w-full">
+            </textarea>
+          </div>
+
+          <div class="col-12 field">
+            <label for="behavioralNotes" class="block font-medium mb-2">Behavioral Notes</label>
+            <textarea
+              id="behavioralNotes"
+              formControlName="behavioralNotes"
+              [rows]="3"
+              placeholder="Add any behavioral observations..."
+              class="w-full">
+            </textarea>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Compatibilidad -->
+      <p-card header="Compatibility" class="mb-4">
+        <div class="grid">
+          <div class="col-12 md:col-4 field">
+            <div class="flex align-items-center">
+              <p-checkbox
+                id="beginnerFriendly"
+                formControlName="beginnerFriendly"
+                [binary]="true">
+              </p-checkbox>
+              <label for="beginnerFriendly" class="ml-2">Beginner friendly *</label>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-4 field">
+            <div class="flex align-items-center">
+              <p-checkbox
+                id="apartmentSuitable"
+                formControlName="apartmentSuitable"
+                [binary]="true">
+              </p-checkbox>
+              <label for="apartmentSuitable" class="ml-2">Apartment suitable *</label>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-4 field">
+            <div class="flex align-items-center">
+              <p-checkbox
+                id="familyFriendly"
+                formControlName="familyFriendly"
+                [binary]="true">
+              </p-checkbox>
+              <label for="familyFriendly" class="ml-2">Family friendly *</label>
+            </div>
+          </div>
+        </div>
+      </p-card>
+
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end gap-2">
+      <p-button
+        label="Cancel"
+        icon="pi pi-times"
+        styleClass="p-button-text"
+        (click)="closeForm()"
+        [disabled]="isSubmitting">
+      </p-button>
+      <p-button
+        label="Save Profile"
+        icon="pi pi-check"
+        (click)="onSubmit()"
+        [loading]="isSubmitting">
+      </p-button>
+    </div>
+  </ng-template>
+</p-dialog>

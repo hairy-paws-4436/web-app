@@ -1,0 +1,133 @@
+/* components/pet/pet-profile-display/pet-profile-display.component.css */
+
+:host ::ng-deep .p-dialog .p-dialog-header {
+  padding: 1.25rem 1.5rem;
+  background-color: var(--p-primary-color);
+  color: white;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+  padding: 1.5rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.profile-display-content {
+  max-width: 100%;
+}
+
+:host ::ng-deep .p-card {
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--p-surface-200);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+:host ::ng-deep .p-card .p-card-header {
+  background-color: var(--p-surface-50);
+  color: var(--p-primary-color);
+  font-weight: 600;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--p-surface-200);
+}
+
+:host ::ng-deep .p-card .p-card-body {
+  padding: 1.25rem;
+}
+
+.profile-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--p-surface-100);
+}
+
+.profile-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.profile-label {
+  font-weight: 500;
+  color: var(--p-text-color);
+}
+
+.profile-value {
+  color: var(--p-text-color);
+}
+
+:host ::ng-deep .p-tag {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.text-content {
+  line-height: 1.6;
+  color: var(--p-text-color);
+  margin-top: 0.5rem;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Responsive design */
+@media screen and (max-width: 768px) {
+  :host ::ng-deep .p-dialog {
+    width: 95vw !important;
+  }
+
+  :host ::ng-deep .p-dialog .p-dialog-header {
+    padding: 1rem;
+  }
+
+  :host ::ng-deep .p-dialog .p-dialog-content {
+    padding: 1rem;
+  }
+
+  :host ::ng-deep .p-card .p-card-header {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+
+  :host ::ng-deep .p-card .p-card-body {
+    padding: 1rem;
+  }
+
+  .profile-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  :host ::ng-deep .p-dialog .p-dialog-footer {
+    padding: 1rem;
+    flex-direction: column;
+  }
+
+  :host ::ng-deep .p-dialog .p-dialog-footer .p-button {
+    margin-left: 0;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  :host ::ng-deep .p-dialog {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: none !important;
+    border-radius: 0;
+  }
+
+  :host ::ng-deep .p-dialog .p-dialog-content {
+    max-height: calc(100vh - 140px);
+  }
+}

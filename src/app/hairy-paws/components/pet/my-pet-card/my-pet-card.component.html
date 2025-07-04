@@ -24,6 +24,24 @@
       <button
         pButton
         pRipple
+        icon="pi pi-user-plus"
+        class="p-button-rounded p-button-success p-button-outlined"
+        (click)="onCreateProfile()"
+        pTooltip="Create detailed profile"
+        tooltipPosition="top">
+      </button>
+      <button
+        pButton
+        pRipple
+        icon="pi pi-eye"
+        class="p-button-rounded p-button-warning p-button-outlined"
+        (click)="onViewProfile()"
+        pTooltip="View detailed profile"
+        tooltipPosition="top">
+      </button>
+      <button
+        pButton
+        pRipple
         icon="pi pi-trash"
         class="p-button-rounded p-button-danger p-button-outlined"
         (click)="onDelete()"
@@ -77,6 +95,26 @@
       icon="pi pi-pencil"
       class="p-button-text p-button-info"
       (click)="onEdit()">
+    </button>
+    <button
+      pButton
+      pRipple
+      label="Profile"
+      icon="pi pi-user-plus"
+      class="p-button-text p-button-success"
+      (click)="onCreateProfile()"
+      pTooltip="Create detailed profile"
+      tooltipPosition="top">
+    </button>
+    <button
+      pButton
+      pRipple
+      label="View"
+      icon="pi pi-eye"
+      class="p-button-text p-button-warning"
+      (click)="onViewProfile()"
+      pTooltip="View detailed profile"
+      tooltipPosition="top">
     </button>
     <button
       pButton

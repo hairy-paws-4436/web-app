@@ -18,6 +18,8 @@
         [pet]="pet"
         (editPet)="openEditDialog($event)"
         (deletePet)="confirmDeletePet($event)"
+        (createProfile)="openProfileDialog($event)"
+        (viewProfile)="openViewProfileDialog($event)"
         class="pet-card-item">
       </app-my-pet-card>
     </div>
@@ -25,9 +27,25 @@
     <app-progreess-spinner [isLoading]="isLoading"></app-progreess-spinner>
   </div>
 
+  <!-- Dialog para editar mascota -->
   <app-edit-pet-dialog
     [(visible)]="displayEditDialog"
     [pet]="selectedPet"
     (petUpdated)="handlePetUpdate($event)">
   </app-edit-pet-dialog>
+
+  <!-- Dialog para crear/editar perfil detallado -->
+  <app-pet-profile-form
+    [(visible)]="displayProfileDialog"
+    [pet]="selectedPet"
+    (profileCreated)="handleProfileCreated($event)">
+  </app-pet-profile-form>
+
+  <!-- Dialog para visualizar perfil detallado -->
+  <app-pet-profile-display
+    [(visible)]="displayViewProfileDialog"
+    [pet]="selectedPet"
+    [profile]="selectedProfile"
+    (editProfile)="openProfileDialogFromView()">
+  </app-pet-profile-display>
 </div>
